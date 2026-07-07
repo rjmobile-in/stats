@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RJ Mobile — Unified Analytics Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link id="flatpickr-theme" rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --blue: #3B82F6; --blue-hover: #60A5FA;
+      --surface: #0D1117; --white: #161C27;
+      --border: #2A3347; --text: #E8EDF5;
+      --text-soft: #9BAAC4; --green: #34D399; --red: #EF4444;
+      --chart-grid: #2A3347; --chart-text: #9BAAC4;
+    }
+    
+    body.light-theme {
+      --surface: #F3F4F6; --white: #FFFFFF;
+      --border: #D1D5DB; --text: #111827;
+      --text-soft: #6B7280; --blue-hover: #2563EB;
+      --chart-grid: #E5E7EB; --chart-text: #6B7280;
+    }
+
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 16px; transition: background 0.3s, color 0.3s; }
+    
+    /* Global Loader */
+    #global-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: var(--text-soft); font-weight: 500; font-size: 15px; }
+    .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Login Screen */
+    #login-screen { display: none; background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); text-align: center; width: 100%; max-width: 400px; margin-top: 10vh; border: 1px solid var(--border); }
+    #login-screen h2 { font-weight: 800; font-size: 24px; margin-bottom: 4px; }
+    #login-screen p { color: var(--text-soft); font-size: 14px; margin-bottom: 24px; }
+    .input-field { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 15px; margin-bottom: 12px; outline: none; }
+    .input-field:focus { border-color: var(--blue); }
+    .checkbox-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; font-size: 13px; color: var(--text-soft); cursor: pointer; }
+    #login-btn { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--blue); color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    #login-btn:hover { background: var(--blue-hover); }
+    #error-msg { color: #EF4444; font-size: 13px; margin-top: 12px; display: none; }
+
+    /* Dashboard Layout */
+    #dashboard { display: none; width: 100%; max-width: 1100px; }
+    .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-text .name { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; line-height: 1.1; }
+    .brand-text .tag { font-size: 12px; font-weight: 600; color: var(--blue-hover); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+    .role-badge { display: inline-block; background: rgba(59,130,246,0.15); color: var(--blue-hover); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+
+    .view-section { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Tabs (For Views) */
+    .tab-controls { display: flex; gap: 12px; margin-bottom: 16px; background: var(--white); padding: 8px; border-radius: 12px; border: 1px solid var(--border); overflow-x: auto; }
+    .tab-btn { flex: 1; background: transparent; border: none; color: var(--text-soft); font-size: 14px; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: 0.2s; white-space: nowrap; }
+    .tab-btn:hover { color: var(--text); background: var(--surface); }
+    .tab-btn.active { color: var(--blue-hover); background: rgba(59,130,246,0.15); }
+
+    /* Buttons */
+    .header-btns { display: flex; gap: 10px; flex-wrap: wrap; align-items: center;}
+    .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+    .btn-secondary:hover:not(:disabled) { border-color: var(--blue); }
+    .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: var(--blue-hover); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+    .btn-primary:hover { background: var(--blue); color: white; }
+    #theme-toggle { background: transparent; border: none; color: var(--text-soft); cursor: pointer; padding: 6px; border-radius: 6px; display: flex; }
+    #theme-toggle:hover { background: var(--border); color: var(--text); }
+
+    /* Controls & Filters */
+    .controls-wrapper { background: var(--white); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 24px; }
+    .global-controls { margin-bottom: 20px; }
+    .quick-dates { display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; }
+    .quick-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-soft); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .quick-btn:hover, .quick-btn.active { border-color: var(--blue); color: var(--blue-hover); background: rgba(59,130,246,0.05); }
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 12px; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 150px; }
+    .filter-group label { font-size: 11px; color: var(--text-soft); font-weight: 600; text-transform: uppercase; }
+    .filter-input { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; outline: none; border-color: var(--border); }
+    .filter-input:focus { border-color: var(--blue); }
+    .filter-input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Export Container (For PDF) */
+    .export-container { width: 100%; }
+    .pdf-header { display: none; padding: 20px 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+    .pdf-header h1 { font-size: 24px; color: var(--text); font-weight: 800; margin-bottom: 4px; }
+    .pdf-header p { font-size: 14px; color: var(--text-soft); }
+
+    /* Quick Stats */
+    .metrics-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .metric-card { flex: 1; min-width: 180px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; }
+    .metric-title { font-size: 11px; color: var(--text-soft); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+    .metric-value { font-size: 24px; font-weight: 800; color: var(--blue-hover); display: flex; align-items: center; gap: 10px; }
+    .trend-indicator { font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+    .trend-up { background: rgba(52,211,153,0.15); color: var(--green); }
+    .trend-down { background: rgba(239,68,68,0.15); color: var(--red); }
+    .trend-neutral { background: rgba(155,170,196,0.15); color: var(--text-soft); }
+    
+    /* Charts */
+    .charts-wrapper { position: relative; min-height: 200px; margin-bottom: 24px; }
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .charts-full { grid-column: span 2; }
+    .chart-container { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: transform 0.2s; }
+    .chart-title { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-soft); margin-bottom: 16px; }
+    
+    /* UX: Empty State Overlay */
+    .no-data-overlay { display: none; position: absolute; inset: 0; background: rgba(22, 28, 39, 0.85); z-index: 10; border-radius: 12px; align-items: center; justify-content: center; flex-direction: column; gap: 12px; backdrop-filter: blur(5px); border: 1px dashed var(--border); }
+    body.light-theme .no-data-overlay { background: rgba(255, 255, 255, 0.85); }
+    .no-data-overlay.active { display: flex; }
+    .no-data-overlay svg { width: 48px; height: 48px; color: var(--text-soft); }
+    .no-data-overlay span { font-size: 16px; font-weight: 600; color: var(--text); }
+    .no-data-overlay p { font-size: 13px; color: var(--text-soft); }
+
+    @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } .charts-full { grid-column: span 1; } }
+
+    /* Table */
+    .stats-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    th { background: rgba(59,130,246,0.05); color: var(--text-soft); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+    td { font-size: 14px; }
+    tr:last-child td { border-bottom: none; }
+    .empty-row { text-align: center; color: var(--text-soft); padding: 24px !important; }
+    .skeleton-box { height: 16px; border-radius: 4px; background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Pagination */
+    .pagination-controls { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--white); border-top: 1px solid var(--border); gap: 16px; flex-wrap: wrap; }
+    .page-info-group { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-soft); }
+    .page-btns { display: flex; gap: 8px; }
+    
+    @media (max-width: 480px) { .pagination-controls { flex-direction: column; align-items: center; justify-content: center; } }
+    .load-more-container { text-align: center; margin-bottom: 40px; margin-top: 10px;}
+    .load-more-btn { display: none; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+  <div id="global-loader">
+    <div class="spinner"></div>
+    <p>Authenticating...</p>
+  </div>
+
+  <div id="login-screen">
+    <h2>RJ Mobile</h2>
+    <p>Unified Analytics Portal</p>
+    <input type="email" id="email-input" class="input-field" placeholder="Email Address" />
+    <input type="password" id="password-input" class="input-field" placeholder="Password" />
+    <label class="checkbox-row"><input type="checkbox" id="remember-me" checked> Keep me logged in</label>
+    <button id="login-btn">Secure Login</button>
+    <div id="error-msg">Authentication failed.</div>
+  </div>
+
+  <div id="dashboard">
+    
+    <div class="header">
+      <div class="brand-text" style="flex-direction: row; align-items: center; gap: 12px;">
+        <img src="logo.png" alt="RJ Mobile Logo" style="height: 40px; width: auto;" />
+        <div>
+          <div class="name">RJ Mobile <span id="role-badge" class="role-badge">STAFF</span></div>
+          <div class="tag">Social Analytics Dashboard</div>
+        </div>
+      </div>
+      <div class="header-btns">
+        <button id="theme-toggle" title="Toggle Light/Dark Mode">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <button id="export-pdf-btn" class="btn-primary">Export Report</button>
+        <button id="export-csv-btn" class="btn-primary">Export CSV</button>
+        <button id="logout-btn" class="btn-secondary">Logout</button>
+      </div>
+    </div>
+
+    <div class="controls-wrapper global-controls">
+      <div class="quick-dates" id="global-quick-dates">
+        <button class="quick-btn" data-preset="today">Today</button>
+        <button class="quick-btn" data-preset="7days">Last 7 Days</button>
+        <button class="quick-btn" data-preset="month">This Month</button>
+        <button class="quick-btn active" data-preset="all">All Time</button>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-group"><label>Global Start Date</label><input type="text" id="global-filter-start" class="filter-input" placeholder="dd/mm/yyyy"></div>
+        <div class="filter-group"><label>Global End Date</label><input type="text" id="global-filter-end" class="filter-input" placeholder="dd/mm/yyyy"></div>
+      </div>
+    </div>
+
+    <div id="view-social" class="view-section">
+      
+      <div class="controls-wrapper" style="margin-bottom: 24px;">
+        <div class="filter-bar">
+          <div class="filter-group" id="soc-staff-filter-group">
+            <label>Staff Name</label>
+            <input list="soc-staff-options" id="soc-filter-staff" class="filter-input" placeholder="Search staff...">
+            <datalist id="soc-staff-options"></datalist>
+          </div>
+          <div class="filter-group">
+            <label>Platform</label>
+            <select id="soc-filter-platform" class="filter-input">
+              <option value="">All Platforms</option>
+              <option value="Instagram">Instagram</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Snapchat">Snapchat</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="soc-export-container" class="export-container">
+        <div class="pdf-header" id="soc-pdf-header">
+          <h1>RJ Mobile Social Analytics Report</h1>
+          <p id="soc-pdf-date-range">Generated Report</p>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-title">Filtered Clicks</div>
+            <div class="metric-value">
+              <span id="soc-metric-total">0</span>
+              <span id="soc-trend-total" class="trend-indicator trend-neutral">-</span>
+            </div>
+          </div>
+          <div class="metric-card" id="soc-card-top-staff">
+            <div class="metric-title">Top Performing Staff</div>
+            <div class="metric-value"><span id="soc-metric-staff">-</span></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Top Platform</div>
+            <div class="metric-value"><span id="soc-metric-platform">-</span></div>
+          </div>
+        </div>
+
+        <div class="charts-wrapper">
+          <div id="soc-no-data" class="no-data-overlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>No Social Data Available</span>
+            <p>Try adjusting your date range or filters.</p>
+          </div>
+          <div class="charts-grid" id="soc-charts-grid">
+            <div class="chart-container"><div class="chart-title">Clicks by Platform</div><canvas id="soc-platformDoughnutChart" style="max-height: 220px;"></canvas></div>
+            <div class="chart-container" id="soc-chart-cont-staff"><div class="chart-title">Top Staff</div><canvas id="soc-staffBarChart" style="max-height: 220px;"></canvas></div>
+            <div class="chart-container"><div class="chart-title">Hourly Activity</div><canvas id="soc-hourlyLineChart" style="max-height: 220px;"></canvas></div>
+            <div class="chart-container charts-full"><div class="chart-title">Click Trends (Time-Series)</div><canvas id="soc-timeSeriesChart" style="max-height: 260px;"></canvas></div>
+          </div>
+        </div>
+
+        <!-- NEW VIEW TOGGLES -->
+        <div class="tab-controls">
+          <button class="tab-btn view-tab-btn active" data-view="list">List View</button>
+          <button class="tab-btn view-tab-btn" data-view="staff">Group by Staff</button>
+          <button class="tab-btn view-tab-btn" data-view="platform">Group by Platform</button>
+        </div>
+
+        <div class="stats-card">
+          <table>
+            <thead id="soc-table-head">
+              <tr><th>Staff Name</th><th>Platform</th><th>Date & Time</th></tr>
+            </thead>
+            <tbody id="soc-table-body"></tbody>
+          </table>
+          <div class="pagination-controls" id="soc-pagination-ui">
+            <div class="page-info-group">
+              <span id="soc-page-info">Page 0 of 0</span>
+              <select id="soc-rows-per-page" class="filter-input" style="padding: 4px 8px; font-size: 12px; min-width: auto; height: auto;">
+                <option value="15">15 per page</option><option value="25">25 per page</option><option value="50">50 per page</option><option value="100">100 per page</option>
+              </select>
+            </div>
+            <div class="page-btns">
+              <button id="soc-prev-page-btn" class="btn-secondary" style="padding: 6px 12px;">Prev</button>
+              <button id="soc-next-page-btn" class="btn-secondary" style="padding: 6px 12px;">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="load-more-container"><button id="soc-load-more-btn" class="btn-secondary load-more-btn">Fetch Older Data</button></div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+    // Firebase Unified Config
+    const firebaseConfig = { 
+      apiKey: "AIzaSyBsAsMlKJqoyOS27IVotwszVvO1ZFCGABs", 
+      authDomain: "staff-review-935f3.firebaseapp.com", 
+      projectId: "staff-review-935f3", 
+      storageBucket: "staff-review-935f3.firebasestorage.app", 
+      messagingSenderId: "91819642184", 
+      appId: "1:91819642184:web:9b78814e6efcfb811a608d",
+      measurementId: "G-CVH4RRXS41" 
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    // Global App State
+    let userRole = 'staff';
+    let userStaffName = '';
+    let isSocLoaded = false;
+    let currentViewMode = 'list'; // Added for view toggling
+
+    const masterStaffList = [
+      "Aman", "Ankur", "Ayush", "Deepak", "Farhan", "Gaurav", "Girish", "Harsh Dubay",
+      "Harsh Kejriwal", "Harsh Verma", "Kamal Murarka", "Krishna Choubey", "Krishna Singh",
+      "Krishna Soni", "Lokesh", "Manish Daga", "Manish Soni", "Mohit Tamrayat", "Pawan",
+      "Prakash", "Prashant", "Rajesh", "Rakesh", "Ram", "Ronak", "Sachin", "Sameer Singh",
+      "Sanju", "Sonu", "Subhash", "Sufiyan", "Sunil", "Vinod", "Vivek", "Yash"
+    ];
+
+    // Social State
+    let socData = [], socFiltered = [];
+    let socDoughnut, socStaffChart, socHourly, socLine;
+    let socLastDoc = null, socIsFetching = false;
+    let socPage = 1, socRows = 15;
+    
+    // UI Init: Global Flatpickr
+    function triggerActiveFilters() {
+      if(isSocLoaded) applySocFilters();
+    }
+    
+    const globalStartPicker = flatpickr("#global-filter-start", { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", onChange: triggerActiveFilters });
+    const globalEndPicker = flatpickr("#global-filter-end", { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", onChange: triggerActiveFilters });
+
+    // Global Quick Dates Logic
+    document.querySelectorAll('#global-quick-dates .quick-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#global-quick-dates .quick-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        const p = e.target.getAttribute('data-preset'), today = new Date();
+        
+        if (p === 'all') { 
+          globalStartPicker.clear(); 
+          globalEndPicker.clear(); 
+        } 
+        else if (p === 'today') { 
+          globalStartPicker.setDate(today, false); 
+          globalEndPicker.setDate(today, false); 
+        } 
+        else if (p === '7days') { 
+          const lw = new Date(); lw.setDate(today.getDate()-7); 
+          globalStartPicker.setDate(lw, false); 
+          globalEndPicker.setDate(today, false); 
+        } 
+        else if (p === 'month') { 
+          const fd = new Date(today.getFullYear(), today.getMonth(), 1); 
+          globalStartPicker.setDate(fd, false); 
+          globalEndPicker.setDate(today, false); 
+        }
+        triggerActiveFilters();
+      });
+    });
+
+    // View Toggle Logic
+    document.querySelectorAll('.view-tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentViewMode = e.target.getAttribute('data-view');
+        socPage = 1; 
+        renderSocTable();
+      });
+    });
+
+    // --- Theming ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const fpThemeLink = document.getElementById('flatpickr-theme');
+    function applyTheme(forceLight = false) {
+      const isLight = forceLight || localStorage.getItem('rj_theme') === 'light';
+      if (isLight) {
+        document.body.classList.add('light-theme');
+        fpThemeLink.href = 'https://npmcdn.com/flatpickr/dist/themes/light.css';
+        themeToggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+      } else {
+        document.body.classList.remove('light-theme');
+        fpThemeLink.href = 'https://npmcdn.com/flatpickr/dist/themes/dark.css';
+        themeToggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      }
+      triggerActiveFilters(); 
+    }
+    themeToggleBtn.addEventListener('click', () => { localStorage.setItem('rj_theme', document.body.classList.contains('light-theme') ? 'dark' : 'light'); applyTheme(); });
+    applyTheme();
+
+    // --- Authentication & RBAC ---
+    onAuthStateChanged(auth, (user) => {
+      document.getElementById('global-loader').style.display = 'none';
+      if (user) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        
+        const email = user.email.toLowerCase();
+        if (email.includes('admin')) {
+          userRole = 'admin';
+          document.getElementById('role-badge').innerText = 'ADMIN';
+          document.getElementById('role-badge').style.color = '#34D399';
+          document.getElementById('role-badge').style.background = 'rgba(52,211,153,0.15)';
+          
+          document.getElementById('soc-filter-staff').disabled = false;
+          document.getElementById('soc-card-top-staff').style.display = 'block';
+          document.getElementById('soc-chart-cont-staff').style.display = 'block';
+        } else {
+          userRole = 'staff';
+          document.getElementById('role-badge').innerText = 'STAFF';
+          
+          let rawName = email.split('@')[0]; 
+          userStaffName = rawName.replace(/[.-]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            
+          document.getElementById('soc-filter-staff').value = userStaffName;
+          document.getElementById('soc-filter-staff').disabled = true; 
+          document.getElementById('soc-card-top-staff').style.display = 'none';
+          document.getElementById('soc-chart-cont-staff').style.display = 'none';
+        }
+        
+        loadSocStats(false);
+      } else {
+        document.getElementById('login-screen').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        isSocLoaded = false;
+      }
+    });
+
+    document.getElementById('password-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('login-btn').click(); });
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const e = document.getElementById('email-input').value, p = document.getElementById('password-input').value, r = document.getElementById('remember-me').checked, msg = document.getElementById('error-msg');
+      try { msg.style.display = 'none'; await setPersistence(auth, r ? browserLocalPersistence : browserSessionPersistence); await signInWithEmailAndPassword(auth, e, p); } 
+      catch (err) { msg.style.display = 'block'; msg.innerText = err.message; }
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+    // --- General Utilities ---
+    function formatToDate(ts) { if(!ts) return "N/A"; const d = ts.toDate(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}, ${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,'0')} ${d.getHours()>=12?'PM':'AM'}`; }
+    
+    function getDynamicGroupedDate(date, totalDays) {
+      if (totalDays <= 31) return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}`;
+      if (totalDays <= 180) {
+        const diff = date.getDate() - date.getDay() + (date.getDay()===0?-6:1);
+        const mon = new Date(date.setDate(diff));
+        return `Wk of ${String(mon.getDate()).padStart(2,'0')}/${String(mon.getMonth()+1).padStart(2,'0')}`;
+      }
+      const mos = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return `${mos[date.getMonth()]} '${String(date.getFullYear()).slice(2)}`;
+    }
+
+    function renderSkeletonTable(tbodyId) {
+      const tb = document.getElementById(tbodyId); tb.innerHTML = '';
+      for(let i=0; i<5; i++) tb.innerHTML += `<tr><td><div class="skeleton-box" style="width:70%;"></div></td><td><div class="skeleton-box" style="width:50%;"></div></td><td><div class="skeleton-box" style="width:90%;"></div></td></tr>`;
+    }
+
+    // ==========================================
+    // SOCIAL ANALYTICS LOGIC
+    // ==========================================
+    document.getElementById('soc-filter-staff').addEventListener('input', applySocFilters);
+    document.getElementById('soc-filter-platform').addEventListener('change', applySocFilters);
+    document.getElementById('soc-load-more-btn').addEventListener('click', () => loadSocStats(true));
+    
+    document.getElementById('soc-rows-per-page').addEventListener('change', (e) => { socRows = parseInt(e.target.value); socPage = 1; renderSocTable(); });
+    document.getElementById('soc-prev-page-btn').addEventListener('click', () => { if(socPage > 1) { socPage--; renderSocTable(); } });
+    document.getElementById('soc-next-page-btn').addEventListener('click', () => { 
+      const maxRows = currentViewMode === 'list' ? socFiltered.length : document.getElementById('soc-table-body').children.length; // Approximate check, actual limits handled in render
+      socPage++; renderSocTable(); 
+    });
+
+    async function loadSocStats(loadMore = false) {
+      if (socIsFetching) return;
+      socIsFetching = true;
+      const loadBtn = document.getElementById('soc-load-more-btn');
+      
+      if (!loadMore) { renderSkeletonTable('soc-table-body'); socData = []; socLastDoc = null; } 
+      else { loadBtn.innerText = 'Loading...'; loadBtn.disabled = true; }
+      
+      try {
+        const limitCount = 1000;
+        let q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), limit(limitCount));
+        if (loadMore && socLastDoc) q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), startAfter(socLastDoc), limit(limitCount));
+
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          socLastDoc = snapshot.docs[snapshot.docs.length - 1];
+          snapshot.forEach(doc => { 
+            let d = doc.data(); 
+            if(d.staff_name) d.staff_name = d.staff_name.replace(/[.-]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); 
+            socData.push(d); 
+          });
+        }
+        loadBtn.style.display = (snapshot.docs.length < limitCount) ? 'none' : 'block';
+        loadBtn.innerText = 'Fetch Older Data'; loadBtn.disabled = false;
+        
+        if(userRole === 'admin') {
+          const staffCounts = {};
+          socData.forEach(i => { if(i.staff_name) staffCounts[i.staff_name] = (staffCounts[i.staff_name] || 0) + 1; });
+          
+          const dl = document.getElementById('soc-staff-options'); 
+          dl.innerHTML = '';
+          
+          masterStaffList.forEach(name => {
+            const count = staffCounts[name] || 0;
+            dl.appendChild(new Option(`${name} - ${count}`, `${name} - ${count}`));
+          });
+          
+          const unique = [...new Set(socData.map(i => i.staff_name))].sort();
+          unique.forEach(s => { 
+            if(s && s !== 'Direct/Unknown' && !masterStaffList.includes(s)) {
+              dl.appendChild(new Option(`${s} - ${staffCounts[s]}`, `${s} - ${staffCounts[s]}`));
+            } 
+          });
+        }
+        
+        isSocLoaded = true;
+        applySocFilters(); 
+      } catch (err) {
+        console.error(err);
+        if (!loadMore) document.getElementById('soc-table-body').innerHTML = '<tr><td colspan="3" style="color:var(--red); text-align:center;">Failed to load secure data.</td></tr>';
+      } finally { socIsFetching = false; }
+    }
+
+    function applySocFilters() {
+      if(!isSocLoaded) return;
+      const sQ = document.getElementById('soc-filter-staff').value.toLowerCase().split(' - ')[0].trim();
+      const pQ = document.getElementById('soc-filter-platform').value;
+      const startQ = document.getElementById('global-filter-start').value;
+      const endQ = document.getElementById('global-filter-end').value;
+
+      let startMs = 0, endMs = Infinity;
+      if(startQ) startMs = new Date(startQ).getTime();
+      if(endQ) { const d = new Date(endQ); d.setTime(d.getTime() + 86400000); endMs = d.getTime(); }
+      const duration = endMs - startMs; 
+
+      socFiltered = socData.filter(item => {
+        if (sQ && item.staff_name && !item.staff_name.toLowerCase().includes(sQ)) return false;
+        if (pQ && item.platform !== pQ) return false;
+        if (item.created_at) {
+          const t = item.created_at.toDate().getTime();
+          if (startQ && t < startMs) return false;
+          if (endQ && t >= endMs) return false;
+        }
+        return true;
+      });
+
+      let prevCount = null;
+      if(startQ && duration < Infinity) {
+        const prevEndMs = startMs, prevStartMs = startMs - duration;
+        prevCount = socData.filter(item => {
+          if (sQ && item.staff_name && !item.staff_name.toLowerCase().includes(sQ)) return false;
+          if (pQ && item.platform !== pQ) return false;
+          if (item.created_at) {
+            const t = item.created_at.toDate().getTime();
+            return t >= prevStartMs && t < prevEndMs;
+          }
+          return false;
+        }).length;
+      }
+
+      socPage = 1; 
+      updateSocDashboard(prevCount);
+    }
+
+    function updateSocDashboard(prevCount) {
+      const total = socFiltered.length;
+      document.getElementById('soc-metric-total').innerText = total;
+
+      const trendEl = document.getElementById('soc-trend-total');
+      if (prevCount !== null) {
+        if (prevCount === 0) { trendEl.className = 'trend-indicator trend-neutral'; trendEl.innerText = 'No prior data'; } 
+        else {
+          const pct = Math.round(((total - prevCount) / prevCount) * 100);
+          if (pct > 0) { trendEl.className = 'trend-indicator trend-up'; trendEl.innerText = `↑ +${pct}% vs prev`; }
+          else if (pct < 0) { trendEl.className = 'trend-indicator trend-down'; trendEl.innerText = `↓ ${pct}% vs prev`; }
+          else { trendEl.className = 'trend-indicator trend-neutral'; trendEl.innerText = `− 0%`; }
+        }
+      } else { trendEl.innerText = ''; trendEl.className = ''; }
+
+      const emptyOverlay = document.getElementById('soc-no-data');
+      if (total === 0) {
+        emptyOverlay.classList.add('active');
+        document.getElementById('soc-table-body').innerHTML = '<tr><td colspan="3" class="empty-row">No data matches filters.</td></tr>';
+        document.getElementById('soc-metric-staff').innerText = "-";
+        document.getElementById('soc-metric-platform').innerText = "-";
+        updateSocCharts({}, socFiltered); 
+        renderSocTable();
+        return;
+      }
+
+      emptyOverlay.classList.remove('active');
+      const sC = {}, pC = {};
+      socFiltered.forEach(d => {
+        if(d.staff_name && d.staff_name !== 'Direct/Unknown') sC[d.staff_name] = (sC[d.staff_name] || 0) + 1;
+        if(d.platform) pC[d.platform] = (pC[d.platform] || 0) + 1;
+      });
+
+      document.getElementById('soc-metric-staff').innerText = Object.keys(sC).sort((a,b)=>sC[b]-sC[a])[0] || "-";
+      document.getElementById('soc-metric-platform').innerText = Object.keys(pC).sort((a,b)=>pC[b]-pC[a])[0] || "-";
+      
+      updateSocCharts(pC, socFiltered, sC);
+      renderSocTable();
+    }
+
+    function updateSocCharts(pC, rawData, sC = {}) {
+      const txt = getComputedStyle(document.body).getPropertyValue('--chart-text').trim();
+      const grid = getComputedStyle(document.body).getPropertyValue('--chart-grid').trim();
+      Chart.defaults.color = txt; Chart.defaults.borderColor = grid;
+
+      const colors = {'Instagram':'#E1306C', 'YouTube':'#FF0000', 'Facebook':'#1877F2', 'Snapchat':'#FFFC00'};
+      const pLabs = Object.keys(pC), pVals = Object.values(pC), pBGs = pLabs.map(l => colors[l] || '#3B82F6');
+
+      if(socDoughnut) socDoughnut.destroy();
+      socDoughnut = new Chart(document.getElementById('soc-platformDoughnutChart'), {
+        type: 'doughnut', data: { labels: pLabs, datasets: [{ data: pVals, backgroundColor: pBGs, borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.raw} Clicks` } } } }
+      });
+
+      if(userRole === 'admin') {
+        if(socStaffChart) socStaffChart.destroy();
+        const sLabs = Object.keys(sC).sort((a,b)=>sC[b]-sC[a]).slice(0,5);
+        socStaffChart = new Chart(document.getElementById('soc-staffBarChart'), {
+          type: 'bar', data: { labels: sLabs, datasets: [{ data: sLabs.map(s=>sC[s]), backgroundColor: '#60A5FA', borderRadius: 4 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+        });
+      }
+
+      const hC = {}, dC = {};
+      let minDate = Infinity, maxDate = 0;
+      rawData.forEach(i => {
+        if(i.created_at) {
+          const t = i.created_at.toDate().getTime();
+          if(t < minDate) minDate = t; if(t > maxDate) maxDate = t;
+        }
+      });
+      const daysRange = rawData.length > 0 ? Math.ceil((maxDate - minDate) / 86400000) : 0;
+
+      rawData.forEach(i => {
+        if(i.created_at) {
+          const d = i.created_at.toDate();
+          hC[d.getHours()] = (hC[d.getHours()]||0) + 1;
+          const groupStr = getDynamicGroupedDate(new Date(d), daysRange);
+          dC[groupStr] = (dC[groupStr]||0) + 1;
+        }
+      });
+
+      if(socHourly) socHourly.destroy();
+      const hSorted = Object.keys(hC).map(Number).sort((a,b)=>a-b);
+      socHourly = new Chart(document.getElementById('soc-hourlyLineChart'), {
+        type: 'line', data: { labels: hSorted.map(h => `${h%12||12} ${h>=12?'PM':'AM'}`), datasets: [{ data: hSorted.map(h=>hC[h]), borderColor: '#34D399', backgroundColor: 'rgba(52,211,153,0.1)', fill: true, tension: 0.4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      if(socLine) socLine.destroy();
+      socLine = new Chart(document.getElementById('soc-timeSeriesChart'), {
+        type: 'line', data: { labels: Object.keys(dC).reverse(), datasets: [{ data: Object.values(dC).reverse(), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+    }
+
+    function renderSocTable() {
+      const thead = document.getElementById('soc-table-head');
+      const tb = document.getElementById('soc-table-body');
+      const info = document.getElementById('soc-page-info');
+      const prevBtn = document.getElementById('soc-prev-page-btn');
+      const nextBtn = document.getElementById('soc-next-page-btn');
+      tb.innerHTML = '';
+      
+      if(socFiltered.length === 0) { 
+        thead.innerHTML = `<tr><th>Staff Name</th><th>Platform</th><th>Date & Time</th></tr>`;
+        info.innerText = `Page 0 of 0`; 
+        prevBtn.disabled = true; 
+        nextBtn.disabled = true; 
+        return; 
+      }
+      
+      let displayData = [];
+      
+      if (currentViewMode === 'list') {
+        thead.innerHTML = `<tr><th>Staff Name</th><th>Platform</th><th>Date & Time</th></tr>`;
+        displayData = socFiltered;
+      } else if (currentViewMode === 'staff') {
+        thead.innerHTML = `<tr><th>Staff Name</th><th>Total Clicks</th><th>Platform Breakdown</th></tr>`;
+        const grouped = {};
+        socFiltered.forEach(d => {
+            const name = d.staff_name || "Unknown";
+            if(!grouped[name]) grouped[name] = { total: 0, platforms: {} };
+            grouped[name].total++;
+            const p = d.platform || "Unknown";
+            grouped[name].platforms[p] = (grouped[name].platforms[p] || 0) + 1;
+        });
+        displayData = Object.keys(grouped).map(k => ({ 
+            col1: k, col2: grouped[k].total, 
+            col3: Object.entries(grouped[k].platforms).map(([p,c])=>`${p} (${c})`).join(', ') 
+        })).sort((a,b) => b.col2 - a.col2);
+      } else if (currentViewMode === 'platform') {
+        thead.innerHTML = `<tr><th>Platform</th><th>Total Clicks</th><th>Top Staff</th></tr>`;
+        const grouped = {};
+        socFiltered.forEach(d => {
+            const p = d.platform || "Unknown";
+            if(!grouped[p]) grouped[p] = { total: 0, staff: {} };
+            grouped[p].total++;
+            const s = d.staff_name || "Unknown";
+            grouped[p].staff[s] = (grouped[p].staff[s] || 0) + 1;
+        });
+        displayData = Object.keys(grouped).map(k => {
+            const topStaff = Object.entries(grouped[k].staff).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([s,c])=>`${s} (${c})`).join(', ');
+            return { col1: k, col2: grouped[k].total, col3: topStaff };
+        }).sort((a,b) => b.col2 - a.col2);
+      }
+
+      const start = (socPage - 1) * socRows;
+      const end = start + socRows;
+      const paginatedData = displayData.slice(start, end);
+      
+      paginatedData.forEach(d => { 
+        if (currentViewMode === 'list') {
+            tb.innerHTML += `<tr><td><strong>${d.staff_name||"Unknown"}</strong></td><td>${d.platform||"Unknown"}</td><td>${formatToDate(d.created_at)}</td></tr>`; 
+        } else {
+            tb.innerHTML += `<tr><td><strong>${d.col1}</strong></td><td>${d.col2}</td><td><span style="color: var(--text-soft); font-size: 13px;">${d.col3}</span></td></tr>`; 
+        }
+      });
+
+      info.innerText = `Page ${socPage} of ${Math.ceil(displayData.length / socRows) || 1}`;
+      prevBtn.disabled = socPage === 1; 
+      nextBtn.disabled = end >= displayData.length;
+    }
+
+    // ==========================================
+    // EXPORTS (Context Aware)
+    // ==========================================
+    document.getElementById('export-csv-btn').addEventListener('click', () => {
+      let csv = "";
+      
+      if (currentViewMode === 'list') {
+        csv = "Staff Name,Platform,Date & Time\n";
+        socFiltered.forEach(d => { csv += `"${d.staff_name||'Unknown'}","${d.platform||'Unknown'}","${formatToDate(d.created_at)}"\n`; });
+      } else if (currentViewMode === 'staff') {
+        csv = "Staff Name,Total Clicks,Platform Breakdown\n";
+        const grouped = {};
+        socFiltered.forEach(d => {
+            const name = d.staff_name || "Unknown";
+            if(!grouped[name]) grouped[name] = { total: 0, platforms: {} };
+            grouped[name].total++;
+            const p = d.platform || "Unknown";
+            grouped[name].platforms[p] = (grouped[name].platforms[p] || 0) + 1;
+        });
+        const displayData = Object.keys(grouped).map(k => ({ col1: k, col2: grouped[k].total, col3: Object.entries(grouped[k].platforms).map(([p,c])=>`${p} (${c})`).join(', ') })).sort((a,b) => b.col2 - a.col2);
+        displayData.forEach(d => { csv += `"${d.col1}","${d.col2}","${d.col3}"\n`; });
+      } else if (currentViewMode === 'platform') {
+        csv = "Platform,Total Clicks,Top Staff\n";
+        const grouped = {};
+        socFiltered.forEach(d => {
+            const p = d.platform || "Unknown";
+            if(!grouped[p]) grouped[p] = { total: 0, staff: {} };
+            grouped[p].total++;
+            const s = d.staff_name || "Unknown";
+            grouped[p].staff[s] = (grouped[p].staff[s] || 0) + 1;
+        });
+        const displayData = Object.keys(grouped).map(k => {
+            const topStaff = Object.entries(grouped[k].staff).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([s,c])=>`${s} (${c})`).join(', ');
+            return { col1: k, col2: grouped[k].total, col3: topStaff };
+        }).sort((a,b) => b.col2 - a.col2);
+        displayData.forEach(d => { csv += `"${d.col1}","${d.col2}","${d.col3}"\n`; });
+      }
+
+      const a = document.createElement("a"); 
+      a.href = "data:text/csv;charset=utf-8," + encodeURI(csv); 
+      let formattedViewName = currentViewMode.charAt(0).toUpperCase() + currentViewMode.slice(1);
+      a.download = `RJ_Social_${formattedViewName}_View.csv`; 
+      a.click();
+    });
+
+    document.getElementById('export-pdf-btn').addEventListener('click', () => {
+      const originalTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+      applyTheme(true); 
+      
+      const container = document.getElementById(`soc-export-container`);
+      const header = document.getElementById(`soc-pdf-header`);
+      
+      header.style.display = 'block';
+      document.getElementById(`soc-pdf-date-range`).innerText = `Data Filter: ${document.getElementById('global-filter-start').value || 'Beginning'} to ${document.getElementById('global-filter-end').value || 'Now'}`;
+      document.getElementById(`soc-pagination-ui`).style.display = 'none';
+
+      setTimeout(() => {
+        html2pdf().set({
+          margin: 10, filename: `RJ_Social_Report.pdf`, image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(container).save().then(() => {
+          header.style.display = 'none';
+          document.getElementById(`soc-pagination-ui`).style.display = 'flex';
+          if(originalTheme === 'dark') { localStorage.setItem('rj_theme', 'dark'); applyTheme(); }
+        });
+      }, 300);
+    });
+
+  </script>
+</body>
+</html>
