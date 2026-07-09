@@ -38,6 +38,9 @@
       --chart-grid: #27272a;
       --chart-text: #a1a1aa;
       --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --gold-alpha: rgba(255, 215, 0, 0.08);
+      --silver-alpha: rgba(192, 192, 192, 0.08);
+      --bronze-alpha: rgba(205, 127, 50, 0.08);
     }
     
     body.light-theme {
@@ -54,6 +57,9 @@
       --chart-grid: #e2e8f0;
       --chart-text: #64748b;
       --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+      --gold-alpha: rgba(255, 215, 0, 0.15);
+      --silver-alpha: rgba(192, 192, 192, 0.15);
+      --bronze-alpha: rgba(205, 127, 50, 0.15);
     }
 
     body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; transition: background-color 0.4s ease, color 0.4s ease; overflow-x: hidden; }
@@ -150,8 +156,8 @@
     .metric-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), #3b82f6); }
     .metric-icon { position: absolute; top: 24px; right: 24px; width: 40px; height: 40px; border-radius: 12px; background: var(--input-bg); display: flex; align-items: center; justify-content: center; color: var(--primary); border: 1px solid var(--card-border); }
     .metric-title { font-size: 13px; color: var(--text-soft); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 12px; margin-right: 50px; }
-    .metric-value { font-size: 36px; font-weight: 800; color: var(--text-main); display: flex; align-items: baseline; gap: 12px; line-height: 1; }
-    .trend-indicator { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; font-family: 'Inter', sans-serif;}
+    .metric-value { font-size: 36px; font-weight: 800; color: var(--text-main); display: flex; align-items: baseline; line-height: 1; }
+    .trend-indicator { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; font-family: 'Inter', sans-serif; margin-left: 12px; vertical-align: middle;}
     .trend-up { background: var(--success-alpha); color: var(--success); }
     .trend-down { background: var(--danger-alpha); color: var(--danger); }
     .trend-neutral { background: var(--input-bg); color: var(--text-soft); }
@@ -189,6 +195,17 @@
     .empty-row { text-align: center; color: var(--text-soft); padding: 40px !important; }
     .skeleton-box { height: 20px; border-radius: 6px; background: linear-gradient(90deg, var(--input-bg) 25%, var(--card-border) 50%, var(--input-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Leaderboard & Trend Pills CSS */
+    .rank-1 td { background: var(--gold-alpha) !important; }
+    .rank-2 td { background: var(--silver-alpha) !important; }
+    .rank-3 td { background: var(--bronze-alpha) !important; }
+    .medal { font-size: 18px; margin-right: 8px; vertical-align: middle; line-height: 1; display: inline-block;}
+    
+    .tbl-trend { font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 6px; margin-left: 12px; display: inline-block; vertical-align: middle;}
+    .tbl-trend.up { background: var(--success-alpha); color: var(--success); }
+    .tbl-trend.down { background: var(--danger-alpha); color: var(--danger); }
+    .tbl-trend.neutral { background: var(--input-bg); color: var(--text-soft); }
 
     .pagination-controls { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; background: var(--card-bg); border-top: 1px solid var(--card-border); gap: 16px; flex-wrap: wrap; }
     .page-info-group { display: flex; align-items: center; gap: 16px; font-size: 14px; font-weight: 600; color: var(--text-soft); }
@@ -321,10 +338,16 @@
           </div>
         </div>
         
-        <div class="filter-group" style="flex: 1 1 100%; margin-top: 12px;">
-          <button id="global-reset-btn" class="btn-secondary" style="height: 46px; width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <div class="filter-group" style="flex: 1 1 100%; margin-top: 12px; flex-direction: row; gap: 12px;">
+          <button id="global-reset-btn" class="btn-secondary" style="height: 46px; flex: 1; max-width: 220px; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            Reset All Filters
+            Reset Filters
+          </button>
+          
+          <!-- Save Default View Button -->
+          <button id="global-save-default-btn" class="btn-primary" style="height: 46px; flex: 1; max-width: 220px; display: flex; align-items: center; justify-content: center; gap: 8px;" title="Save current filters as your default view">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Default View
           </button>
         </div>
       </div>
@@ -349,7 +372,7 @@
             <div class="metric-title">Filtered Clicks</div>
             <div class="metric-value">
               <span id="soc-metric-total">0</span>
-              <span id="soc-trend-total" class="trend-indicator trend-neutral">-</span>
+              <span id="soc-trend-total" class="trend-indicator trend-neutral" style="display:none;"></span>
             </div>
           </div>
           <div class="metric-card" id="soc-card-top-staff">
@@ -471,12 +494,12 @@
       "Sanju", "Sonu", "Subhash", "Sufiyan", "Sunil", "Vinod", "Vivek", "Yash"
     ];
 
-    let socData = [], socFiltered = [];
+    let socData = [], socFiltered = [], socPrevFiltered = [];
     let socDoughnut, socStaffChart, socHourly, socLine;
     let socLastDoc = null, socIsFetching = false;
     let socPage = 1, socRows = 50;
 
-    // Filter Arrays for Feature 3 & 5
+    // Filter Arrays
     let selectedStaffArr = [];
     let selectedPlatformArr = [];
 
@@ -494,41 +517,81 @@
       }
     }
 
-    function debounce(func, delay) {
-      let timeoutId;
-      return function(...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => { func.apply(this, args); }, delay);
-      };
+    // Number Animation Feature
+    function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
     }
 
     let globalStartPicker, globalEndPicker;
     
-    // Feature 5: Parse URL Params on Boot
     function parseURLParams() {
       const p = new URLSearchParams(window.location.search);
-      if(p.has('staff')) selectedStaffArr = p.get('staff').split(',').filter(Boolean);
-      if(p.has('platforms')) selectedPlatformArr = p.get('platforms').split(',').filter(Boolean);
+      let defaultPreset = 'all';
+      let defaultStart = null;
+      let defaultEnd = null;
+
+      // Load Default View from LocalStorage if no URL params exist
+      if (!window.location.search && localStorage.getItem('rj_default_filters')) {
+          try {
+              const defaults = JSON.parse(localStorage.getItem('rj_default_filters'));
+              selectedStaffArr = defaults.staff || [];
+              selectedPlatformArr = defaults.platforms || [];
+              defaultPreset = defaults.preset || 'all';
+              defaultStart = defaults.start || null;
+              defaultEnd = defaults.end || null;
+          } catch(e) {}
+      } else {
+          if(p.has('staff')) selectedStaffArr = p.get('staff').split(',').filter(Boolean);
+          if(p.has('platforms')) selectedPlatformArr = p.get('platforms').split(',').filter(Boolean);
+          defaultStart = p.get('start') || null;
+          defaultEnd = p.get('end') || null;
+      }
       
       globalStartPicker = flatpickr("#global-filter-start", { 
-        dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", defaultDate: p.get('start') || null,
+        dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", defaultDate: defaultStart,
         onChange: (selectedDates, dateStr) => { 
           if (globalEndPicker) globalEndPicker.set('minDate', dateStr || null);
           triggerActiveFilters(); 
         } 
       });
       globalEndPicker = flatpickr("#global-filter-end", { 
-        dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", defaultDate: p.get('end') || null,
+        dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", defaultDate: defaultEnd,
         onChange: (selectedDates, dateStr) => { 
           if (globalStartPicker) globalStartPicker.set('maxDate', dateStr || null);
           triggerActiveFilters(); 
         } 
       });
+
+      document.querySelectorAll('#global-quick-dates .quick-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.preset === defaultPreset);
+      });
       
       syncMultiSelectUI();
     }
 
-    // Feature 5: Update URL automatically
+    // Save Default View Handler
+    document.getElementById('global-save-default-btn').addEventListener('click', () => {
+        const defaultPrefs = {
+            staff: selectedStaffArr,
+            platforms: selectedPlatformArr,
+            start: document.getElementById('global-filter-start').value,
+            end: document.getElementById('global-filter-end').value,
+            preset: document.querySelector('#global-quick-dates .quick-btn.active')?.dataset.preset || 'all'
+        };
+        localStorage.setItem('rj_default_filters', JSON.stringify(defaultPrefs));
+        showToast("Default view saved successfully!");
+    });
+
     function updateURLParams() {
       const url = new URL(window.location);
       if(selectedStaffArr.length) url.searchParams.set('staff', selectedStaffArr.join(','));
@@ -546,7 +609,6 @@
       window.history.replaceState({}, '', url);
     }
 
-    // Feature 3: Custom Multi-Select Logic
     function initMultiSelect(containerId, displayId, dropdownId, searchId, optionsId, type) {
       const container = document.getElementById(containerId);
       const display = document.getElementById(displayId);
@@ -754,7 +816,6 @@
     document.getElementById('soc-prev-page-btn').addEventListener('click', () => { if(socPage > 1) { socPage--; renderSocTable(); } });
     document.getElementById('soc-next-page-btn').addEventListener('click', () => { socPage++; renderSocTable(); });
 
-    // Feature 1: Real-Time Data Fetching via onSnapshot
     async function loadSocStats(loadMore = false) {
       if (socIsFetching && !loadMore) return;
       socIsFetching = true;
@@ -859,10 +920,13 @@
         return true;
       });
 
+      socPrevFiltered = [];
       let prevCount = null;
+
+      // Extract previous period for Trend Pills calculation
       if(startQ && duration < Infinity) {
         const prevEndMs = startMs, prevStartMs = startMs - duration;
-        prevCount = socData.filter(item => {
+        socPrevFiltered = socData.filter(item => {
           if (selectedStaffArr.length > 0 && item.staff_name && !selectedStaffArr.includes(item.staff_name)) return false;
           if (selectedPlatformArr.length > 0 && item.platform && !selectedPlatformArr.includes(item.platform)) return false;
           if (item.created_at) {
@@ -870,7 +934,8 @@
             return t >= prevStartMs && t < prevEndMs;
           }
           return false;
-        }).length;
+        });
+        prevCount = socPrevFiltered.length;
       }
 
       socPage = 1; 
@@ -878,7 +943,6 @@
       updateSocDashboard(prevCount);
     }
 
-    // Feature 4: Automated Insight Generation
     function generateInsights(rawData, pC) {
       const cont = document.getElementById('automated-insights');
       if (!rawData || rawData.length === 0) {
@@ -912,10 +976,13 @@
 
     function updateSocDashboard(prevCount) {
       const total = socFiltered.length;
-      document.getElementById('soc-metric-total').innerText = total;
+      
+      // Animated Number Counter
+      animateValue('soc-metric-total', 0, total, 800);
 
       const trendEl = document.getElementById('soc-trend-total');
       if (prevCount !== null) {
+        trendEl.style.display = 'inline-flex';
         if (prevCount === 0) { trendEl.className = 'trend-indicator trend-neutral'; trendEl.innerText = 'No prior data'; } 
         else {
           const pct = Math.round(((total - prevCount) / prevCount) * 100);
@@ -923,7 +990,7 @@
           else if (pct < 0) { trendEl.className = 'trend-indicator trend-down'; trendEl.innerText = `↓ ${pct}% vs prior`; }
           else { trendEl.className = 'trend-indicator trend-neutral'; trendEl.innerText = `− 0%`; }
         }
-      } else { trendEl.innerText = ''; trendEl.className = ''; }
+      } else { trendEl.style.display = 'none'; }
 
       const emptyOverlay = document.getElementById('soc-no-data');
       if (total === 0) {
@@ -944,9 +1011,7 @@
         if(d.platform) pC[d.platform] = (pC[d.platform] || 0) + 1;
       });
 
-      // --- Replace the old metric assignments with this ---
-
-      // 1. Calculate and display Top Staff with percentage
+      // Percentage Breakdowns in Metric Cards
       const topStaff = Object.keys(sC).sort((a,b)=>sC[b]-sC[a])[0];
       if (topStaff && total > 0) {
         const staffPct = Math.round((sC[topStaff] / total) * 100);
@@ -955,7 +1020,6 @@
         document.getElementById('soc-metric-staff').innerText = "-";
       }
 
-      // 2. Calculate and display Top Platform with percentage
       const topPlatform = Object.keys(pC).sort((a,b)=>pC[b]-pC[a])[0];
       if (topPlatform && total > 0) {
         const platPct = Math.round((pC[topPlatform] / total) * 100);
@@ -981,7 +1045,6 @@
       const colors = {'Instagram':'#E1306C', 'YouTube':'#FF0000', 'Facebook':'#1877F2', 'Snapchat':'#FFFC00', 'WhatsApp':'#25D366'};
       const pLabs = Object.keys(pC), pVals = Object.values(pC), pBGs = pLabs.map(l => colors[l] || primaryHex);
 
-      // Feature 2: Cross-Chart Filtering Implementation
       if (socDoughnut) {
         socDoughnut.data.labels = pLabs;
         socDoughnut.data.datasets[0].data = pVals;
@@ -1093,6 +1156,7 @@
       tb.innerHTML = '';
       
       let displayData = [];
+      const isDateFiltered = document.getElementById('global-filter-start').value !== "";
       
       if (currentViewMode === 'list') {
         thead.innerHTML = `<tr><th>Staff Name</th><th>Platform</th><th>Date & Time</th></tr>`;
@@ -1105,9 +1169,11 @@
       } else if (currentViewMode === 'staff') {
         thead.innerHTML = `<tr><th>Staff Name</th><th>Total Clicks</th><th>Platform Breakdown</th></tr>`;
         const grouped = {};
+        const prevGrouped = {};
         
         masterStaffList.forEach(name => { grouped[name] = { total: 0, platforms: {} }; });
 
+        // Current Period
         socFiltered.forEach(d => {
             const name = d.staff_name || "Unknown";
             if(!grouped[name]) grouped[name] = { total: 0, platforms: {} }; 
@@ -1115,15 +1181,40 @@
             const p = d.platform || "Unknown";
             grouped[name].platforms[p] = (grouped[name].platforms[p] || 0) + 1;
         });
+
+        // Previous Period (for trend pills)
+        socPrevFiltered.forEach(d => {
+            const name = d.staff_name || "Unknown";
+            prevGrouped[name] = (prevGrouped[name] || 0) + 1;
+        });
         
         displayData = Object.keys(grouped).map(k => {
             const platformStr = Object.keys(grouped[k].platforms).length > 0
                 ? Object.entries(grouped[k].platforms).map(([p,c])=>`${p} (${c})`).join(', ') : "None";
-            return { col1: k, col2: grouped[k].total, col3: platformStr };
+            
+            // Calculate Trend Pill
+            let trendHtml = '';
+            if (isDateFiltered && (grouped[k].total > 0 || prevGrouped[k] > 0)) {
+                let prevVal = prevGrouped[k] || 0;
+                if (prevVal === 0) {
+                    trendHtml = `<span class="tbl-trend up">↑ New</span>`;
+                } else {
+                    const pct = Math.round(((grouped[k].total - prevVal) / prevVal) * 100);
+                    if (pct > 0) trendHtml = `<span class="tbl-trend up">↑ +${pct}%</span>`;
+                    else if (pct < 0) trendHtml = `<span class="tbl-trend down">↓ ${pct}%</span>`;
+                    else trendHtml = `<span class="tbl-trend neutral">− 0%</span>`;
+                }
+            }
+
+            return { col1: k, col2: grouped[k].total, col3: platformStr, trend: trendHtml };
         }).sort((a,b) => b.col2 - a.col2 || a.col1.localeCompare(b.col1)); 
+
       } else if (currentViewMode === 'platform') {
         thead.innerHTML = `<tr><th>Platform</th><th>Total Clicks</th><th>Top Staff</th></tr>`;
         const grouped = {};
+        const prevGrouped = {};
+
+        // Current Period
         socFiltered.forEach(d => {
             const p = d.platform || "Unknown";
             if(!grouped[p]) grouped[p] = { total: 0, staff: {} };
@@ -1131,9 +1222,31 @@
             const s = d.staff_name || "Unknown";
             grouped[p].staff[s] = (grouped[p].staff[s] || 0) + 1;
         });
+
+        // Previous Period
+        socPrevFiltered.forEach(d => {
+            const p = d.platform || "Unknown";
+            prevGrouped[p] = (prevGrouped[p] || 0) + 1;
+        });
+
         displayData = Object.keys(grouped).map(k => {
             const topStaff = Object.entries(grouped[k].staff).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([s,c])=>`${s} (${c})`).join(', ');
-            return { col1: k, col2: grouped[k].total, col3: topStaff };
+            
+            // Calculate Trend Pill
+            let trendHtml = '';
+            if (isDateFiltered) {
+                let prevVal = prevGrouped[k] || 0;
+                if (prevVal === 0) {
+                    trendHtml = `<span class="tbl-trend up">↑ New</span>`;
+                } else {
+                    const pct = Math.round(((grouped[k].total - prevVal) / prevVal) * 100);
+                    if (pct > 0) trendHtml = `<span class="tbl-trend up">↑ +${pct}%</span>`;
+                    else if (pct < 0) trendHtml = `<span class="tbl-trend down">↓ ${pct}%</span>`;
+                    else trendHtml = `<span class="tbl-trend neutral">− 0%</span>`;
+                }
+            }
+
+            return { col1: k, col2: grouped[k].total, col3: topStaff, trend: trendHtml };
         }).sort((a,b) => b.col2 - a.col2);
       }
 
@@ -1141,11 +1254,22 @@
       const end = start + socRows;
       const paginatedData = displayData.slice(start, end);
       
-      paginatedData.forEach(d => { 
+      paginatedData.forEach((d, i) => { 
+        const globalIndex = start + i;
+
         if (currentViewMode === 'list') {
             tb.innerHTML += `<tr><td><strong>${d.staff_name||"Unknown"}</strong></td><td><span style="background: var(--input-bg); padding: 4px 8px; border-radius: 6px; font-size:13px;">${d.platform||"Unknown"}</span></td><td style="color: var(--text-soft);">${formatToDate(d.created_at)}</td></tr>`; 
         } else {
-            tb.innerHTML += `<tr><td><strong>${d.col1}</strong></td><td><span style="font-size: 16px; font-weight: 700; color: var(--primary);">${d.col2}</span></td><td><span style="color: var(--text-soft); font-size: 14px;">${d.col3}</span></td></tr>`; 
+            // Apply Leaderboard Polish specifically for Staff View
+            let rankClass = '';
+            let medal = '';
+            if (currentViewMode === 'staff' && d.col2 > 0) {
+                if (globalIndex === 0) { rankClass = 'rank-1'; medal = '<span class="medal">🥇</span>'; }
+                else if (globalIndex === 1) { rankClass = 'rank-2'; medal = '<span class="medal">🥈</span>'; }
+                else if (globalIndex === 2) { rankClass = 'rank-3'; medal = '<span class="medal">🥉</span>'; }
+            }
+            
+            tb.innerHTML += `<tr class="${rankClass}"><td><strong>${medal}${d.col1}</strong></td><td><span style="font-size: 16px; font-weight: 700; color: var(--primary);">${d.col2}</span>${d.trend}</td><td><span style="color: var(--text-soft); font-size: 14px;">${d.col3}</span></td></tr>`; 
         }
       });
 
