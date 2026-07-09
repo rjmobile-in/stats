@@ -34,12 +34,10 @@
 
     body { font-family: 'Inter', system-ui, sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 16px; transition: background 0.3s, color 0.3s; }
     
-    /* Global Loader */
     #global-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: var(--text-soft); font-weight: 500; font-size: 15px; }
     .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Login Screen */
     #login-screen { display: none; background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); text-align: center; width: 100%; max-width: 400px; margin-top: 10vh; border: 1px solid var(--border); }
     #login-screen h2 { font-weight: 800; font-size: 24px; margin-bottom: 4px; }
     #login-screen p { color: var(--text-soft); font-size: 14px; margin-bottom: 24px; }
@@ -50,20 +48,17 @@
     #login-btn:hover { background: var(--blue-hover); }
     #error-msg { color: #EF4444; font-size: 13px; margin-top: 12px; display: none; }
 
-    /* Password Toggle Elements */
     .password-wrapper { position: relative; width: 100%; margin-bottom: 12px; }
     .password-wrapper .input-field { margin-bottom: 0; padding-right: 40px; }
     .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-soft); cursor: pointer; display: flex; }
     .toggle-password:hover { color: var(--text); }
 
-    /* Dropdown Menu */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--white); min-width: 170px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 100; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; margin-top: 5px; }
     .dropdown-content a { color: var(--text); padding: 12px 16px; text-decoration: none; display: block; font-size: 13px; font-weight: 500; transition: background 0.2s; }
     .dropdown-content a:hover { background-color: var(--surface); color: var(--blue-hover); }
     .dropdown.show .dropdown-content { display: block; }
 
-    /* Dashboard Layout */
     #dashboard { display: none; width: 100%; max-width: 1100px; }
     .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
     .brand-text { display: flex; flex-direction: column; }
@@ -74,13 +69,11 @@
     .view-section { animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Tabs (For Views) */
     .tab-controls { display: flex; gap: 12px; margin-bottom: 16px; background: var(--white); padding: 8px; border-radius: 12px; border: 1px solid var(--border); overflow-x: auto; }
     .tab-btn { flex: 1; background: transparent; border: none; color: var(--text-soft); font-size: 14px; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: 0.2s; white-space: nowrap; }
     .tab-btn:hover { color: var(--text); background: var(--surface); }
     .tab-btn.active { color: var(--blue-hover); background: rgba(59,130,246,0.15); }
 
-    /* Buttons */
     .header-btns { display: flex; gap: 10px; flex-wrap: wrap; align-items: center;}
     .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
     .btn-secondary:hover:not(:disabled) { border-color: var(--blue); }
@@ -90,26 +83,23 @@
     #theme-toggle { background: transparent; border: none; color: var(--text-soft); cursor: pointer; padding: 6px; border-radius: 6px; display: flex; }
     #theme-toggle:hover { background: var(--border); color: var(--text); }
 
-    /* Controls & Filters */
     .controls-wrapper { background: var(--white); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 24px; }
     .global-controls { margin-bottom: 20px; }
     .quick-dates { display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; }
     .quick-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-soft); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
     .quick-btn:hover, .quick-btn.active { border-color: var(--blue); color: var(--blue-hover); background: rgba(59,130,246,0.05); }
-    .filter-bar { display: flex; flex-wrap: wrap; gap: 12px; }
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .filter-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 150px; }
     .filter-group label { font-size: 11px; color: var(--text-soft); font-weight: 600; text-transform: uppercase; }
     .filter-input { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; outline: none; border-color: var(--border); }
     .filter-input:focus { border-color: var(--blue); }
     .filter-input:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Export Container (For PDF) */
     .export-container { width: 100%; }
     .pdf-header { display: none; padding: 20px 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
     .pdf-header h1 { font-size: 24px; color: var(--text); font-weight: 800; margin-bottom: 4px; }
     .pdf-header p { font-size: 14px; color: var(--text-soft); }
 
-    /* Quick Stats */
     .metrics-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
     .metric-card { flex: 1; min-width: 180px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; }
     .metric-title { font-size: 11px; color: var(--text-soft); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
@@ -119,14 +109,16 @@
     .trend-down { background: rgba(239,68,68,0.15); color: var(--red); }
     .trend-neutral { background: rgba(155,170,196,0.15); color: var(--text-soft); }
     
-    /* Charts */
     .charts-wrapper { position: relative; min-height: 200px; margin-bottom: 24px; }
     .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .charts-full { grid-column: span 2; }
     .chart-container { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: transform 0.2s; }
     .chart-title { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-soft); margin-bottom: 16px; }
     
-    /* UX: Empty State Overlay */
+    .charts-loading-overlay { display: none; position: absolute; inset: 0; background: rgba(13, 17, 23, 0.6); backdrop-filter: blur(4px); z-index: 15; border-radius: 12px; align-items: center; justify-content: center; flex-direction: column; }
+    body.light-theme .charts-loading-overlay { background: rgba(255, 255, 255, 0.6); }
+    .charts-loading-overlay.active { display: flex; }
+
     .no-data-overlay { display: none; position: absolute; inset: 0; background: rgba(22, 28, 39, 0.85); z-index: 10; border-radius: 12px; align-items: center; justify-content: center; flex-direction: column; gap: 12px; backdrop-filter: blur(5px); border: 1px dashed var(--border); }
     body.light-theme .no-data-overlay { background: rgba(255, 255, 255, 0.85); }
     .no-data-overlay.active { display: flex; }
@@ -136,7 +128,6 @@
 
     @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } .charts-full { grid-column: span 1; } }
 
-    /* Table */
     .stats-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
@@ -147,7 +138,6 @@
     .skeleton-box { height: 16px; border-radius: 4px; background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-    /* Pagination */
     .pagination-controls { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--white); border-top: 1px solid var(--border); gap: 16px; flex-wrap: wrap; }
     .page-info-group { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-soft); }
     .page-btns { display: flex; gap: 8px; }
@@ -155,6 +145,9 @@
     @media (max-width: 480px) { .pagination-controls { flex-direction: column; align-items: center; justify-content: center; } }
     .load-more-container { text-align: center; margin-bottom: 40px; margin-top: 10px;}
     .load-more-btn { display: none; margin: 0 auto; }
+
+    #toast { visibility: hidden; min-width: 250px; background-color: var(--white); color: var(--text); border: 1px solid var(--border); text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 10000; right: 30px; bottom: 30px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transition: opacity 0.3s, bottom 0.3s, visibility 0.3s; }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
   </style>
 </head>
 <body>
@@ -163,6 +156,8 @@
     <div class="spinner"></div>
     <p>Authenticating...</p>
   </div>
+
+  <div id="toast"></div>
 
   <div id="login-screen">
     <h2>RJ Mobile</h2>
@@ -199,14 +194,12 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
         
-        <!-- Modified Export Dropdown -->
         <div class="dropdown" id="export-dropdown">
           <button id="export-menu-btn" class="btn-primary">Export Report ▼</button>
           <div id="export-menu" class="dropdown-content">
             <a href="#" data-export="pdf">Download PDF</a>
             <a href="#" data-export="csv">Download CSV</a>
             <a href="#" data-export="xls">Download Excel (XLS)</a>
-            <a href="#" data-export="json">Download JSON</a>
           </div>
         </div>
 
@@ -224,6 +217,7 @@
       <div class="filter-bar">
         <div class="filter-group"><label>Global Start Date</label><input type="text" id="global-filter-start" class="filter-input" placeholder="dd/mm/yyyy"></div>
         <div class="filter-group"><label>Global End Date</label><input type="text" id="global-filter-end" class="filter-input" placeholder="dd/mm/yyyy"></div>
+        <div class="filter-group" style="flex: 0; min-width: auto;"><button id="global-reset-btn" class="btn-secondary" style="height: 40px;">Reset Filters</button></div>
       </div>
     </div>
 
@@ -275,6 +269,9 @@
         </div>
 
         <div class="charts-wrapper">
+          <div id="soc-charts-loading" class="charts-loading-overlay">
+            <div class="spinner"></div>
+          </div>
           <div id="soc-no-data" class="no-data-overlay">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span>No Social Data Available</span>
@@ -288,7 +285,6 @@
           </div>
         </div>
 
-        <!-- VIEW TOGGLES -->
         <div class="tab-controls">
           <button class="tab-btn view-tab-btn active" data-view="list">List View</button>
           <button class="tab-btn view-tab-btn" data-view="staff">Group by Staff</button>
@@ -306,7 +302,13 @@
             <div class="page-info-group">
               <span id="soc-page-info">Page 0 of 0</span>
               <select id="soc-rows-per-page" class="filter-input" style="padding: 4px 8px; font-size: 12px; min-width: auto; height: auto;">
-                <option value="15">15 per page</option><option value="25">25 per page</option><option value="50">50 per page</option><option value="100">100 per page</option>
+                <option value="15">15 per page</option>
+                <option value="25">25 per page</option>
+                <option value="50" selected>50 per page</option>
+                <option value="100">100 per page</option>
+                <option value="250">250 per page</option>
+                <option value="500">500 per page</option>
+                <option value="1000">1000 per page</option>
               </select>
             </div>
             <div class="page-btns">
@@ -326,7 +328,6 @@
     import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
-    // Firebase Unified Config
     const firebaseConfig = { 
       apiKey: "AIzaSyBsAsMlKJqoyOS27IVotwszVvO1ZFCGABs", 
       authDomain: "staff-review-935f3.firebaseapp.com", 
@@ -340,7 +341,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     
-    // Global App State
     let userRole = 'staff';
     let userStaffName = '';
     let isSocLoaded = false;
@@ -354,21 +354,65 @@
       "Sanju", "Sonu", "Subhash", "Sufiyan", "Sunil", "Vinod", "Vivek", "Yash"
     ];
 
-    // Social State
     let socData = [], socFiltered = [];
     let socDoughnut, socStaffChart, socHourly, socLine;
     let socLastDoc = null, socIsFetching = false;
-    let socPage = 1, socRows = 15;
+    let socPage = 1, socRows = 50;
     
-    // UI Init: Global Flatpickr
     function triggerActiveFilters() {
       if(isSocLoaded) applySocFilters();
     }
     
-    const globalStartPicker = flatpickr("#global-filter-start", { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", onChange: triggerActiveFilters });
-    const globalEndPicker = flatpickr("#global-filter-end", { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", onChange: triggerActiveFilters });
+    function showToast(msg, duration = 3000) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.classList.add('show');
+      if (t.timeoutId) clearTimeout(t.timeoutId);
+      if (duration > 0) {
+        t.timeoutId = setTimeout(() => { t.classList.remove('show'); }, duration);
+      }
+    }
 
-    // Global Quick Dates Logic
+    function debounce(func, delay) {
+      let timeoutId;
+      return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => { func.apply(this, args); }, delay);
+      };
+    }
+
+    let globalStartPicker, globalEndPicker;
+    
+    globalStartPicker = flatpickr("#global-filter-start", { 
+      dateFormat: "Y-m-d", 
+      altInput: true, 
+      altFormat: "d/m/Y", 
+      onChange: (selectedDates, dateStr) => { 
+        if (globalEndPicker) globalEndPicker.set('minDate', dateStr || null);
+        triggerActiveFilters(); 
+      } 
+    });
+    
+    globalEndPicker = flatpickr("#global-filter-end", { 
+      dateFormat: "Y-m-d", 
+      altInput: true, 
+      altFormat: "d/m/Y", 
+      onChange: (selectedDates, dateStr) => { 
+        if (globalStartPicker) globalStartPicker.set('maxDate', dateStr || null);
+        triggerActiveFilters(); 
+      } 
+    });
+
+    document.getElementById('global-reset-btn').addEventListener('click', () => {
+      globalStartPicker.clear();
+      globalEndPicker.clear();
+      globalStartPicker.set('maxDate', null);
+      globalEndPicker.set('minDate', null);
+      document.querySelectorAll('#global-quick-dates .quick-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-preset="all"]').classList.add('active');
+      triggerActiveFilters();
+    });
+
     document.querySelectorAll('#global-quick-dates .quick-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('#global-quick-dates .quick-btn').forEach(b => b.classList.remove('active'));
@@ -378,26 +422,33 @@
         if (p === 'all') { 
           globalStartPicker.clear(); 
           globalEndPicker.clear(); 
+          globalStartPicker.set('maxDate', null);
+          globalEndPicker.set('minDate', null);
         } 
         else if (p === 'today') { 
           globalStartPicker.setDate(today, false); 
           globalEndPicker.setDate(today, false); 
+          globalStartPicker.set('maxDate', today);
+          globalEndPicker.set('minDate', today);
         } 
         else if (p === '7days') { 
           const lw = new Date(); lw.setDate(today.getDate()-7); 
           globalStartPicker.setDate(lw, false); 
           globalEndPicker.setDate(today, false); 
+          globalStartPicker.set('maxDate', today);
+          globalEndPicker.set('minDate', lw);
         } 
         else if (p === 'month') { 
           const fd = new Date(today.getFullYear(), today.getMonth(), 1); 
           globalStartPicker.setDate(fd, false); 
           globalEndPicker.setDate(today, false); 
+          globalStartPicker.set('maxDate', today);
+          globalEndPicker.set('minDate', fd);
         }
         triggerActiveFilters();
       });
     });
 
-    // View Toggle Logic
     document.querySelectorAll('.view-tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
@@ -408,7 +459,6 @@
       });
     });
 
-    // --- Theming ---
     const themeToggleBtn = document.getElementById('theme-toggle');
     const fpThemeLink = document.getElementById('flatpickr-theme');
     function applyTheme(forceLight = false) {
@@ -427,7 +477,6 @@
     themeToggleBtn.addEventListener('click', () => { localStorage.setItem('rj_theme', document.body.classList.contains('light-theme') ? 'dark' : 'light'); applyTheme(); });
     applyTheme();
 
-    // --- Authentication & RBAC ---
     onAuthStateChanged(auth, (user) => {
       document.getElementById('global-loader').style.display = 'none';
       if (user) {
@@ -467,7 +516,6 @@
 
     document.getElementById('password-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('login-btn').click(); });
     
-    // Toggle Password Visibility Logic
     document.getElementById('toggle-password-btn').addEventListener('click', (e) => {
       const input = document.getElementById('password-input');
       const btn = e.currentTarget;
@@ -487,7 +535,6 @@
     });
     document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-    // --- General Utilities ---
     function formatToDate(ts) { if(!ts) return "N/A"; const d = ts.toDate(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}, ${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,'0')} ${d.getHours()>=12?'PM':'AM'}`; }
     
     function getDynamicGroupedDate(date, totalDays) {
@@ -506,10 +553,7 @@
       for(let i=0; i<5; i++) tb.innerHTML += `<tr><td><div class="skeleton-box" style="width:70%;"></div></td><td><div class="skeleton-box" style="width:50%;"></div></td><td><div class="skeleton-box" style="width:90%;"></div></td></tr>`;
     }
 
-    // ==========================================
-    // SOCIAL ANALYTICS LOGIC
-    // ==========================================
-    document.getElementById('soc-filter-staff').addEventListener('input', applySocFilters);
+    document.getElementById('soc-filter-staff').addEventListener('input', debounce(applySocFilters, 300));
     document.getElementById('soc-filter-platform').addEventListener('change', applySocFilters);
     document.getElementById('soc-load-more-btn').addEventListener('click', () => loadSocStats(true));
     
@@ -522,6 +566,7 @@
     async function loadSocStats(loadMore = false) {
       if (socIsFetching) return;
       socIsFetching = true;
+      document.getElementById('soc-charts-loading').classList.add('active');
       const loadBtn = document.getElementById('soc-load-more-btn');
       
       if (!loadMore) { renderSkeletonTable('soc-table-body'); socData = []; socLastDoc = null; } 
@@ -569,7 +614,10 @@
       } catch (err) {
         console.error(err);
         if (!loadMore) document.getElementById('soc-table-body').innerHTML = '<tr><td colspan="3" style="color:var(--red); text-align:center;">Failed to load secure data.</td></tr>';
-      } finally { socIsFetching = false; }
+      } finally { 
+        socIsFetching = false; 
+        document.getElementById('soc-charts-loading').classList.remove('active');
+      }
     }
 
     function applySocFilters() {
@@ -661,19 +709,32 @@
       const colors = {'Instagram':'#E1306C', 'YouTube':'#FF0000', 'Facebook':'#1877F2', 'Snapchat':'#FFFC00', 'WhatsApp':'#25D366'};
       const pLabs = Object.keys(pC), pVals = Object.values(pC), pBGs = pLabs.map(l => colors[l] || '#3B82F6');
 
-      if(socDoughnut) socDoughnut.destroy();
-      socDoughnut = new Chart(document.getElementById('soc-platformDoughnutChart'), {
-        type: 'doughnut', data: { labels: pLabs, datasets: [{ data: pVals, backgroundColor: pBGs, borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.raw} Clicks` } } } }
-      });
+      if (socDoughnut) {
+        socDoughnut.data.labels = pLabs;
+        socDoughnut.data.datasets[0].data = pVals;
+        socDoughnut.data.datasets[0].backgroundColor = pBGs;
+        socDoughnut.update();
+      } else {
+        socDoughnut = new Chart(document.getElementById('soc-platformDoughnutChart'), {
+          type: 'doughnut', data: { labels: pLabs, datasets: [{ data: pVals, backgroundColor: pBGs, borderWidth: 0 }] },
+          options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.raw} Clicks` } } } }
+        });
+      }
 
       if(userRole === 'admin') {
-        if(socStaffChart) socStaffChart.destroy();
         const sLabs = Object.keys(sC).sort((a,b)=>sC[b]-sC[a]).slice(0,5);
-        socStaffChart = new Chart(document.getElementById('soc-staffBarChart'), {
-          type: 'bar', data: { labels: sLabs, datasets: [{ data: sLabs.map(s=>sC[s]), backgroundColor: '#60A5FA', borderRadius: 4 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-        });
+        const sData = sLabs.map(s=>sC[s]);
+        
+        if (socStaffChart) {
+          socStaffChart.data.labels = sLabs;
+          socStaffChart.data.datasets[0].data = sData;
+          socStaffChart.update();
+        } else {
+          socStaffChart = new Chart(document.getElementById('soc-staffBarChart'), {
+            type: 'bar', data: { labels: sLabs, datasets: [{ data: sData, backgroundColor: '#60A5FA', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+          });
+        }
       }
 
       const hC = {}, dC = {};
@@ -695,18 +756,34 @@
         }
       });
 
-      if(socHourly) socHourly.destroy();
       const hSorted = Object.keys(hC).map(Number).sort((a,b)=>a-b);
-      socHourly = new Chart(document.getElementById('soc-hourlyLineChart'), {
-        type: 'line', data: { labels: hSorted.map(h => `${h%12||12} ${h>=12?'PM':'AM'}`), datasets: [{ data: hSorted.map(h=>hC[h]), borderColor: '#34D399', backgroundColor: 'rgba(52,211,153,0.1)', fill: true, tension: 0.4 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-      });
+      const hLabels = hSorted.map(h => `${h%12||12} ${h>=12?'PM':'AM'}`);
+      const hData = hSorted.map(h=>hC[h]);
 
-      if(socLine) socLine.destroy();
-      socLine = new Chart(document.getElementById('soc-timeSeriesChart'), {
-        type: 'line', data: { labels: Object.keys(dC).reverse(), datasets: [{ data: Object.values(dC).reverse(), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-      });
+      if (socHourly) {
+        socHourly.data.labels = hLabels;
+        socHourly.data.datasets[0].data = hData;
+        socHourly.update();
+      } else {
+        socHourly = new Chart(document.getElementById('soc-hourlyLineChart'), {
+          type: 'line', data: { labels: hLabels, datasets: [{ data: hData, borderColor: '#34D399', backgroundColor: 'rgba(52,211,153,0.1)', fill: true, tension: 0.4 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+        });
+      }
+
+      const tLabels = Object.keys(dC).reverse();
+      const tData = Object.values(dC).reverse();
+
+      if (socLine) {
+        socLine.data.labels = tLabels;
+        socLine.data.datasets[0].data = tData;
+        socLine.update();
+      } else {
+        socLine = new Chart(document.getElementById('soc-timeSeriesChart'), {
+          type: 'line', data: { labels: tLabels, datasets: [{ data: tData, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+        });
+      }
     }
 
     function renderSocTable() {
@@ -732,14 +809,13 @@
         thead.innerHTML = `<tr><th>Staff Name</th><th>Total Clicks</th><th>Platform Breakdown</th></tr>`;
         const grouped = {};
         
-        // Ensure all master staff members are initialized with 0
         masterStaffList.forEach(name => {
             grouped[name] = { total: 0, platforms: {} };
         });
 
         socFiltered.forEach(d => {
             const name = d.staff_name || "Unknown";
-            if(!grouped[name]) grouped[name] = { total: 0, platforms: {} }; // Fallback for names not in master list
+            if(!grouped[name]) grouped[name] = { total: 0, platforms: {} }; 
             grouped[name].total++;
             const p = d.platform || "Unknown";
             grouped[name].platforms[p] = (grouped[name].platforms[p] || 0) + 1;
@@ -750,7 +826,7 @@
                 ? Object.entries(grouped[k].platforms).map(([p,c])=>`${p} (${c})`).join(', ')
                 : "None";
             return { col1: k, col2: grouped[k].total, col3: platformStr };
-        }).sort((a,b) => b.col2 - a.col2 || a.col1.localeCompare(b.col1)); // Sort by totals descending, then alphabetically 
+        }).sort((a,b) => b.col2 - a.col2 || a.col1.localeCompare(b.col1)); 
       } else if (currentViewMode === 'platform') {
         thead.innerHTML = `<tr><th>Platform</th><th>Total Clicks</th><th>Top Staff</th></tr>`;
         const grouped = {};
@@ -783,23 +859,16 @@
       prevBtn.disabled = socPage === 1; 
       nextBtn.disabled = end >= displayData.length;
     }
-
-    // ==========================================
-    // EXPORTS (Context Aware & Consolidated)
-    // ==========================================
     
-    // Toggle Dropdown menu
     document.getElementById('export-menu-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         document.getElementById('export-dropdown').classList.toggle('show');
     });
 
-    // Close Dropdown when clicking outside
     window.addEventListener('click', () => {
         document.getElementById('export-dropdown').classList.remove('show');
     });
 
-    // Handle Data Extraction logic used across CSV, XLS, and JSON
     function getExportData() {
         let headers = [];
         let rows = [];
@@ -844,7 +913,6 @@
         return { headers, rows };
     }
 
-    // Handle Dropdown Clicks
     document.querySelectorAll('#export-menu a').forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
@@ -853,13 +921,14 @@
             let formattedViewName = currentViewMode.charAt(0).toUpperCase() + currentViewMode.slice(1);
 
             if (type === 'pdf') {
-                // PDF Export fixes: no longer forcing the light theme flash
                 const container = document.getElementById(`soc-export-container`);
                 const header = document.getElementById(`soc-pdf-header`);
                 
                 header.style.display = 'block';
                 document.getElementById(`soc-pdf-date-range`).innerText = `Data Filter: ${document.getElementById('global-filter-start').value || 'Beginning'} to ${document.getElementById('global-filter-end').value || 'Now'}`;
                 document.getElementById(`soc-pagination-ui`).style.display = 'none';
+
+                showToast("Preparing your PDF...", 0);
 
                 setTimeout(() => {
                     html2pdf().set({
@@ -868,6 +937,7 @@
                     }).from(container).save().then(() => {
                         header.style.display = 'none';
                         document.getElementById(`soc-pagination-ui`).style.display = 'flex';
+                        showToast("Download Complete!", 3000);
                     });
                 }, 300);
             } 
@@ -880,7 +950,6 @@
                 a.click();
             }
             else if (type === 'xls') {
-                // Simple Excel Export logic utilizing raw HTML table approach 
                 let tableStr = '<table><tr>';
                 headers.forEach(h => tableStr += `<th>${h}</th>`);
                 tableStr += '</tr>';
@@ -891,22 +960,10 @@
                 });
                 tableStr += '</table>';
                 
-                const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Report</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>${tableStr}</body></html>`;
+                const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body>${tableStr}</body></html>`;
                 const a = document.createElement("a");
                 a.href = "data:application/vnd.ms-excel;base64," + btoa(unescape(encodeURIComponent(template)));
                 a.download = `RJ_Social_${formattedViewName}_View.xls`;
-                a.click();
-            }
-            else if (type === 'json') {
-                const jsonArr = rows.map(r => {
-                    let obj = {};
-                    headers.forEach((h, i) => obj[h] = r[i]);
-                    return obj;
-                });
-                const jsonStr = JSON.stringify(jsonArr, null, 2);
-                const a = document.createElement("a");
-                a.href = "data:application/json;charset=utf-8," + encodeURIComponent(jsonStr);
-                a.download = `RJ_Social_${formattedViewName}_View.json`;
                 a.click();
             }
         });
