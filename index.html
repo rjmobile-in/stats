@@ -214,35 +214,41 @@
         <button class="quick-btn" data-preset="month">This Month</button>
         <button class="quick-btn active" data-preset="all">All Time</button>
       </div>
+      
+      <!-- Unified Filters Menu -->
       <div class="filter-bar">
-        <div class="filter-group"><label>Global Start Date</label><input type="text" id="global-filter-start" class="filter-input" placeholder="dd/mm/yyyy"></div>
-        <div class="filter-group"><label>Global End Date</label><input type="text" id="global-filter-end" class="filter-input" placeholder="dd/mm/yyyy"></div>
-        <div class="filter-group" style="flex: 0; min-width: auto;"><button id="global-reset-btn" class="btn-secondary" style="height: 40px;">Reset Filters</button></div>
+        <div class="filter-group">
+          <label>Start Date</label>
+          <input type="text" id="global-filter-start" class="filter-input" placeholder="dd/mm/yyyy">
+        </div>
+        <div class="filter-group">
+          <label>End Date</label>
+          <input type="text" id="global-filter-end" class="filter-input" placeholder="dd/mm/yyyy">
+        </div>
+        <div class="filter-group" id="soc-staff-filter-group">
+          <label>Staff Name</label>
+          <input list="soc-staff-options" id="soc-filter-staff" class="filter-input" placeholder="Search staff...">
+          <datalist id="soc-staff-options"></datalist>
+        </div>
+        <div class="filter-group">
+          <label>Platform</label>
+          <select id="soc-filter-platform" class="filter-input">
+            <option value="">All Platforms</option>
+            <option value="Instagram">Instagram</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Facebook">Facebook</option>
+            <option value="Snapchat">Snapchat</option>
+            <option value="WhatsApp">WhatsApp</option>
+          </select>
+        </div>
+        
+        <div class="filter-group" style="flex: 1 1 100%; margin-top: 8px;">
+          <button id="global-reset-btn" class="btn-secondary" style="height: 40px; width: 100%; max-width: 200px;">Reset All Filters</button>
+        </div>
       </div>
     </div>
 
     <div id="view-social" class="view-section">
-      
-      <div class="controls-wrapper" style="margin-bottom: 24px;">
-        <div class="filter-bar">
-          <div class="filter-group" id="soc-staff-filter-group">
-            <label>Staff Name</label>
-            <input list="soc-staff-options" id="soc-filter-staff" class="filter-input" placeholder="Search staff...">
-            <datalist id="soc-staff-options"></datalist>
-          </div>
-          <div class="filter-group">
-            <label>Platform</label>
-            <select id="soc-filter-platform" class="filter-input">
-              <option value="">All Platforms</option>
-              <option value="Instagram">Instagram</option>
-              <option value="YouTube">YouTube</option>
-              <option value="Facebook">Facebook</option>
-              <option value="Snapchat">Snapchat</option>
-              <option value="WhatsApp">WhatsApp</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
       <div id="soc-export-container" class="export-container">
         <div class="pdf-header" id="soc-pdf-header">
@@ -408,8 +414,15 @@
       globalEndPicker.clear();
       globalStartPicker.set('maxDate', null);
       globalEndPicker.set('minDate', null);
+      
       document.querySelectorAll('#global-quick-dates .quick-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('[data-preset="all"]').classList.add('active');
+      
+      if (userRole === 'admin') {
+        document.getElementById('soc-filter-staff').value = '';
+      }
+      document.getElementById('soc-filter-platform').value = '';
+      
       triggerActiveFilters();
     });
 
