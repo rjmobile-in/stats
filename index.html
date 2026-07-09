@@ -50,6 +50,19 @@
     #login-btn:hover { background: var(--blue-hover); }
     #error-msg { color: #EF4444; font-size: 13px; margin-top: 12px; display: none; }
 
+    /* Password Toggle Elements */
+    .password-wrapper { position: relative; width: 100%; margin-bottom: 12px; }
+    .password-wrapper .input-field { margin-bottom: 0; padding-right: 40px; }
+    .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-soft); cursor: pointer; display: flex; }
+    .toggle-password:hover { color: var(--text); }
+
+    /* Dropdown Menu */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--white); min-width: 170px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 100; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; margin-top: 5px; }
+    .dropdown-content a { color: var(--text); padding: 12px 16px; text-decoration: none; display: block; font-size: 13px; font-weight: 500; transition: background 0.2s; }
+    .dropdown-content a:hover { background-color: var(--surface); color: var(--blue-hover); }
+    .dropdown.show .dropdown-content { display: block; }
+
     /* Dashboard Layout */
     #dashboard { display: none; width: 100%; max-width: 1100px; }
     .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
@@ -155,7 +168,17 @@
     <h2>RJ Mobile</h2>
     <p>Unified Analytics Portal</p>
     <input type="email" id="email-input" class="input-field" placeholder="Email Address" />
-    <input type="password" id="password-input" class="input-field" placeholder="Password" />
+    
+    <div class="password-wrapper">
+      <input type="password" id="password-input" class="input-field" placeholder="Password" />
+      <button id="toggle-password-btn" class="toggle-password" type="button" title="Show/Hide Password">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+
     <label class="checkbox-row"><input type="checkbox" id="remember-me" checked> Keep me logged in</label>
     <button id="login-btn">Secure Login</button>
     <div id="error-msg">Authentication failed.</div>
@@ -175,8 +198,18 @@
         <button id="theme-toggle" title="Toggle Light/Dark Mode">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
-        <button id="export-pdf-btn" class="btn-primary">Export Report</button>
-        <button id="export-csv-btn" class="btn-primary">Export CSV</button>
+        
+        <!-- Modified Export Dropdown -->
+        <div class="dropdown" id="export-dropdown">
+          <button id="export-menu-btn" class="btn-primary">Export Report ▼</button>
+          <div id="export-menu" class="dropdown-content">
+            <a href="#" data-export="pdf">Download PDF</a>
+            <a href="#" data-export="csv">Download CSV</a>
+            <a href="#" data-export="xls">Download Excel (XLS)</a>
+            <a href="#" data-export="json">Download JSON</a>
+          </div>
+        </div>
+
         <button id="logout-btn" class="btn-secondary">Logout</button>
       </div>
     </div>
@@ -433,6 +466,20 @@
     });
 
     document.getElementById('password-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('login-btn').click(); });
+    
+    // Toggle Password Visibility Logic
+    document.getElementById('toggle-password-btn').addEventListener('click', (e) => {
+      const input = document.getElementById('password-input');
+      const btn = e.currentTarget;
+      if(input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-off-icon"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+      }
+    });
+
     document.getElementById('login-btn').addEventListener('click', async () => {
       const e = document.getElementById('email-input').value, p = document.getElementById('password-input').value, r = document.getElementById('remember-me').checked, msg = document.getElementById('error-msg');
       try { msg.style.display = 'none'; await setPersistence(auth, r ? browserLocalPersistence : browserSessionPersistence); await signInWithEmailAndPassword(auth, e, p); } 
@@ -738,85 +785,132 @@
     }
 
     // ==========================================
-    // EXPORTS (Context Aware)
+    // EXPORTS (Context Aware & Consolidated)
     // ==========================================
-    document.getElementById('export-csv-btn').addEventListener('click', () => {
-      let csv = "";
-      
-      if (currentViewMode === 'list') {
-        csv = "Staff Name,Platform,Date & Time\n";
-        socFiltered.forEach(d => { csv += `"${d.staff_name||'Unknown'}","${d.platform||'Unknown'}","${formatToDate(d.created_at)}"\n`; });
-      } else if (currentViewMode === 'staff') {
-        csv = "Staff Name,Total Clicks,Platform Breakdown\n";
-        const grouped = {};
-        
-        masterStaffList.forEach(name => {
-            grouped[name] = { total: 0, platforms: {} };
-        });
-
-        socFiltered.forEach(d => {
-            const name = d.staff_name || "Unknown";
-            if(!grouped[name]) grouped[name] = { total: 0, platforms: {} };
-            grouped[name].total++;
-            const p = d.platform || "Unknown";
-            grouped[name].platforms[p] = (grouped[name].platforms[p] || 0) + 1;
-        });
-        const displayData = Object.keys(grouped).map(k => {
-            const platformStr = Object.keys(grouped[k].platforms).length > 0
-                ? Object.entries(grouped[k].platforms).map(([p,c])=>`${p} (${c})`).join(', ')
-                : "None";
-            return { col1: k, col2: grouped[k].total, col3: platformStr };
-        }).sort((a,b) => b.col2 - a.col2 || a.col1.localeCompare(b.col1));
-
-        displayData.forEach(d => { csv += `"${d.col1}","${d.col2}","${d.col3}"\n`; });
-      } else if (currentViewMode === 'platform') {
-        csv = "Platform,Total Clicks,Top Staff\n";
-        const grouped = {};
-        socFiltered.forEach(d => {
-            const p = d.platform || "Unknown";
-            if(!grouped[p]) grouped[p] = { total: 0, staff: {} };
-            grouped[p].total++;
-            const s = d.staff_name || "Unknown";
-            grouped[p].staff[s] = (grouped[p].staff[s] || 0) + 1;
-        });
-        const displayData = Object.keys(grouped).map(k => {
-            const topStaff = Object.entries(grouped[k].staff).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([s,c])=>`${s} (${c})`).join(', ');
-            return { col1: k, col2: grouped[k].total, col3: topStaff };
-        }).sort((a,b) => b.col2 - a.col2);
-        
-        displayData.forEach(d => { csv += `"${d.col1}","${d.col2}","${d.col3}"\n`; });
-      }
-
-      const a = document.createElement("a"); 
-      a.href = "data:text/csv;charset=utf-8," + encodeURI(csv); 
-      let formattedViewName = currentViewMode.charAt(0).toUpperCase() + currentViewMode.slice(1);
-      a.download = `RJ_Social_${formattedViewName}_View.csv`; 
-      a.click();
+    
+    // Toggle Dropdown menu
+    document.getElementById('export-menu-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('export-dropdown').classList.toggle('show');
     });
 
-    document.getElementById('export-pdf-btn').addEventListener('click', () => {
-      const originalTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
-      applyTheme(true); 
-      
-      const container = document.getElementById(`soc-export-container`);
-      const header = document.getElementById(`soc-pdf-header`);
-      
-      header.style.display = 'block';
-      document.getElementById(`soc-pdf-date-range`).innerText = `Data Filter: ${document.getElementById('global-filter-start').value || 'Beginning'} to ${document.getElementById('global-filter-end').value || 'Now'}`;
-      document.getElementById(`soc-pagination-ui`).style.display = 'none';
-
-      setTimeout(() => {
-        html2pdf().set({
-          margin: 10, filename: `RJ_Social_Report.pdf`, image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(container).save().then(() => {
-          header.style.display = 'none';
-          document.getElementById(`soc-pagination-ui`).style.display = 'flex';
-          if(originalTheme === 'dark') { localStorage.setItem('rj_theme', 'dark'); applyTheme(); }
-        });
-      }, 300);
+    // Close Dropdown when clicking outside
+    window.addEventListener('click', () => {
+        document.getElementById('export-dropdown').classList.remove('show');
     });
 
+    // Handle Data Extraction logic used across CSV, XLS, and JSON
+    function getExportData() {
+        let headers = [];
+        let rows = [];
+
+        if (currentViewMode === 'list') {
+            headers = ["Staff Name", "Platform", "Date & Time"];
+            socFiltered.forEach(d => { 
+                rows.push([d.staff_name || 'Unknown', d.platform || 'Unknown', formatToDate(d.created_at)]);
+            });
+        } else if (currentViewMode === 'staff') {
+            headers = ["Staff Name", "Total Clicks", "Platform Breakdown"];
+            const grouped = {};
+            masterStaffList.forEach(name => { grouped[name] = { total: 0, platforms: {} }; });
+            socFiltered.forEach(d => {
+                const name = d.staff_name || "Unknown";
+                if(!grouped[name]) grouped[name] = { total: 0, platforms: {} };
+                grouped[name].total++;
+                const p = d.platform || "Unknown";
+                grouped[name].platforms[p] = (grouped[name].platforms[p] || 0) + 1;
+            });
+            const displayData = Object.keys(grouped).map(k => {
+                const platformStr = Object.keys(grouped[k].platforms).length > 0 ? Object.entries(grouped[k].platforms).map(([p,c])=>`${p} (${c})`).join(', ') : "None";
+                return { col1: k, col2: grouped[k].total, col3: platformStr };
+            }).sort((a,b) => b.col2 - a.col2 || a.col1.localeCompare(b.col1));
+            displayData.forEach(d => rows.push([d.col1, d.col2, d.col3]));
+        } else if (currentViewMode === 'platform') {
+            headers = ["Platform", "Total Clicks", "Top Staff"];
+            const grouped = {};
+            socFiltered.forEach(d => {
+                const p = d.platform || "Unknown";
+                if(!grouped[p]) grouped[p] = { total: 0, staff: {} };
+                grouped[p].total++;
+                const s = d.staff_name || "Unknown";
+                grouped[p].staff[s] = (grouped[p].staff[s] || 0) + 1;
+            });
+            const displayData = Object.keys(grouped).map(k => {
+                const topStaff = Object.entries(grouped[k].staff).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([s,c])=>`${s} (${c})`).join(', ');
+                return { col1: k, col2: grouped[k].total, col3: topStaff };
+            }).sort((a,b) => b.col2 - a.col2);
+            displayData.forEach(d => rows.push([d.col1, d.col2, d.col3]));
+        }
+        return { headers, rows };
+    }
+
+    // Handle Dropdown Clicks
+    document.querySelectorAll('#export-menu a').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const type = e.target.getAttribute('data-export');
+            const { headers, rows } = getExportData();
+            let formattedViewName = currentViewMode.charAt(0).toUpperCase() + currentViewMode.slice(1);
+
+            if (type === 'pdf') {
+                // PDF Export fixes: no longer forcing the light theme flash
+                const container = document.getElementById(`soc-export-container`);
+                const header = document.getElementById(`soc-pdf-header`);
+                
+                header.style.display = 'block';
+                document.getElementById(`soc-pdf-date-range`).innerText = `Data Filter: ${document.getElementById('global-filter-start').value || 'Beginning'} to ${document.getElementById('global-filter-end').value || 'Now'}`;
+                document.getElementById(`soc-pagination-ui`).style.display = 'none';
+
+                setTimeout(() => {
+                    html2pdf().set({
+                        margin: 10, filename: `RJ_Social_Report.pdf`, image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    }).from(container).save().then(() => {
+                        header.style.display = 'none';
+                        document.getElementById(`soc-pagination-ui`).style.display = 'flex';
+                    });
+                }, 300);
+            } 
+            else if (type === 'csv') {
+                let csv = headers.join(",") + "\n";
+                rows.forEach(r => { csv += `"${r.join('","')}"\n`; });
+                const a = document.createElement("a"); 
+                a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv); 
+                a.download = `RJ_Social_${formattedViewName}_View.csv`; 
+                a.click();
+            }
+            else if (type === 'xls') {
+                // Simple Excel Export logic utilizing raw HTML table approach 
+                let tableStr = '<table><tr>';
+                headers.forEach(h => tableStr += `<th>${h}</th>`);
+                tableStr += '</tr>';
+                rows.forEach(r => {
+                    tableStr += '<tr>';
+                    r.forEach(cell => tableStr += `<td>${cell}</td>`);
+                    tableStr += '</tr>';
+                });
+                tableStr += '</table>';
+                
+                const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Report</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>${tableStr}</body></html>`;
+                const a = document.createElement("a");
+                a.href = "data:application/vnd.ms-excel;base64," + btoa(unescape(encodeURIComponent(template)));
+                a.download = `RJ_Social_${formattedViewName}_View.xls`;
+                a.click();
+            }
+            else if (type === 'json') {
+                const jsonArr = rows.map(r => {
+                    let obj = {};
+                    headers.forEach((h, i) => obj[h] = r[i]);
+                    return obj;
+                });
+                const jsonStr = JSON.stringify(jsonArr, null, 2);
+                const a = document.createElement("a");
+                a.href = "data:application/json;charset=utf-8," + encodeURIComponent(jsonStr);
+                a.download = `RJ_Social_${formattedViewName}_View.json`;
+                a.click();
+            }
+        });
+    });
   </script>
 </body>
 </html>
