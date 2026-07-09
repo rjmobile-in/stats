@@ -944,8 +944,25 @@
         if(d.platform) pC[d.platform] = (pC[d.platform] || 0) + 1;
       });
 
-      document.getElementById('soc-metric-staff').innerText = Object.keys(sC).sort((a,b)=>sC[b]-sC[a])[0] || "-";
-      document.getElementById('soc-metric-platform').innerText = Object.keys(pC).sort((a,b)=>pC[b]-pC[a])[0] || "-";
+      // --- Replace the old metric assignments with this ---
+
+      // 1. Calculate and display Top Staff with percentage
+      const topStaff = Object.keys(sC).sort((a,b)=>sC[b]-sC[a])[0];
+      if (topStaff && total > 0) {
+        const staffPct = Math.round((sC[topStaff] / total) * 100);
+        document.getElementById('soc-metric-staff').innerHTML = `${topStaff} <span style="font-size: 18px; color: var(--text-soft); font-weight: 600; margin-left: 8px;">(${staffPct}%)</span>`;
+      } else {
+        document.getElementById('soc-metric-staff').innerText = "-";
+      }
+
+      // 2. Calculate and display Top Platform with percentage
+      const topPlatform = Object.keys(pC).sort((a,b)=>pC[b]-pC[a])[0];
+      if (topPlatform && total > 0) {
+        const platPct = Math.round((pC[topPlatform] / total) * 100);
+        document.getElementById('soc-metric-platform').innerHTML = `${topPlatform} <span style="font-size: 18px; color: var(--text-soft); font-weight: 600; margin-left: 8px;">(${platPct}%)</span>`;
+      } else {
+        document.getElementById('soc-metric-platform').innerText = "-";
+      }
       
       generateInsights(socFiltered, pC);
       updateSocCharts(pC, socFiltered, sC);
