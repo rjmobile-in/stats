@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RJ Mobile — Ultimate Catalog & Compare Pro</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      /* Dark Theme */
+      --bg-base: #09090b; 
+      --card-bg: #18181b;
+      --card-border: #27272a;
+      --primary: #8b5cf6; 
+      --primary-hover: #a78bfa;
+      --primary-alpha: rgba(139, 92, 246, 0.15);
+      --text-main: #f4f4f5;
+      --text-soft: #a1a1aa;
+      --success: #10b981; 
+      --success-alpha: rgba(16, 185, 129, 0.15);
+      --danger: #ef4444;
+      --danger-alpha: rgba(239, 68, 68, 0.15);
+      --input-bg: #09090b;
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --overlay-bg: rgba(0, 0, 0, 0.7);
+    }
+    
+    body.light-theme {
+      /* Light Theme */
+      --bg-base: #f8fafc; 
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --primary: #4f46e5; 
+      --primary-hover: #6366f1;
+      --primary-alpha: rgba(79, 70, 229, 0.1);
+      --text-main: #0f172a;
+      --text-soft: #64748b;
+      --success-alpha: rgba(16, 185, 129, 0.2);
+      --danger-alpha: rgba(239, 68, 68, 0.15);
+      --input-bg: #f1f5f9;
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+      --overlay-bg: rgba(255, 255, 255, 0.85);
+    }
+
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-base); color: var(--text-main); min-height: 100vh; padding: 24px 16px; transition: background-color 0.4s ease; }
+    h1, h2, h3, .name { font-family: 'Plus Jakarta Sans', sans-serif; }
+    #app-container { max-width: 1200px; margin: 0 auto; padding-bottom: 80px; }
+    
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 20px 24px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); box-shadow: var(--shadow-soft); }
+    .brand-text .name { font-size: 24px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; display: flex; align-items: center; }
+    .brand-text .tag { font-size: 13px; font-weight: 600; color: var(--text-soft); }
+    .role-badge { display: inline-flex; background: var(--primary-alpha); color: var(--primary); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
+    .action-btn { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-soft); cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+    .action-btn:hover { color: var(--primary); border-color: var(--primary); }
+    .logo-icon { width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; margin-right: 16px; }
+
+    /* Sticky Controls & Filters */
+    .sticky-controls { position: sticky; top: 10px; z-index: 50; }
+    .controls-wrapper { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); padding: 20px 24px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 16px; backdrop-filter: blur(10px); }
+    .row-1, .row-2 { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .row-1 { justify-content: space-between; }
+    .row-2 { padding-top: 16px; border-top: 1px solid var(--card-border); }
+    
+    .search-box { flex: 1; min-width: 250px; }
+    .search-box input, .filter-input, .filter-select { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none; transition: 0.2s; }
+    .search-box input:focus, .filter-input:focus, .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-alpha); }
+    
+    .filter-input { width: 110px; }
+    .filter-select { width: 150px; cursor: pointer; appearance: none; }
+    
+    .quick-dates { display: inline-flex; background: var(--input-bg); border-radius: 14px; padding: 6px; gap: 4px; flex-wrap: wrap; border: 1px solid var(--card-border); align-items: center;}
+    .quick-btn { background: transparent; border: none; color: var(--text-soft); font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .quick-btn:hover { color: var(--text-main); }
+    .quick-btn.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    
+    .btn-reset { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+    .btn-reset:hover { background: var(--danger); color: white; }
+
+    /* Layout Toggle */
+    .view-toggles { display: flex; gap: 8px; margin-left: auto; }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Grid View */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+    
+    /* List View */
+    .list-view { display: flex; flex-direction: column; gap: 16px; }
+    .list-view .metric-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 16px 24px; }
+    .list-view .specs-list, .list-view .antutu-container, .list-view .color-section { display: none; } /* Hide details in list view for compactness */
+    .list-view .card-header { margin-bottom: 0; width: 40%; align-items: center; }
+    .list-view .compare-label { margin-top: 0; }
+    
+    /* Cards */
+    .metric-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; position: relative; box-shadow: var(--shadow-soft); transition: 0.3s; display: flex; flex-direction: column; cursor: pointer; animation: fadeIn 0.4s ease forwards; overflow: hidden; }
+    .metric-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    body.light-theme .metric-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .metric-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), #3b82f6); opacity: 0; transition: 0.3s; border-radius: 20px 20px 0 0; }
+    .metric-card:hover::after { opacity: 1; }
+    
+    /* Quick Specs Overlay (Hover Effect) */
+    .quick-specs-overlay { position: absolute; inset: 0; background: var(--overlay-bg); backdrop-filter: blur(4px); display: flex; flex-direction: column; justify-content: center; padding: 30px; opacity: 0; transition: 0.3s ease; pointer-events: none; z-index: 5; }
+    .metric-card:hover .quick-specs-overlay { opacity: 1; }
+    .quick-spec-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 14px; color: var(--text-main); font-weight: 600; }
+    .quick-spec-item svg { color: var(--primary); }
+    .click-hint { margin-top: 10px; font-size: 12px; color: var(--primary); font-weight: 700; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; pointer-events: none; }
+    .phone-name { font-size: 20px; font-weight: 800; color: var(--text-main); }
+    .phone-price { font-size: 18px; font-weight: 700; color: var(--success); margin-top: 4px;}
+    .tags-container { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: 120px;}
+    .cat-tag { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; background: var(--primary-alpha); color: var(--primary); text-transform: uppercase; white-space: nowrap; }
+
+    /* Colors */
+    .color-section { margin-bottom: 16px; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+    .color-label { font-size: 12px; font-weight: 600; color: var(--text-soft); }
+    .color-dots { display: flex; gap: 6px; }
+    .color-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--card-border); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+    /* AnTuTu */
+    .antutu-container { margin-bottom: 16px; pointer-events: none; }
+    .antutu-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--text-soft); }
+    .antutu-header span:last-child { color: var(--text-main); font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;}
+    .antutu-track { width: 100%; height: 6px; background: var(--input-bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--card-border); }
+    .antutu-fill { height: 100%; border-radius: 10px; transition: width 1s ease-out; }
+
+    .specs-list { flex: 1; margin-bottom: 20px; pointer-events: none; }
+    .spec-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--text-soft); font-weight: 500; }
+    .spec-item svg { color: var(--primary); flex-shrink: 0; width: 16px; height: 16px; }
+    .spec-item strong { color: var(--text-main); font-weight: 600; margin-right: 4px;}
+
+    /* Checkbox */
+    .compare-label { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-main); transition: 0.2s; user-select: none; margin-top: auto; z-index: 10; }
+    .compare-label:hover { border-color: var(--primary); }
+    .compare-label input { accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; }
+
+    /* Compare Bar Bottom */
+    #compare-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 14px 24px; border-radius: 16px; display: flex; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; }
+    #compare-bar.show { bottom: 30px; }
+    #compare-bar p { font-weight: 600; font-size: 15px; margin-right: 10px;}
+    .btn-compare-action { background: white; color: var(--primary); border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-compare-action:hover { background: #f4f4f5; transform: scale(1.05); }
+    .btn-clear-compare { background: rgba(0,0,0,0.2); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+    .btn-clear-compare:hover { background: rgba(255,255,255,0.2); }
+
+    /* Modals */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; width: 100%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: var(--shadow-soft); animation: fadeIn 0.3s ease; }
+    .compare-modal-size { max-width: 1200px; }
+    .details-modal-size { max-width: 650px; }
+    
+    .modal-header { padding: 24px 30px; border-bottom: 1px solid var(--card-border); position: relative; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 10px;}
+    .modal-body { padding: 0 30px 30px 30px; overflow-y: auto; flex: 1; }
+
+    .close-modal { position: absolute; top: 20px; right: 20px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .close-modal:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+    /* Hide Similarities Toggle */
+    .toggle-similar-container { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-soft); cursor: pointer; }
+    .toggle-switch { position: relative; width: 40px; height: 22px; background: var(--card-border); border-radius: 20px; transition: 0.3s; }
+    .toggle-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; }
+    input:checked + .toggle-switch { background: var(--primary); }
+    input:checked + .toggle-switch::after { transform: translateX(18px); }
+
+    /* Table & Sticky Header */
+    .table-container { overflow-y: auto; max-height: 70vh; position: relative; padding-top: 10px;}
+    .compare-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; }
+    .compare-table th, .compare-table td { padding: 16px; border-bottom: 1px solid var(--card-border); border-right: 1px solid var(--card-border); text-align: center; }
+    .compare-table th:first-child, .compare-table td:first-child { border-left: 1px solid var(--card-border); }
+    .compare-table tr:first-child th { border-top: 1px solid var(--card-border); }
+    
+    .compare-table th { background: var(--card-bg); font-weight: 700; color: var(--text-main); font-size: 16px; position: sticky; top: 0; z-index: 10; }
+    .compare-table th::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 1px; background: var(--card-border); } /* Fix sticky border gap */
+    
+    .compare-table td { color: var(--text-soft); font-size: 14px; font-weight: 500; transition: background 0.2s; background: var(--card-bg);}
+    .compare-table tr:hover td { background: var(--input-bg); color: var(--text-main); }
+    
+    .spec-row-title { font-weight: 700 !important; color: var(--primary) !important; text-align: left !important; background: var(--input-bg) !important; font-size: 15px;}
+    
+    /* Smart Highlight Winner & Loser */
+    .winner-cell { background: var(--success-alpha) !important; color: var(--success) !important; font-weight: 700 !important; border: 1px solid var(--success) !important; position: relative; }
+    .winner-cell::after { content: '🏆'; position: absolute; top: 4px; right: 4px; font-size: 12px; }
+
+    .loser-cell { background: var(--danger-alpha) !important; color: var(--danger) !important; font-weight: 700 !important; border: 1px solid var(--danger) !important; position: relative; }
+    .loser-cell::after { content: '🔻'; position: absolute; top: 4px; right: 4px; font-size: 12px; }
+    
+    .icon-yes { color: var(--success); font-weight: bold; font-size: 16px; }
+    .icon-no { color: var(--danger); font-weight: bold; font-size: 16px; }
+    
+    /* Details Clean Rows */
+    .details-table td:first-child { text-align: left; font-weight: 600; color: var(--text-main); width: 45%; }
+    .details-table td:last-child { text-align: left; color: var(--text-soft); }
+
+    /* WhatsApp Button */
+    .wa-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #25D366; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+    .wa-btn:hover { background: #128C7E; transform: translateY(-2px); }
+
+    /* Empty State */
+    .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center; color: var(--text-soft); animation: fadeIn 0.4s; }
+    .empty-state svg { width: 80px; height: 80px; color: var(--card-border); margin-bottom: 20px; }
+    .empty-state h3 { color: var(--text-main); font-size: 20px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+    
+    <!-- Header -->
+    <div class="header">
+      <div class="brand-text">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        </div>
+        <div>
+          <div class="name">RJ Mobile <span class="role-badge">PRO CATALOG</span></div>
+          <div class="tag">Expanded Inventory & Smart Compare</div>
+        </div>
+      </div>
+      <div>
+        <button id="theme-toggle" class="action-btn" title="Toggle Theme">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sticky Filters & Controls -->
+    <div class="sticky-controls">
+      <div class="controls-wrapper">
+        <div class="row-1">
+          <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search phones or brands...">
+          </div>
+          
+          <!-- Category Multi-Select Filters -->
+          <div class="quick-dates" id="category-filters">
+            <button class="quick-btn" data-cat="Premium">💎 Premium</button>
+            <button class="quick-btn" data-cat="Camera">📸 Camera</button>
+            <button class="quick-btn" data-cat="Gaming">🎮 Gaming</button>
+            <button class="quick-btn" data-cat="Budget">💰 Budget</button>
+            <button class="quick-btn" data-cat="New Launch">🚀 New Launch</button>
+            <button class="quick-btn" data-cat="Best Seller">🔥 Best Seller</button>
+            <button id="btn-clear-cats" class="quick-btn" style="color:var(--danger); border-left: 1px solid var(--card-border); border-radius:0; margin-left:4px;" title="Clear Categories">✖ Clear</button>
+          </div>
+
+          <!-- View Toggle -->
+          <div class="view-toggles">
+            <button id="btn-grid-view" class="action-btn" style="border-color: var(--primary); color: var(--primary);" title="Grid View">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
+            <button id="btn-list-view" class="action-btn" title="List View">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="row-2">
+          <select id="brand-filter" class="filter-select">
+            <option value="all">All Brands</option>
+            <option value="Apple">Apple</option>
+            <option value="Samsung">Samsung</option>
+            <option value="OnePlus">OnePlus</option>
+            <option value="Vivo">Vivo</option>
+            <option value="Poco">Poco</option>
+            <option value="Motorola">Motorola</option>
+          </select>
+          
+          <input type="number" id="min-price" class="filter-input" placeholder="Min ₹">
+          <input type="number" id="max-price" class="filter-input" placeholder="Max ₹">
+          
+          <!-- Disabled hidden placeholder for Price -->
+          <select id="sort-price" class="filter-select">
+            <option value="default" disabled selected hidden>Sort by Price</option>
+            <option value="asc">Low to High</option>
+            <option value="desc">High to Low</option>
+          </select>
+
+          <button id="btn-reset" class="quick-btn btn-reset">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> 
+            Reset All
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="grid" id="product-grid"></div>
+
+  </div>
+
+  <!-- Compare Bar -->
+  <div id="compare-bar">
+    <p><span id="compare-count">0</span> Selected</p>
+    <button class="btn-compare-action" onclick="showCompareModal()">Compare Now</button>
+    <button class="btn-clear-compare" onclick="clearCompare()" title="Clear Selection">✖</button>
+  </div>
+
+  <!-- Compare Modal -->
+  <div id="compare-modal" class="modal-overlay">
+    <div class="modal-content compare-modal-size">
+      <div class="modal-header">
+        <h2 style="font-size: 24px;">Smart Comparison</h2>
+        <!-- Hide Similarities Toggle -->
+        <label class="toggle-similar-container">
+          <input type="checkbox" id="hide-similar-toggle" style="display:none;" onchange="toggleSimilarities()">
+          <div class="toggle-switch"></div>
+          Show Only Differences
+        </label>
+        <button class="close-modal" onclick="closeCompareModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body table-container" id="compare-table-container">
+        <!-- Table injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Single Phone Details Modal -->
+  <div id="details-modal" class="modal-overlay">
+    <div class="modal-content details-modal-size">
+      <div class="modal-header" style="border:none; padding-bottom:0;">
+        <button class="close-modal" onclick="closeDetailsModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="details-body" style="padding-top:0;"></div>
+    </div>
+  </div>
+
+  <script>
+    const checkIcon = `<span class="icon-yes">✔</span>`;
+    const crossIcon = `<span class="icon-no">✘</span>`;
+
+    function parsePrice(str) { return parseInt(str.replace(/[^0-9]/g, ''), 10); }
+    // Extract first number for logic comparing (e.g. "12GB" -> 12, "5000mAh" -> 5000)
+    function extractNum(str) { let match = str.match(/\d+/); return match ? parseInt(match[0], 10) : 0; }
+
+    // Database with Array of Categories/Tags
+    const mobiles = [
+      {
+        id: 1, name: "iPhone 15 Pro Max", brand: "Apple", price: "₹1,59,900", categories: ["Premium", "Best Seller"], antutu: 1530000,
+        processor: "A17 Pro (3nm)", ramRom: "8GB / 256GB NVMe", os: "iOS 17",
+        display: "6.7' Super Retina XDR OLED", resolution: "1290x2796", peakBrightness: "2000 nits",
+        cameraMain: "48MP OIS", cameraUltrawide: "12MP", cameraTelephoto: "12MP (5x Optical)", cameraSelfie: "12MP AF",
+        battery: "4422mAh", wiredCharging: "27W", wirelessCharging: "15W MagSafe",
+        buildFront: "Ceramic Shield", buildBack: "Corning Glass", buildFrame: "Titanium", weight: "221g", ipRating: "IP68",
+        fingerprint: crossIcon, faceUnlock: checkIcon, nfc: checkIcon, audioJack: crossIcon, sdCard: crossIcon, usbType: "Type-C 3.2",
+        colors: [{name: "Natural Titanium", hex: "#b4b1a8"}, {name: "Black Titanium", hex: "#1e1e1f"}]
+      },
+      {
+        id: 2, name: "Galaxy S24 Ultra", brand: "Samsung", price: "₹1,29,999", categories: ["Premium", "New Launch", "Camera"], antutu: 1950000,
+        processor: "Snapdragon 8 Gen 3", ramRom: "12GB / 256GB UFS 4.0", os: "Android 14",
+        display: "6.8' AMOLED 2X", resolution: "1440x3120", peakBrightness: "2600 nits",
+        cameraMain: "200MP OIS", cameraUltrawide: "12MP", cameraTelephoto: "50MP (5x) + 10MP (3x)", cameraSelfie: "12MP AF",
+        battery: "5000mAh", wiredCharging: "45W", wirelessCharging: "15W Qi",
+        buildFront: "Gorilla Armor", buildBack: "Gorilla Glass", buildFrame: "Titanium", weight: "232g", ipRating: "IP68",
+        fingerprint: checkIcon, faceUnlock: checkIcon, nfc: checkIcon, audioJack: crossIcon, sdCard: crossIcon, usbType: "Type-C 3.2",
+        colors: [{name: "Titanium Grey", hex: "#7a7776"}, {name: "Titanium Violet", hex: "#4f415c"}]
+      },
+      {
+        id: 3, name: "OnePlus 12", brand: "OnePlus", price: "₹64,999", categories: ["Gaming", "Premium"], antutu: 2100000,
+        processor: "Snapdragon 8 Gen 3", ramRom: "12GB / 256GB UFS 4.0", os: "Android 14",
+        display: "6.82' LTPO AMOLED", resolution: "1440x3168", peakBrightness: "4500 nits",
+        cameraMain: "50MP OIS", cameraUltrawide: "48MP", cameraTelephoto: "64MP (3x Optical)", cameraSelfie: "32MP",
+        battery: "5400mAh", wiredCharging: "100W", wirelessCharging: "50W AirVOOC",
+        buildFront: "Gorilla Victus 2", buildBack: "Glass", buildFrame: "Aluminum", weight: "220g", ipRating: "IP65",
+        fingerprint: checkIcon, faceUnlock: checkIcon, nfc: checkIcon, audioJack: crossIcon, sdCard: crossIcon, usbType: "Type-C 3.2",
+        colors: [{name: "Flowy Emerald", hex: "#234a41"}, {name: "Silky Black", hex: "#2a2d34"}]
+      },
+      {
+        id: 5, name: "Vivo V30 Pro", brand: "Vivo", price: "₹41,999", categories: ["Camera", "New Launch"], antutu: 980000,
+        processor: "Dimensity 8200", ramRom: "12GB / 512GB UFS 3.1", os: "Android 14",
+        display: "6.78' AMOLED Curved", resolution: "1260x2800", peakBrightness: "2800 nits",
+        cameraMain: "50MP OIS (Zeiss)", cameraUltrawide: "50MP", cameraTelephoto: "50MP (2x Portrait)", cameraSelfie: "50MP AF",
+        battery: "5000mAh", wiredCharging: "80W", wirelessCharging: crossIcon,
+        buildFront: "Schott Alpha", buildBack: "Glass", buildFrame: "Plastic", weight: "188g", ipRating: "IP54",
+        fingerprint: checkIcon, faceUnlock: checkIcon, nfc: checkIcon, audioJack: crossIcon, sdCard: crossIcon, usbType: "Type-C 2.0",
+        colors: [{name: "Andaman Blue", hex: "#a4d3df"}, {name: "Classic Black", hex: "#1d1d1f"}]
+      },
+      {
+        id: 8, name: "Poco X6 Pro", brand: "Poco", price: "₹26,999", categories: ["Gaming", "Best Seller"], antutu: 1400000,
+        processor: "Dimensity 8300 Ultra", ramRom: "8GB / 256GB UFS 4.0", os: "Android 14",
+        display: "6.67' AMOLED", resolution: "1220x2712", peakBrightness: "1800 nits",
+        cameraMain: "64MP OIS", cameraUltrawide: "8MP", cameraTelephoto: crossIcon, cameraSelfie: "16MP",
+        battery: "5000mAh", wiredCharging: "67W", wirelessCharging: crossIcon,
+        buildFront: "Gorilla Glass 5", buildBack: "Eco Leather", buildFrame: "Plastic", weight: "190g", ipRating: "IP54",
+        fingerprint: checkIcon, faceUnlock: checkIcon, nfc: checkIcon, audioJack: crossIcon, sdCard: crossIcon, usbType: "Type-C 2.0",
+        colors: [{name: "POCO Yellow", hex: "#ffca08"}, {name: "Spectre Black", hex: "#222222"}]
+      },
+      {
+        id: 9, name: "Moto G34 5G", brand: "Motorola", price: "₹10,999", categories: ["Budget"], antutu: 420000,
+        processor: "Snapdragon 695 5G", ramRom: "8GB / 128GB UFS 2.2", os: "Android 14",
+        display: "6.5' IPS LCD", resolution: "720x1600", peakBrightness: "500 nits",
+        cameraMain: "50MP PDAF", cameraUltrawide: crossIcon, cameraTelephoto: crossIcon, cameraSelfie: "16MP",
+        battery: "5000mAh", wiredCharging: "18W", wirelessCharging: crossIcon,
+        buildFront: "Glass", buildBack: "Vegan Leather", buildFrame: "Plastic", weight: "179g", ipRating: "Water-repellent",
+        fingerprint: checkIcon, faceUnlock: checkIcon, nfc: crossIcon, audioJack: checkIcon, sdCard: checkIcon, usbType: "Type-C 2.0",
+        colors: [{name: "Ice Blue", hex: "#b2d1d9"}, {name: "Ocean Green", hex: "#1c5148"}]
+      }
+    ];
+
+    let selectedForCompare = [];
+    let activeCategories = [];
+    let isGridView = true;
+    
+    const searchInput = document.getElementById('search-input');
+    const brandFilter = document.getElementById('brand-filter');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    const sortPrice = document.getElementById('sort-price');
+    const gridContainer = document.getElementById('product-grid');
+
+    // Theme Toggle
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    function applyTheme() {
+      const isLight = localStorage.getItem('rj_theme') === 'light';
+      if (isLight) {
+        document.body.classList.add('light-theme');
+        themeToggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+      } else {
+        document.body.classList.remove('light-theme');
+        themeToggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      }
+    }
+    themeToggleBtn.addEventListener('click', () => { localStorage.setItem('rj_theme', document.body.classList.contains('light-theme') ? 'dark' : 'light'); applyTheme(); });
+    applyTheme();
+
+    // View Toggles
+    const btnGrid = document.getElementById('btn-grid-view');
+    const btnList = document.getElementById('btn-list-view');
+    
+    function setView(grid) {
+      isGridView = grid;
+      if(grid) {
+        gridContainer.classList.remove('list-view');
+        btnGrid.style.borderColor = 'var(--primary)'; btnGrid.style.color = 'var(--primary)';
+        btnList.style.borderColor = 'var(--card-border)'; btnList.style.color = 'var(--text-soft)';
+      } else {
+        gridContainer.classList.add('list-view');
+        btnList.style.borderColor = 'var(--primary)'; btnList.style.color = 'var(--primary)';
+        btnGrid.style.borderColor = 'var(--card-border)'; btnGrid.style.color = 'var(--text-soft)';
+      }
+    }
+    btnGrid.addEventListener('click', () => setView(true));
+    btnList.addEventListener('click', () => setView(false));
+
+    function getAnTuTuColor(score) {
+      if(score > 1800000) return 'linear-gradient(90deg, #8b5cf6, #3b82f6)';
+      if(score > 1000000) return 'linear-gradient(90deg, #10b981, #34d399)';
+      if(score > 600000) return 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+      return 'linear-gradient(90deg, #ef4444, #f87171)';
+    }
+
+    function renderGrid() {
+      gridContainer.innerHTML = '';
+      
+      const query = searchInput.value.toLowerCase();
+      const brand = brandFilter.value;
+      const minP = minPriceInput.value ? parseInt(minPriceInput.value) : 0;
+      const maxP = maxPriceInput.value ? parseInt(maxPriceInput.value) : Infinity;
+      const sort = sortPrice.value;
+
+      let filtered = mobiles.filter(m => {
+        const pNum = parsePrice(m.price);
+        // Multi-select Logic: If activeCategories has items, phone must match AT LEAST ONE
+        const matchCat = activeCategories.length === 0 || m.categories.some(c => activeCategories.includes(c));
+        const matchSearch = m.name.toLowerCase().includes(query) || m.brand.toLowerCase().includes(query);
+        const matchBrand = brand === 'all' || m.brand === brand;
+        const matchPrice = pNum >= minP && pNum <= maxP;
+        return matchCat && matchSearch && matchBrand && matchPrice;
+      });
+
+      if (sort === 'asc') filtered.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+      else if (sort === 'desc') filtered.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+
+      if(filtered.length === 0) {
+        // SVG Empty State
+        gridContainer.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><path d="M11 8v2"></path><path d="M11 14h.01"></path>
+            </svg>
+            <h3>No Phones Found</h3>
+            <p>Try adjusting your filters, price range, or categories.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach((phone, index) => {
+        const isChecked = selectedForCompare.includes(phone.id) ? 'checked' : '';
+        const colorDotsHtml = phone.colors.map(c => `<div class="color-dot" style="background-color: ${c.hex};" title="${c.name}"></div>`).join('');
+        const tagsHtml = phone.categories.map(c => `<div class="cat-tag">${c}</div>`).join('');
+        const antutuPercent = (phone.antutu / 2500000) * 100;
+        const barColor = getAnTuTuColor(phone.antutu);
+
+        const card = document.createElement('div');
+        card.className = 'metric-card';
+        card.style.animationDelay = `${index * 0.05}s`; // Staggered fade in
+        card.onclick = (e) => {
+          if(e.target.closest('.compare-label')) return;
+          showDetailsModal(phone.id);
+        };
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="phone-name">${phone.name}</div>
+              <div class="phone-price">${phone.price}</div>
+            </div>
+            <div class="tags-container">${tagsHtml}</div>
+          </div>
+          
+          <div class="antutu-container">
+            <div class="antutu-header"><span>AnTuTu Benchmark</span> <span>${phone.antutu.toLocaleString()}</span></div>
+            <div class="antutu-track"><div class="antutu-fill" style="width: ${antutuPercent}%; background: ${barColor};"></div></div>
+          </div>
+
+          <div class="color-section">
+            <span class="color-label">Colors:</span>
+            <div class="color-dots">${colorDotsHtml}</div>
+          </div>
+
+          <div class="specs-list">
+            <div class="spec-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg> <span><strong>RAM:</strong> ${phone.ramRom.split(' / ')[0]}</span></div>
+            <div class="spec-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> <span><strong>CPU:</strong> ${phone.processor.split(' (')[0]}</span></div>
+            <div class="spec-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> <span><strong>Cam:</strong> ${phone.cameraMain}</span></div>
+          </div>
+          
+          <!-- Hover Overlay (Quick Specs) -->
+          <div class="quick-specs-overlay">
+            <div class="quick-spec-item"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg> ${phone.ramRom}</div>
+            <div class="quick-spec-item"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg> ${phone.battery} (${phone.wiredCharging})</div>
+            <div class="quick-spec-item"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> ${phone.cameraMain} & ${phone.cameraUltrawide}</div>
+            <div class="click-hint">Click for full specs</div>
+          </div>
+
+          <label class="compare-label">
+            <input type="checkbox" value="${phone.id}" onchange="toggleCompare(${phone.id}, this)" ${isChecked}>
+            Compare
+          </label>
+        `;
+        gridContainer.appendChild(card);
+      });
+    }
+
+    // Multi-select Categories Logic
+    document.querySelectorAll('.quick-btn[data-cat]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const cat = e.target.getAttribute('data-cat');
+        if (activeCategories.includes(cat)) {
+          activeCategories = activeCategories.filter(c => c !== cat);
+          e.target.classList.remove('active');
+        } else {
+          activeCategories.push(cat);
+          e.target.classList.add('active');
+        }
+        renderGrid();
+      });
+    });
+
+    // Clear Categories
+    document.getElementById('btn-clear-cats').addEventListener('click', () => {
+      activeCategories = [];
+      document.querySelectorAll('.quick-btn[data-cat]').forEach(b => b.classList.remove('active'));
+      renderGrid();
+    });
+    
+    // Other Filters
+    [searchInput, brandFilter, minPriceInput, maxPriceInput, sortPrice].forEach(el => {
+      el.addEventListener('input', renderGrid);
+      el.addEventListener('change', renderGrid);
+    });
+
+    // Reset All Filters
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      searchInput.value = '';
+      brandFilter.value = 'all';
+      minPriceInput.value = '';
+      maxPriceInput.value = '';
+      sortPrice.value = 'default';
+      activeCategories = [];
+      document.querySelectorAll('.quick-btn[data-cat]').forEach(b => b.classList.remove('active'));
+      renderGrid();
+    });
+
+    // Compare Logic
+    function toggleCompare(id, checkbox) {
+      if (checkbox.checked) {
+        if (selectedForCompare.length >= 3) {
+          alert("Maximum 3 phones can be compared at once!");
+          checkbox.checked = false;
+          return;
+        }
+        selectedForCompare.push(id);
+      } else {
+        selectedForCompare = selectedForCompare.filter(itemId => itemId !== id);
+      }
+      updateCompareBar();
+    }
+
+    function clearCompare() {
+      selectedForCompare = [];
+      document.querySelectorAll('.compare-label input').forEach(cb => cb.checked = false);
+      updateCompareBar();
+    }
+
+    function updateCompareBar() {
+      const bar = document.getElementById('compare-bar');
+      document.getElementById('compare-count').innerText = selectedForCompare.length;
+      if (selectedForCompare.length >= 2) bar.classList.add('show');
+      else bar.classList.remove('show');
+    }
+
+    // Smart Compare Modal Builder
+    function showCompareModal() {
+      const modal = document.getElementById('compare-modal');
+      const container = document.getElementById('compare-table-container');
+      const toggleCheck = document.getElementById('hide-similar-toggle');
+      toggleCheck.checked = false; // Reset toggle
+      
+      const phones = mobiles.filter(m => selectedForCompare.includes(m.id));
+      
+      // Calculate max and min values for smart highlight ONLY for comparable fields
+      const maxAntutu = Math.max(...phones.map(p => p.antutu));
+      const minAntutu = Math.min(...phones.map(p => p.antutu));
+      const maxRam = Math.max(...phones.map(p => extractNum(p.ramRom)));
+      const minRam = Math.min(...phones.map(p => extractNum(p.ramRom)));
+      const maxBat = Math.max(...phones.map(p => extractNum(p.battery)));
+      const minBat = Math.min(...phones.map(p => extractNum(p.battery)));
+      const maxCharge = Math.max(...phones.map(p => extractNum(p.wiredCharging)));
+      const minCharge = Math.min(...phones.map(p => extractNum(p.wiredCharging)));
+      const maxBright = Math.max(...phones.map(p => extractNum(p.peakBrightness)));
+      const minBright = Math.min(...phones.map(p => extractNum(p.peakBrightness)));
+
+      // Highlight logic: Only highlight if values are different (max != min)
+      const getClass = (val, max, min) => {
+        if (max === min) return ''; // Tie
+        const num = extractNum(val);
+        if (num === max && max > 0) return 'winner-cell';
+        if (num === min && min > 0) return 'loser-cell';
+        return '';
+      };
+      const getAntutuClass = (val, max, min) => {
+        if (max === min) return ''; // Tie
+        if (val === max) return 'winner-cell';
+        if (val === min) return 'loser-cell';
+        return '';
+      };
+
+      let html = `<table class="compare-table" id="main-compare-table">`;
+      
+      html += `<tr><th style="width: 20%; text-align: left;">Features</th>`;
+      phones.forEach(p => {
+        html += `<th><div style="font-size:18px;">${p.name}</div><div style="color:var(--success); font-size:15px; margin-top:4px;">${p.price}</div></th>`;
+      });
+      html += `</tr>`;
+
+      // Data Rows: added data-comp="true" for rows that can be hidden by "Hide Similarities" toggle
+      html += `<tr><td class="spec-row-title" colspan="${phones.length + 1}">Performance & Memory</td></tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Processor</td>${phones.map(p => `<td>${p.processor}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">AnTuTu Score</td>${phones.map(p => `<td class="${getAntutuClass(p.antutu, maxAntutu, minAntutu)}">${p.antutu.toLocaleString()}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">RAM / ROM</td>${phones.map(p => `<td class="${getClass(p.ramRom, maxRam, minRam)}">${p.ramRom}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">OS</td>${phones.map(p => `<td>${p.os}</td>`).join('')}</tr>`;
+      
+      html += `<tr><td class="spec-row-title" colspan="${phones.length + 1}">Display</td></tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Screen</td>${phones.map(p => `<td>${p.display}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Resolution</td>${phones.map(p => `<td>${p.resolution}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Peak Brightness</td>${phones.map(p => `<td class="${getClass(p.peakBrightness, maxBright, minBright)}">${p.peakBrightness}</td>`).join('')}</tr>`;
+      
+      html += `<tr><td class="spec-row-title" colspan="${phones.length + 1}">Camera</td></tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Main</td>${phones.map(p => `<td>${p.cameraMain}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Ultrawide</td>${phones.map(p => `<td>${p.cameraUltrawide}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Telephoto</td>${phones.map(p => `<td>${p.cameraTelephoto}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Selfie</td>${phones.map(p => `<td>${p.cameraSelfie}</td>`).join('')}</tr>`;
+      
+      html += `<tr><td class="spec-row-title" colspan="${phones.length + 1}">Battery</td></tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Capacity</td>${phones.map(p => `<td class="${getClass(p.battery, maxBat, minBat)}">${p.battery}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Wired Charging</td>${phones.map(p => `<td class="${getClass(p.wiredCharging, maxCharge, minCharge)}">${p.wiredCharging}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Wireless Charging</td>${phones.map(p => `<td>${p.wirelessCharging}</td>`).join('')}</tr>`;
+      
+      html += `<tr><td class="spec-row-title" colspan="${phones.length + 1}">Features & Ports</td></tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Fingerprint Sensor</td>${phones.map(p => `<td>${p.fingerprint}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">Face Unlock</td>${phones.map(p => `<td>${p.faceUnlock}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">NFC</td>${phones.map(p => `<td>${p.nfc}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">3.5mm Audio Jack</td>${phones.map(p => `<td>${p.audioJack}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">MicroSD Card</td>${phones.map(p => `<td>${p.sdCard}</td>`).join('')}</tr>`;
+      html += `<tr data-comp="true"><td style="text-align: left; font-weight:600; color:var(--text-main);">USB Port</td>${phones.map(p => `<td>${p.usbType}</td>`).join('')}</tr>`;
+
+      html += `</table>`;
+      container.innerHTML = html;
+      modal.style.display = 'flex';
+    }
+    function closeCompareModal() { document.getElementById('compare-modal').style.display = 'none'; }
+
+    // Toggle Hide Similarities
+    function toggleSimilarities() {
+      const isChecked = document.getElementById('hide-similar-toggle').checked;
+      const rows = document.querySelectorAll('#main-compare-table tr[data-comp="true"]');
+      
+      rows.forEach(row => {
+        // Get all cells except the first one (which is the title)
+        const cells = Array.from(row.querySelectorAll('td:not(:first-child)'));
+        // Check if all inner text matches
+        const allSame = cells.every(c => c.innerHTML.trim() === cells[0].innerHTML.trim());
+        
+        if (allSame) {
+          row.style.display = isChecked ? 'none' : '';
+        }
+      });
+    }
+
+    // Single Phone Details (Full WhatsApp Share)
+    function showDetailsModal(id) {
+      const phone = mobiles.find(m => m.id === id);
+      const modal = document.getElementById('details-modal');
+      const body = document.getElementById('details-body');
+      
+      const colorsHtml = phone.colors.map(c => `<div class="color-dot" style="background-color:${c.hex};" title="${c.name}"></div>`).join('');
+      const antutuPercent = (phone.antutu / 2500000) * 100;
+      
+      const waText = encodeURIComponent(`*${phone.name}* (${phone.price})\n\n🏆 *AnTuTu Score:* ${phone.antutu.toLocaleString()}\n⚡ *Processor:* ${phone.processor}\n💾 *RAM / Storage:* ${phone.ramRom}\n📱 *Display:* ${phone.display} (${phone.peakBrightness})\n📸 *Main Camera:* ${phone.cameraMain}\n🤳 *Selfie Camera:* ${phone.cameraSelfie}\n🔋 *Battery:* ${phone.battery} (${phone.wiredCharging})\n🛡️ *IP Rating:* ${phone.ipRating}\n\nCheck out full specs on RJ Mobile Catalog!`);
+
+      body.innerHTML = `
+        <h2 style="text-align: center; margin-bottom: 5px; font-size: 26px; color: var(--text-main); margin-top:20px;">${phone.name}</h2>
+        <p style="text-align: center; color: var(--success); font-weight: 700; font-size: 20px; margin-bottom: 20px;">${phone.price}</p>
+        
+        <div class="antutu-container" style="margin-bottom:24px;">
+          <div class="antutu-header"><span>AnTuTu Benchmark Score</span> <span>${phone.antutu.toLocaleString()}</span></div>
+          <div class="antutu-track"><div class="antutu-fill" style="width: ${antutuPercent}%; background: ${getAnTuTuColor(phone.antutu)};"></div></div>
+        </div>
+
+        <table class="compare-table details-table" style="margin-top:0;">
+          <tr><td class="spec-row-title" colspan="2">Core Performance</td></tr>
+          <tr><td>Processor</td><td>${phone.processor}</td></tr>
+          <tr><td>RAM / Storage</td><td>${phone.ramRom}</td></tr>
+          
+          <tr><td class="spec-row-title" colspan="2">Display & Camera</td></tr>
+          <tr><td>Screen</td><td>${phone.display}</td></tr>
+          <tr><td>Brightness</td><td>${phone.peakBrightness}</td></tr>
+          <tr><td>Main Camera</td><td>${phone.cameraMain}</td></tr>
+          <tr><td>Front Camera</td><td>${phone.cameraSelfie}</td></tr>
+          
+          <tr><td class="spec-row-title" colspan="2">Battery & Build</td></tr>
+          <tr><td>Battery (Charging)</td><td>${phone.battery} (${phone.wiredCharging})</td></tr>
+          <tr><td>IP Rating / Weight</td><td>${phone.ipRating} / ${phone.weight}</td></tr>
+          <tr><td>Colors</td><td><div style="display:flex; gap:6px;">${colorsHtml}</div></td></tr>
+
+          <tr><td class="spec-row-title" colspan="2">Extra Features</td></tr>
+          <tr><td>Fingerprint Sensor</td><td>${phone.fingerprint}</td></tr>
+          <tr><td>Face Unlock</td><td>${phone.faceUnlock}</td></tr>
+          <tr><td>NFC</td><td>${phone.nfc}</td></tr>
+          <tr><td>3.5mm Audio Jack</td><td>${phone.audioJack}</td></tr>
+          <tr><td>MicroSD Card Slot</td><td>${phone.sdCard}</td></tr>
+          <tr><td>USB Port</td><td>${phone.usbType}</td></tr>
+        </table>
+        
+        <button class="wa-btn" onclick="window.open('https://wa.me/?text=${waText}', '_blank')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          Share on WhatsApp
+        </button>
+      `;
+      modal.style.display = 'flex';
+    }
+    function closeDetailsModal() { document.getElementById('details-modal').style.display = 'none'; }
+
+    // Init
+    renderGrid();
+  </script>
+</body>
+</html>
