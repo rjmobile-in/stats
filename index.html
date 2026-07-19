@@ -114,7 +114,8 @@
 
     #dashboard { display: none; width: 100%; max-width: 1200px; }
     
-    .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 32px; padding: 20px 24px; border-radius: 20px; box-shadow: var(--shadow-soft); }
+    .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 32px; padding: 20px 24px; border-radius: 20px; box-shadow: var(--shadow-soft); position: relative; z-index: 100; }
+
     .brand-text .name { font-size: calc(24px * var(--font-scale)); font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
     .brand-text .tag { font-size: calc(13px * var(--font-scale)); font-weight: 600; color: var(--text-soft); letter-spacing: 0.5px; margin-top: 4px; }
     .role-badge { display: inline-flex; align-items: center; background: var(--primary-alpha); color: var(--primary); font-size: calc(11px * var(--font-scale)); font-weight: 800; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; letter-spacing: 0.5px; }
