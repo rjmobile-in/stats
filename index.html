@@ -1711,9 +1711,28 @@
             else if (type === 'pdf') {
                 const container = document.getElementById(`soc-export-container`);
                 const header = document.getElementById(`soc-pdf-header`);
-                
                 const includeCharts = document.getElementById('export-pdf-charts').checked;
                 
+                // --- FIX: PDF capture hone se pehle animations hatayein aur table full open karein ---
+                const printStyle = document.createElement('style');
+                printStyle.innerHTML = `
+                    #soc-export-container, #soc-export-container * {
+                        animation: none !important;
+                        opacity: 1 !important;
+                        transform: none !important;
+                    }
+                    .table-responsive {
+                        max-height: none !important;
+                        overflow: visible !important;
+                    }
+                    #soc-export-container {
+                        background-color: var(--bg-base) !important;
+                        padding-top: 10px;
+                    }
+                `;
+                document.head.appendChild(printStyle);
+                // -----------------------------------------------------------------------------------
+
                 header.style.display = 'block';
                 document.getElementById(`soc-pdf-date-range`).innerText = `Data Filter: ${document.getElementById('global-filter-start').value || 'Beginning'} to ${document.getElementById('global-filter-end').value || 'Now'}`;
                 document.getElementById(`soc-pagination-ui`).style.display = 'none';
@@ -1730,10 +1749,15 @@
                         header.style.display = 'none';
                         document.getElementById(`soc-pagination-ui`).style.display = 'flex';
                         if (!includeCharts) { document.querySelector('.charts-wrapper').style.display = 'block'; }
+                        
+                        // FIX: PDF download hone ke baad temp styles wapas hata lein
+                        document.head.removeChild(printStyle);
+                        
                         showToast("Download Complete!", "success", 3000);
                     });
                 }, 300);
-            } 
+            }
+
             else if (type === 'csv') {
                 let csv = headers.join(",") + "\n";
                 rows.forEach(r => { csv += `"${r.join('","')}"\n`; });
