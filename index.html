@@ -168,7 +168,7 @@
     .sidebar.collapsed .logo-img { margin-left: 4px; }
     
     .sidebar-toggle-btn { position: absolute; right: 0px; top: 4px; background: var(--input-bg); border: 1px solid var(--card-border); transition: all 0.3s ease; z-index: 10; }
-    .sidebar.collapsed .sidebar-toggle-btn { right: 50%; transform: translateX(50%); top: -14px;} /* Adjusted top to prevent overlap */
+    .sidebar.collapsed .sidebar-toggle-btn { right: 50%; transform: translateX(50%); top: -14px;} 
 
     .brand-title { font-size: calc(18px * var(--font-scale, 1)); font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
     .brand-subtitle { font-size: calc(11px * var(--font-scale, 1)); color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; font-weight: 600;}
@@ -324,6 +324,7 @@
     .color-picker-input::-webkit-color-swatch-wrapper { padding: 0; }
     .color-picker-input::-webkit-color-swatch { border: none; border-radius: 50%; }
 
+    /* Specific Print Styling for PDF Generator */
     .print-hide { display: none !important; }
   </style>
 </head>
@@ -386,15 +387,15 @@
           </button>
           
           <!-- Tools -->
-          <div class="sidebar-category admin-only">Tools</div>
-          <button class="tab-btn admin-only" data-view="view-qr" title="QR Generator">
+          <div class="sidebar-category admin-only" style="display: none;">Tools</div>
+          <button class="tab-btn admin-only" data-view="view-qr" title="QR Generator" style="display: none;">
             <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg></span> 
             <span class="tab-btn-text">QR Generator</span>
           </button>
 
           <!-- Management -->
-          <div class="sidebar-category admin-only">Management</div>
-          <button class="tab-btn admin-only" data-view="view-settings" title="Directories">
+          <div class="sidebar-category admin-only" style="display: none;">Management</div>
+          <button class="tab-btn admin-only" data-view="view-settings" title="Directories" style="display: none;">
             <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span> 
             <span class="tab-btn-text">Directories</span>
           </button>
@@ -469,7 +470,7 @@
                         </div>
                         
                         <div style="margin-left: auto; display: flex; gap: 16px; flex-wrap: wrap;">
-                            <div class="filter-group dropdown" id="staff-filter-dropdown">
+                            <div class="filter-group dropdown admin-only" id="staff-filter-dropdown" style="display: none;">
                                 <label>Filter Staff</label>
                                 <button id="staff-filter-btn" class="input-field" data-target="staff-dropdown-box" style="margin: 0; width: 160px; padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg);">
                                     <span id="staff-btn-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">All Staff Selected</span> 
@@ -496,13 +497,7 @@
                                         <button id="btn-select-all-platforms">Select All</button>
                                         <button id="btn-deselect-all-platforms">Clear All</button>
                                     </div>
-                                    <div class="list-container" id="platform-checkboxes">
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="Instagram" checked> <span>Instagram</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="YouTube" checked> <span>YouTube</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="Facebook" checked> <span>Facebook</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="Snapchat" checked> <span>Snapchat</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="WhatsApp" checked> <span>WhatsApp</span></label>
-                                    </div>
+                                    <div class="list-container" id="platform-checkboxes"></div>
                                 </div>
                             </div>
                         </div>
@@ -527,7 +522,7 @@
                               <span id="soc-trend-total" class="tbl-trend" style="display:none; font-size: 14px; margin-bottom:4px;"></span>
                             </div>
                         </div>
-                        <div class="widget-card" id="soc-card-top-staff" data-id="w-staff">
+                        <div class="widget-card admin-only" id="soc-card-top-staff" data-id="w-staff" style="display: none;">
                             <div class="widget-header">
                             <span class="widget-title">Top Staff</span>
                             <span class="drag-handle">⣿</span>
@@ -554,7 +549,7 @@
                             <h3>Clicks by Platform <span class="interactive-hint">Interactive</span></h3>
                             <div class="chart-container"><canvas id="soc-platformDoughnutChart"></canvas></div>
                         </div>
-                        <div class="chart-card" id="soc-chart-cont-staff">
+                        <div class="chart-card admin-only" id="soc-chart-cont-staff" style="display: none;">
                             <h3>Top Staff Members <span class="interactive-hint">Interactive</span></h3>
                             <div class="chart-container"><canvas id="soc-staffBarChart"></canvas></div>
                         </div>
@@ -658,7 +653,6 @@
                             <h3>Platforms Directory</h3>
                             <div style="display:flex; flex-direction: column; gap:12px; background: var(--bg-base); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border); margin-bottom: 24px;">
                                 <input type="text" id="new-platform-name" class="input-field" placeholder="Platform Name (e.g. Instagram)" style="margin:0;">
-                                <input type="url" id="new-platform-link" class="input-field" placeholder="Platform Base Link (Optional)" style="margin:0;">
                                 <button id="add-platform-btn" class="btn-primary" style="justify-content:center;">Add Platform</button>
                             </div>
                             
@@ -739,6 +733,34 @@
     </div>
   </div>
 
+  <!-- EDIT STAFF MODAL -->
+  <div id="edit-soc-staff-modal" class="modal-overlay" onclick="this.style.display='none'">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <h2 style="margin-bottom: 8px;">Edit Staff</h2>
+        <input type="hidden" id="edit-soc-staff-id">
+        <label style="font-size: calc(11px * var(--font-scale, 1)); color: var(--text-soft); font-weight: 700; text-transform: uppercase;">Staff Name</label>
+        <input type="text" id="edit-soc-staff-name" class="input-field" style="margin-top: 8px;">
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button id="btn-cancel-soc-staff" class="btn-secondary" style="flex: 1; justify-content: center;">Cancel</button>
+            <button id="btn-save-soc-staff" class="btn-primary" style="flex: 1; justify-content: center;">Save Changes</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- EDIT PLATFORM MODAL -->
+  <div id="edit-soc-plat-modal" class="modal-overlay" onclick="this.style.display='none'">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <h2 style="margin-bottom: 8px;">Edit Platform</h2>
+        <input type="hidden" id="edit-soc-plat-id">
+        <label style="font-size: calc(11px * var(--font-scale, 1)); color: var(--text-soft); font-weight: 700; text-transform: uppercase;">Platform Name</label>
+        <input type="text" id="edit-soc-plat-name" class="input-field" style="margin-top: 8px;">
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button id="btn-cancel-soc-plat" class="btn-secondary" style="flex: 1; justify-content: center;">Cancel</button>
+            <button id="btn-save-soc-plat" class="btn-primary" style="flex: 1; justify-content: center;">Save Changes</button>
+        </div>
+    </div>
+  </div>
+
   <div id="hidden-pdf-container" style="position: absolute; top: -9999px; left: -9999px; z-index: -1;"></div>
 
   <script type="module">
@@ -768,6 +790,9 @@
 
     let dbStaff = [];
     let dbPlatforms = [];
+    
+    let staffMap = {};
+    let platformMap = {};
 
     let socData = [], socFiltered = [], socPrevFiltered = [];
     let socDoughnut, socStaffChart, socHourly, socLine;
@@ -778,8 +803,8 @@
     let autoFetchThrottle = false;
     window.rjDbExhausted = false;
 
-    let selectedStaffArr = [];
-    let selectedPlatformArr = [];
+    let selectedStaffArr = []; 
+    let selectedPlatformArr = []; 
 
     function showToast(message, type = 'primary') {
       const container = document.getElementById('toast-container');
@@ -933,8 +958,104 @@
                 setTimeout(() => location.reload(), 1000);
             });
         }
-    } catch (err) {}
+    } catch (err) {
+        console.error("Theme Customizer setup failed:", err);
+    }
     // --- END SAFE THEME LOGIC ---
+
+    
+
+    let lastSyncTime = 0;
+    
+    function isUserBusy() {
+        const modals = document.querySelectorAll('.modal-overlay');
+        for (let m of modals) {
+            if (m.style.display === 'flex') return true; 
+        }
+        return false;
+    }
+
+    function setupRealtimeSync() {
+      const isSyncOn = document.getElementById('sync-toggle')?.checked;
+      if (isSyncOn && !realtimeSubscription) {
+        realtimeSubscription = supabaseClient
+          .channel('public:social_clicks')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'social_clicks' }, payload => {
+                loadSocStats(false);
+          })
+          .subscribe();
+      } else if (!isSyncOn && realtimeSubscription) {
+        supabaseClient.removeChannel(realtimeSubscription);
+        realtimeSubscription = null;
+      }
+    }
+    
+    const syncToggle = document.getElementById('sync-toggle');
+    if(syncToggle) {
+        syncToggle.addEventListener('change', (e) => {
+            if(e.target.checked) {
+                loadSocStats(false);
+                setupRealtimeSync();
+                showToast("Auto-Sync Enabled", "success");
+            } else {
+                if(realtimeSubscription) {
+                    supabaseClient.removeChannel(realtimeSubscription);
+                    realtimeSubscription = null;
+                }
+                showToast("Auto-Sync Disabled", "primary");
+            }
+        });
+    }
+
+    const dragWidgets = document.getElementById('draggable-widgets');
+    if (dragWidgets) {
+        Sortable.create(dragWidgets, {
+          handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
+          store: {
+            get: (s) => { const order = localStorage.getItem('rj_soc_widget_order'); return order ? order.split('|') : []; },
+            set: (s) => { localStorage.setItem('rj_soc_widget_order', s.toArray().join('|')); }
+          }
+        });
+    }
+    
+    document.getElementById('reset-layout-btn')?.addEventListener('click', () => { 
+      localStorage.removeItem('rj_soc_widget_order'); location.reload(); 
+    });
+
+    document.querySelectorAll('.tab-btn[data-view^="view-"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn[data-view^="view-"]').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        document.querySelectorAll('.app-view').forEach(v => v.style.display = 'none');
+        
+        const titleEl = document.getElementById('page-title');
+        if (titleEl) titleEl.innerText = e.currentTarget.querySelector('.tab-btn-text').innerText;
+        
+        const viewId = e.currentTarget.getAttribute('data-view');
+        document.getElementById(viewId).style.display = 'block';
+
+        const exportBtn = document.getElementById('export-dropdown');
+        if (exportBtn) {
+            if (viewId === 'view-data') exportBtn.style.display = 'inline-block';
+            else exportBtn.style.display = 'none';
+        }
+        
+        if (viewId === 'view-settings') loadSettingsData();
+        if (viewId === 'view-qr') populateQRStaffList();
+      });
+    });
+
+    document.querySelectorAll('#data-sub-tabs .sub-tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+          document.querySelectorAll('#data-sub-tabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          currentViewMode = e.target.getAttribute('data-view');
+          currentSortCol = null;
+          socPage = 1;
+          document.getElementById('table-loading-overlay').classList.add('active');
+          setTimeout(() => { renderSocTable(); }, 50);
+      });
+    });
 
     // Toggle Filters Drawer
     document.getElementById('toggle-filter-btn').addEventListener('click', () => {
@@ -1031,90 +1152,6 @@
       });
     });
 
-    const dragWidgets = document.getElementById('draggable-widgets');
-    if (dragWidgets) {
-        Sortable.create(dragWidgets, {
-          handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-          store: {
-            get: (s) => { const order = localStorage.getItem('rj_soc_widget_order'); return order ? order.split('|') : []; },
-            set: (s) => { localStorage.setItem('rj_soc_widget_order', s.toArray().join('|')); }
-          }
-        });
-    }
-    
-    document.getElementById('reset-layout-btn')?.addEventListener('click', () => { 
-      localStorage.removeItem('rj_soc_widget_order'); location.reload(); 
-    });
-
-    document.querySelectorAll('.tab-btn[data-view^="view-"]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.tab-btn[data-view^="view-"]').forEach(b => b.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        document.querySelectorAll('.app-view').forEach(v => v.style.display = 'none');
-        
-        const titleEl = document.getElementById('page-title');
-        if (titleEl) titleEl.innerText = e.currentTarget.querySelector('.tab-btn-text').innerText;
-        
-        const viewId = e.currentTarget.getAttribute('data-view');
-        document.getElementById(viewId).style.display = 'block';
-
-        const exportBtn = document.getElementById('export-dropdown');
-        if (exportBtn) {
-            if (viewId === 'view-data') exportBtn.style.display = 'inline-block';
-            else exportBtn.style.display = 'none';
-        }
-        
-        if (viewId === 'view-settings') loadSettingsData();
-        if (viewId === 'view-qr') populateQRStaffList();
-      });
-    });
-
-    document.querySelectorAll('#data-sub-tabs .sub-tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-          document.querySelectorAll('#data-sub-tabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
-          e.target.classList.add('active');
-          currentViewMode = e.target.getAttribute('data-view');
-          currentSortCol = null;
-          socPage = 1;
-          document.getElementById('table-loading-overlay').classList.add('active');
-          setTimeout(() => { renderSocTable(); }, 50);
-      });
-    });
-
-    // Native Live-Sync using Supabase Realtime
-    let realtimeSubscription = null;
-    function setupRealtimeSync() {
-      const isSyncOn = document.getElementById('sync-toggle')?.checked;
-      if (isSyncOn && !realtimeSubscription) {
-        realtimeSubscription = supabaseClient
-          .channel('public:social_clicks')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'social_clicks' }, payload => {
-                loadSocStats(false);
-          })
-          .subscribe();
-      } else if (!isSyncOn && realtimeSubscription) {
-        supabaseClient.removeChannel(realtimeSubscription);
-        realtimeSubscription = null;
-      }
-    }
-    
-    const syncToggle = document.getElementById('sync-toggle');
-    if(syncToggle) {
-        syncToggle.addEventListener('change', (e) => {
-            if(e.target.checked) {
-                loadSocStats(false);
-                setupRealtimeSync();
-                showToast("Auto-Sync Enabled", "success");
-            } else {
-                if(realtimeSubscription) {
-                    supabaseClient.removeChannel(realtimeSubscription);
-                    realtimeSubscription = null;
-                }
-                showToast("Auto-Sync Disabled", "primary");
-            }
-        });
-    }
-
     const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && !socIsFetching && isSocLoaded && !window.rjDbExhausted && !autoFetchThrottle) {
             if ((socPage * socRows) >= currentDisplayDataLength) {
@@ -1129,11 +1166,15 @@
         try {
             const { data: staffData } = await supabaseClient.from('staff_directory').select('*').order('name');
             dbStaff = staffData || [];
+            staffMap = {};
+            dbStaff.forEach(s => staffMap[s.id] = s);
         } catch (err) {}
         
         try {
             const { data: platformData } = await supabaseClient.from('platforms_directory').select('*').order('platform_name');
             dbPlatforms = platformData || [];
+            platformMap = {};
+            dbPlatforms.forEach(p => platformMap[p.id] = p);
         } catch (err) {}
     }
 
@@ -1155,23 +1196,25 @@
           document.getElementById('soc-card-top-staff').style.display = 'flex';
           document.getElementById('soc-chart-cont-staff').style.display = 'block';
           document.getElementById('staff-filter-dropdown').style.display = 'block';
-          document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+          document.querySelectorAll('.sidebar .admin-only').forEach(el => el.style.display = ''); // Fix applied here
         } else {
           userRole = 'staff';
           document.getElementById('role-badge').innerText = 'STAFF';
           let rawName = email.split('@')[0]; 
           userStaffName = rawName.replace(/[.-]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
           
-          selectedStaffArr = [userStaffName];
+          let myStaffObj = dbStaff.find(s => s.name === userStaffName);
+          if(myStaffObj) selectedStaffArr = [myStaffObj.id];
+          else selectedStaffArr = [];
+          
           document.getElementById('soc-card-top-staff').style.display = 'none';
           document.getElementById('soc-chart-cont-staff').style.display = 'none';
           document.getElementById('staff-filter-dropdown').style.display = 'none';
-          document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+          document.querySelectorAll('.sidebar .admin-only').forEach(el => el.style.display = 'none');
         }
         
-        // Populate default platforms from DB if available
         if (dbPlatforms.length > 0) {
-            selectedPlatformArr = dbPlatforms.map(p => p.platform_name);
+            selectedPlatformArr = dbPlatforms.map(p => p.id);
         }
 
         loadSocStats(false);
@@ -1266,6 +1309,112 @@
         else btn.innerText = `${selectedPlatformArr.length} Selected`;
     }
 
+    document.getElementById('soc-rows-per-page').addEventListener('change', (e) => { 
+        socRows = parseInt(e.target.value); 
+        socPage = 1; 
+        document.getElementById('table-loading-overlay').classList.add('active');
+        setTimeout(() => { renderSocTable(); }, 50);
+    });
+
+    document.getElementById('soc-prev-page-btn').addEventListener('click', () => { if(socPage > 1) { socPage--; document.getElementById('table-loading-overlay').classList.add('active'); setTimeout(renderSocTable, 50); } });
+    document.getElementById('soc-next-page-btn').addEventListener('click', () => { socPage++; document.getElementById('table-loading-overlay').classList.add('active'); setTimeout(renderSocTable, 50); });
+
+    async function loadSocStats(loadMore = false) {
+      if (socIsFetching && !loadMore) return;
+      socIsFetching = true;
+      
+      if (!loadMore) { 
+        document.getElementById('table-loading-overlay')?.classList.add('active');
+        socData = []; 
+        socLastDoc = null; 
+        window.rjDbExhausted = false;
+      } 
+      
+      try {
+        const DB_FETCH_LIMIT = 5000; 
+        let q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), limit(DB_FETCH_LIMIT));
+        if (loadMore && socLastDoc) q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), startAfter(socLastDoc), limit(DB_FETCH_LIMIT));
+
+        const snapshot = await getDocs(q);
+        let newlyAdded = 0;
+
+        if (!snapshot.empty) {
+            socLastDoc = snapshot.docs[snapshot.docs.length - 1];
+            snapshot.forEach(doc => { 
+                let d = doc.data(); 
+                if (loadMore) {
+                    if (!socData.some(existing => existing.created_at?.toMillis() === d.created_at?.toMillis() && existing.staff_id === d.staff_id)) {
+                        socData.push(d); newlyAdded++;
+                    }
+                } else {
+                    socData.push(d); newlyAdded++;
+                }
+            });
+        }
+
+        if (loadMore && newlyAdded === 0) window.rjDbExhausted = true;
+        
+        // Populate Admin Checkboxes with UUIDs
+        if(userRole === 'admin' && !loadMore) {
+            const staffCounts = {};
+            socData.forEach(i => { if(i.staff_id) staffCounts[i.staff_id] = (staffCounts[i.staff_id] || 0) + 1; });
+            
+            const dl = document.getElementById('staff-checkboxes'); 
+            if(dl) {
+                dl.innerHTML = '';
+                dbStaff.forEach(s => {
+                  const count = staffCounts[s.id] || 0;
+                  const isChecked = selectedStaffArr.length === 0 || selectedStaffArr.includes(s.id) ? 'checked' : '';
+                  dl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="staff-cb" value="${s.id}" ${isChecked}> <span>${s.name} <span style="color:var(--text-soft); font-size:11px;">(${count})</span></span></label>`;
+                });
+
+                document.querySelectorAll('.staff-cb').forEach(cb => {
+                    cb.addEventListener('change', (e) => {
+                        if(e.target.checked) {
+                            if(!selectedStaffArr.includes(e.target.value)) selectedStaffArr.push(e.target.value); 
+                        } else {
+                            selectedStaffArr = selectedStaffArr.filter(v => v !== e.target.value);
+                        }
+                        updateStaffButtonText(); applySocFilters(); 
+                    });
+                });
+            }
+        }
+        
+        if(!loadMore) {
+            const pdl = document.getElementById('platform-checkboxes');
+            if(pdl) {
+                pdl.innerHTML = '';
+                dbPlatforms.forEach(p => {
+                    const isChecked = selectedPlatformArr.length === 0 || selectedPlatformArr.includes(p.id) ? 'checked' : '';
+                    pdl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="plat-cb" value="${p.id}" ${isChecked}> <span>${p.platform_name}</span></label>`;
+                });
+                
+                document.querySelectorAll('.plat-cb').forEach(cb => {
+                  cb.addEventListener('change', (e) => {
+                      if(e.target.checked) {
+                          if(!selectedPlatformArr.includes(e.target.value)) selectedPlatformArr.push(e.target.value); 
+                      } else {
+                          selectedPlatformArr = selectedPlatformArr.filter(v => v !== e.target.value);
+                      }
+                      updatePlatformButtonText(); applySocFilters(); 
+                  });
+              });
+            }
+        }
+        
+        isSocLoaded = true;
+        socIsFetching = false; 
+        document.getElementById('table-loading-overlay')?.classList.remove('active');
+        applySocFilters(); 
+
+      } catch (err) {
+        console.error(err);
+        socIsFetching = false; 
+        document.getElementById('table-loading-overlay')?.classList.remove('active');
+      }
+    }
+
     function applySocFilters() {
       if(!isSocLoaded) return;
       
@@ -1278,8 +1427,8 @@
       const duration = endMs - startMs; 
 
       socFiltered = socData.filter(item => {
-        if (selectedStaffArr.length > 0 && item.staff_name && !selectedStaffArr.includes(item.staff_name)) return false;
-        if (selectedPlatformArr.length > 0 && item.platform && !selectedPlatformArr.includes(item.platform)) return false;
+        if (selectedStaffArr.length > 0 && item.staff_id && !selectedStaffArr.includes(item.staff_id)) return false;
+        if (selectedPlatformArr.length > 0 && item.platform_id && !selectedPlatformArr.includes(item.platform_id)) return false;
         if (item.created_at) {
           const t = new Date(item.created_at).getTime();
           if (startQ && t < startMs) return false;
@@ -1294,8 +1443,8 @@
       if(startQ && duration < Infinity) {
         const prevEndMs = startMs, prevStartMs = startMs - duration;
         socPrevFiltered = socData.filter(item => {
-          if (selectedStaffArr.length > 0 && item.staff_name && !selectedStaffArr.includes(item.staff_name)) return false;
-          if (selectedPlatformArr.length > 0 && item.platform && !selectedPlatformArr.includes(item.platform)) return false;
+          if (selectedStaffArr.length > 0 && item.staff_id && !selectedStaffArr.includes(item.staff_id)) return false;
+          if (selectedPlatformArr.length > 0 && item.platform_id && !selectedPlatformArr.includes(item.platform_id)) return false;
           if (item.created_at) {
             const t = new Date(item.created_at).getTime();
             return t >= prevStartMs && t < prevEndMs;
@@ -1328,8 +1477,11 @@
 
       const sC = {}, pC = {};
       socFiltered.forEach(d => {
-        if(d.staff_name && d.staff_name !== 'Direct/Unknown') sC[d.staff_name] = (sC[d.staff_name] || 0) + 1;
-        if(d.platform) pC[d.platform] = (pC[d.platform] || 0) + 1;
+        const sName = staffMap[d.staff_id]?.name || "Unknown";
+        const pName = platformMap[d.platform_id]?.platform_name || "Unknown";
+        
+        if(sName !== 'Unknown') sC[sName] = (sC[sName] || 0) + 1;
+        if(pName !== 'Unknown') pC[pName] = (pC[pName] || 0) + 1;
       });
 
       const topStaff = Object.keys(sC).sort((a,b)=>sC[b]-sC[a])[0];
@@ -1386,11 +1538,13 @@
             onClick: (e, activeEls) => {
               if (activeEls.length > 0) {
                 const clickedLabel = socDoughnut.data.labels[activeEls[0].index];
-                if (selectedPlatformArr.includes(clickedLabel)) selectedPlatformArr = selectedPlatformArr.filter(p => p !== clickedLabel);
-                else selectedPlatformArr.push(clickedLabel);
-                
-                document.querySelectorAll('.plat-cb').forEach(cb => { cb.checked = selectedPlatformArr.includes(cb.value); });
-                updatePlatformButtonText(); applySocFilters();
+                const platObj = dbPlatforms.find(p => p.platform_name === clickedLabel);
+                if (platObj) {
+                    if (selectedPlatformArr.includes(platObj.id)) selectedPlatformArr = selectedPlatformArr.filter(p => p !== platObj.id);
+                    else selectedPlatformArr.push(platObj.id);
+                    document.querySelectorAll('.plat-cb').forEach(cb => { cb.checked = selectedPlatformArr.includes(cb.value); });
+                    updatePlatformButtonText(); applySocFilters();
+                }
               }
             }
           }
@@ -1415,11 +1569,13 @@
               onClick: (e, activeEls) => {
                 if (activeEls.length > 0) {
                   const clickedLabel = socStaffChart.data.labels[activeEls[0].index];
-                  if (selectedStaffArr.includes(clickedLabel)) selectedStaffArr = selectedStaffArr.filter(s => s !== clickedLabel);
-                  else selectedStaffArr.push(clickedLabel);
-                  
-                  document.querySelectorAll('.staff-cb').forEach(cb => { cb.checked = selectedStaffArr.includes(cb.value); });
-                  updateStaffButtonText(); applySocFilters();
+                  const staffObj = dbStaff.find(s => s.name === clickedLabel);
+                  if (staffObj) {
+                      if (selectedStaffArr.includes(staffObj.id)) selectedStaffArr = selectedStaffArr.filter(s => s !== staffObj.id);
+                      else selectedStaffArr.push(staffObj.id);
+                      document.querySelectorAll('.staff-cb').forEach(cb => { cb.checked = selectedStaffArr.includes(cb.value); });
+                      updateStaffButtonText(); applySocFilters();
+                  }
                 }
               }
             }
@@ -1479,7 +1635,11 @@
     }
 
     function getListViewData() {
-        return [...socFiltered];
+        return socFiltered.map(d => ({
+            ...d, 
+            display_staff_name: staffMap[d.staff_id]?.name || "Unknown",
+            display_platform_name: platformMap[d.platform_id]?.platform_name || "Unknown"
+        }));
     }
 
     function getStaffViewData() {
@@ -1487,20 +1647,20 @@
         const prevGrouped = {};
         const isDateFiltered = document.getElementById('global-start').value !== "";
         
-        const validStaffList = dbStaff.length > 0 ? dbStaff.map(s => s.name) : masterStaffList;
-        validStaffList.forEach(name => { grouped[name] = { total: 0, platforms: {} }; });
+        dbStaff.forEach(s => { grouped[s.id] = { name: s.name, total: 0, platforms: {} }; });
 
         socFiltered.forEach(d => {
-            const name = d.staff_name || "Unknown";
-            if(!grouped[name]) grouped[name] = { total: 0, platforms: {} }; 
-            grouped[name].total++;
-            const p = d.platform || "Unknown";
-            grouped[name].platforms[p] = (grouped[name].platforms[p] || 0) + 1;
+            const sid = d.staff_id || "Unknown";
+            const sname = staffMap[sid]?.name || "Unknown";
+            if(!grouped[sid]) grouped[sid] = { name: sname, total: 0, platforms: {} }; 
+            grouped[sid].total++;
+            const pName = platformMap[d.platform_id]?.platform_name || "Unknown";
+            grouped[sid].platforms[pName] = (grouped[sid].platforms[pName] || 0) + 1;
         });
 
         socPrevFiltered.forEach(d => {
-            const name = d.staff_name || "Unknown";
-            prevGrouped[name] = (prevGrouped[name] || 0) + 1;
+            const sid = d.staff_id || "Unknown";
+            prevGrouped[sid] = (prevGrouped[sid] || 0) + 1;
         });
         
         return Object.keys(grouped).map(k => {
@@ -1518,7 +1678,7 @@
                     else trendHtml = `<span class="tbl-trend neutral">− 0%</span>`;
                 }
             }
-            return { col1: k, col2: grouped[k].total, col3: platformStr, trend: trendHtml };
+            return { col1: grouped[k].name, col2: grouped[k].total, col3: platformStr, trend: trendHtml };
         });
     }
 
@@ -1528,16 +1688,17 @@
         const isDateFiltered = document.getElementById('global-start').value !== "";
 
         socFiltered.forEach(d => {
-            const p = d.platform || "Unknown";
-            if(!grouped[p]) grouped[p] = { total: 0, staff: {} };
-            grouped[p].total++;
-            const s = d.staff_name || "Unknown";
-            grouped[p].staff[s] = (grouped[p].staff[s] || 0) + 1;
+            const pid = d.platform_id || "Unknown";
+            const pname = platformMap[pid]?.platform_name || "Unknown";
+            if(!grouped[pid]) grouped[pid] = { name: pname, total: 0, staff: {} };
+            grouped[pid].total++;
+            const sName = staffMap[d.staff_id]?.name || "Unknown";
+            grouped[pid].staff[sName] = (grouped[pid].staff[sName] || 0) + 1;
         });
 
         socPrevFiltered.forEach(d => {
-            const p = d.platform || "Unknown";
-            prevGrouped[p] = (prevGrouped[p] || 0) + 1;
+            const pid = d.platform_id || "Unknown";
+            prevGrouped[pid] = (prevGrouped[pid] || 0) + 1;
         });
 
         return Object.keys(grouped).map(k => {
@@ -1554,7 +1715,7 @@
                     else trendHtml = `<span class="tbl-trend neutral">− 0%</span>`;
                 }
             }
-            return { col1: k, col2: grouped[k].total, col3: topStaff, trend: trendHtml };
+            return { col1: grouped[k].name, col2: grouped[k].total, col3: topStaff, trend: trendHtml };
         });
     }
 
@@ -1609,8 +1770,8 @@
       
       if (currentViewMode === 'list') {
         thead.innerHTML = `<tr>
-            <th class="${getSortClass('staff_name')}" data-sort="staff_name" style="width: 35%;">Staff Name</th>
-            <th class="${getSortClass('platform')}" data-sort="platform" style="width: 30%;">Platform</th>
+            <th class="${getSortClass('display_staff_name')}" data-sort="display_staff_name" style="width: 35%;">Staff Name</th>
+            <th class="${getSortClass('display_platform_name')}" data-sort="display_platform_name" style="width: 30%;">Platform</th>
             <th class="${getSortClass('created_at')}" data-sort="created_at" style="width: 35%;">Date & Time</th>
         </tr>`;
         
@@ -1672,8 +1833,8 @@
 
         if (currentViewMode === 'list') {
             htmlBuilder += `<tr>
-                <td><strong>${d.staff_name||"Unknown"}</strong></td>
-                <td><span style="background: var(--input-bg); padding: 4px 10px; border-radius: 8px; font-size: calc(12px * var(--font-scale, 1)); font-weight: 700; border: 1px solid var(--card-border);">${d.platform||"Unknown"}</span></td>
+                <td><strong>${d.display_staff_name}</strong></td>
+                <td><span style="background: var(--input-bg); padding: 4px 10px; border-radius: 8px; font-size: calc(12px * var(--font-scale, 1)); font-weight: 700; border: 1px solid var(--card-border);">${d.display_platform_name}</span></td>
                 <td style="color: var(--text-soft); font-weight: 600; font-size: calc(13px * var(--font-scale, 1));">${formatToDate(d.created_at)}</td>
             </tr>`; 
         } else {
@@ -1727,7 +1888,7 @@
 
         if (currentViewMode === 'list') {
             headers = ["Staff Name", "Platform", "Date & Time"];
-            socFiltered.forEach(d => { rows.push([d.staff_name || 'Unknown', d.platform || 'Unknown', formatToDate(d.created_at)]); });
+            socFiltered.forEach(d => { rows.push([staffMap[d.staff_id]?.name || 'Unknown', platformMap[d.platform_id]?.platform_name || 'Unknown', formatToDate(d.created_at)]); });
         } else if (currentViewMode === 'staff') {
             headers = ["Staff Name", "Total Clicks", "Platform Breakdown"];
             getStaffViewData().sort((a,b) => b.col2 - a.col2).forEach(d => rows.push([d.col1, d.col2, d.col3]));
@@ -1741,6 +1902,7 @@
     document.querySelectorAll('#export-menu a').forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
+            document.querySelector('.export-menu').classList.remove('show');
             const type = e.currentTarget.getAttribute('data-export');
             const { headers, rows } = getExportData();
             let formattedViewName = currentViewMode.charAt(0).toUpperCase() + currentViewMode.slice(1);
@@ -1786,10 +1948,14 @@
     function populateQRStaffList() {
         const container = document.getElementById('qr-staff-selection');
         if(!container) return;
-        const staffList = dbStaff.length > 0 ? dbStaff.map(s => s.name) : masterStaffList;
-        container.innerHTML = staffList.map(name => `
+        if(dbStaff.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-soft); font-size: 13px;">No staff found in directory.</div>';
+            return;
+        }
+        
+        container.innerHTML = dbStaff.map(s => `
             <label class="check-wrap" style="background:var(--bg-base); padding: 8px 12px; border: 1px solid var(--card-border);">
-                <input type="checkbox" class="qr-staff-cb" value="${name}" checked> <span>${name}</span>
+                <input type="checkbox" class="qr-staff-cb" value="${s.id}" data-name="${s.name}" checked> <span>${s.name}</span>
             </label>
         `).join('');
     }
@@ -1803,21 +1969,22 @@
     });
 
     document.getElementById('btn-qr-generate-preview')?.addEventListener('click', () => {
-        const selected = Array.from(document.querySelectorAll('.qr-staff-cb:checked')).map(cb => cb.value);
+        const selected = Array.from(document.querySelectorAll('.qr-staff-cb:checked')).map(cb => ({ id: cb.value, name: cb.getAttribute('data-name') }));
         if(selected.length === 0) return showToast("Select at least one staff member.", "error");
 
         const container = document.getElementById('qr-preview-container');
         container.innerHTML = '';
 
-        selected.forEach((name, i) => {
-            const formattedName = formatNameForQR(name);
-            const url = `https://rjmobile-in.github.io/murlipura?staff=${formattedName}`;
+        selected.forEach((s) => {
+            const formattedName = formatNameForQR(s.name);
+            // Passing staff_id (UUID) to ensure robustness against name changes, and staff (Formatted Name) for display/fallback.
+            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${s.id}&staff=${formattedName}`;
             
             const card = document.createElement('div');
             card.className = 'qr-preview-card';
             
             const title = document.createElement('h4');
-            title.innerText = name;
+            title.innerText = s.name;
             
             const qrDiv = document.createElement('div');
             new QRCode(qrDiv, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.H });
@@ -1848,7 +2015,7 @@
     });
 
     document.getElementById('btn-qr-download-pdf')?.addEventListener('click', () => {
-        const selected = Array.from(document.querySelectorAll('.qr-staff-cb:checked')).map(cb => cb.value);
+        const selected = Array.from(document.querySelectorAll('.qr-staff-cb:checked')).map(cb => ({ id: cb.value, name: cb.getAttribute('data-name') }));
         if(selected.length === 0) return showToast("Select at least one staff member.", "error");
 
         const container = document.getElementById('hidden-pdf-container');
@@ -1885,7 +2052,7 @@
             cell.style.boxSizing = 'border-box';
             
             const nameLabel = document.createElement('div');
-            nameLabel.innerText = selected[i];
+            nameLabel.innerText = selected[i].name;
             nameLabel.style.fontSize = '14px';
             nameLabel.style.fontWeight = 'bold';
             nameLabel.style.marginBottom = '10px';
@@ -1893,8 +2060,8 @@
             nameLabel.style.fontFamily = 'sans-serif';
             
             const qrDiv = document.createElement('div');
-            const formattedName = formatNameForQR(selected[i]);
-            const url = `https://rjmobile-in.github.io/murlipura?staff=${formattedName}`;
+            const formattedName = formatNameForQR(selected[i].name);
+            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${selected[i].id}&staff=${formattedName}`;
             
             new QRCode(qrDiv, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.H });
             
@@ -1928,21 +2095,12 @@
     // =========================================================================
     
     async function loadSettingsData() {
-      try {
-        const { data: staffData } = await supabaseClient.from('staff_directory').select('*').order('name');
-        dbStaff = staffData || [];
-      } catch (err) { console.error(err); }
-
-      try {
-        const { data: platData } = await supabaseClient.from('platforms_directory').select('*').order('platform_name');
-        dbPlatforms = platData || [];
-      } catch (err) { console.error(err); }
-
       const staffTbody = document.getElementById('staff-settings-list');
       if (staffTbody) {
           staffTbody.innerHTML = dbStaff.map(s => `<tr>
               <td><strong style="color: var(--text-main);">${s.name}</strong></td>
               <td style="text-align:right; white-space:nowrap;">
+                <button class="edit-btn" onclick="window.openEditSocStaff('${s.id}', '${s.name.replace(/'/g, "\\'")}')">Edit</button>
                 <button class="del-btn" onclick="window.deleteStaffItem('${s.id}')">Remove</button>
               </td>
           </tr>`).join('');
@@ -1952,21 +2110,20 @@
       if (platTbody) {
           platTbody.innerHTML = dbPlatforms.map(p => `<tr>
               <td style="padding: 12px 16px; border-bottom: 1px solid var(--card-border);">
-                <strong style="color: var(--text-main);">${p.platform_name}</strong><br>
-                <span style="font-size:calc(11px * var(--font-scale, 1)); color:var(--text-soft); font-weight: 600;">Link: ${p.link || 'N/A'}</span>
+                <strong style="color: var(--text-main);">${p.platform_name}</strong>
               </td>
               <td style="text-align:right; white-space:nowrap; padding: 12px 16px; border-bottom: 1px solid var(--card-border);">
+                <button class="edit-btn" onclick="window.openEditSocPlatform('${p.id}', '${p.platform_name.replace(/'/g, "\\'")}')">Edit</button>
                 <button class="del-btn" onclick="window.deletePlatformItem('${p.id}')">Remove</button>
               </td>
           </tr>`).join('');
       }
       
-      // Update filter options
       const platDropdown = document.getElementById('platform-checkboxes');
       if (platDropdown && dbPlatforms.length > 0) {
           platDropdown.innerHTML = dbPlatforms.map(p => {
-              const isChecked = selectedPlatformArr.length === 0 || selectedPlatformArr.includes(p.platform_name) ? 'checked' : '';
-              return `<label class="check-wrap"><input type="checkbox" class="plat-cb" value="${p.platform_name}" ${isChecked}> <span>${p.platform_name}</span></label>`;
+              const isChecked = selectedPlatformArr.length === 0 || selectedPlatformArr.includes(p.id) ? 'checked' : '';
+              return `<label class="check-wrap"><input type="checkbox" class="plat-cb" value="${p.id}" ${isChecked}> <span>${p.platform_name}</span></label>`;
           }).join('');
           
           document.querySelectorAll('.plat-cb').forEach(cb => {
@@ -1982,6 +2139,7 @@
       }
     }
 
+    // --- STAFF EDIT LOGIC ---
     document.getElementById('add-staff-btn')?.addEventListener('click', async () => {
       const nameVal = document.getElementById('new-staff-name').value.trim();
       if(nameVal) {
@@ -1991,6 +2149,7 @@
           if (error) throw error;
           
           document.getElementById('new-staff-name').value = '';
+          await initialMetadataLoad(); // refresh maps
           await loadSettingsData(); 
           showToast("Staff added successfully", "success");
         } catch (err) { 
@@ -2001,12 +2160,45 @@
       } else { showToast("Please enter a staff name.", "error"); }
     });
 
+    window.openEditSocStaff = (id, name) => {
+        document.getElementById('edit-soc-staff-id').value = id;
+        document.getElementById('edit-soc-staff-name').value = name;
+        document.getElementById('edit-soc-staff-modal').style.display = 'flex';
+    };
+
+    document.getElementById('btn-cancel-soc-staff')?.addEventListener('click', () => {
+        document.getElementById('edit-soc-staff-modal').style.display = 'none';
+    });
+
+    document.getElementById('btn-save-soc-staff')?.addEventListener('click', async () => {
+        const id = document.getElementById('edit-soc-staff-id').value;
+        const newName = document.getElementById('edit-soc-staff-name').value.trim();
+        if(newName) {
+            const btn = document.getElementById('btn-save-soc-staff'); btn.innerText = "Saving..."; btn.disabled = true;
+            try {
+                const { error } = await supabaseClient.from('staff_directory').update({ name: newName }).eq('id', id);
+                if (error) throw error;
+                document.getElementById('edit-soc-staff-modal').style.display = 'none';
+                await initialMetadataLoad(); // refresh maps
+                await loadSettingsData();
+                showToast("Staff updated successfully", "success");
+                // Refresh views immediately since UI depends on the map
+                applySocFilters();
+            } catch(e) {
+                showToast("Error: " + e.message, "error");
+            } finally {
+                btn.innerText = "Save Changes"; btn.disabled = false;
+            }
+        } else { showToast("Name is required.", "error"); }
+    });
+
     window.deleteStaffItem = async (rowId) => { 
       if(confirm("Remove this staff member?")) { 
           try {
               const { error } = await supabaseClient.from('staff_directory').delete().eq('id', rowId); 
               if (error) throw error;
-              loadSettingsData(); 
+              await initialMetadataLoad();
+              await loadSettingsData(); 
               showToast("Staff removed", "primary"); 
           } catch(err) {
               showToast("Error: " + err.message, "error"); 
@@ -2014,18 +2206,18 @@
       }
     };
 
+    // --- PLATFORM EDIT LOGIC ---
     document.getElementById('add-platform-btn')?.addEventListener('click', async () => { 
       const nameVal = document.getElementById('new-platform-name').value.trim();
-      const linkVal = document.getElementById('new-platform-link').value.trim();
       
       if(nameVal) { 
         const btn = document.getElementById('add-platform-btn'); btn.innerText = "Adding..."; btn.disabled = true;
         try {
-            const { error } = await supabaseClient.from('platforms_directory').insert([{ platform_name: nameVal, link: linkVal }]); 
+            const { error } = await supabaseClient.from('platforms_directory').insert([{ platform_name: nameVal }]); 
             if (error) throw error;
             
             document.getElementById('new-platform-name').value = ''; 
-            document.getElementById('new-platform-link').value = ''; 
+            await initialMetadataLoad(); // refresh maps
             await loadSettingsData(); 
             showToast("Platform added successfully", "success");
         } catch (err) { 
@@ -2038,12 +2230,45 @@
       }
     });
 
+    window.openEditSocPlatform = (id, name) => {
+        document.getElementById('edit-soc-plat-id').value = id;
+        document.getElementById('edit-soc-plat-name').value = name;
+        document.getElementById('edit-soc-plat-modal').style.display = 'flex';
+    };
+
+    document.getElementById('btn-cancel-soc-plat')?.addEventListener('click', () => {
+        document.getElementById('edit-soc-plat-modal').style.display = 'none';
+    });
+
+    document.getElementById('btn-save-soc-plat')?.addEventListener('click', async () => {
+        const id = document.getElementById('edit-soc-plat-id').value;
+        const newName = document.getElementById('edit-soc-plat-name').value.trim();
+        if(newName) {
+            const btn = document.getElementById('btn-save-soc-plat'); btn.innerText = "Saving..."; btn.disabled = true;
+            try {
+                const { error } = await supabaseClient.from('platforms_directory').update({ platform_name: newName }).eq('id', id);
+                if (error) throw error;
+                document.getElementById('edit-soc-plat-modal').style.display = 'none';
+                await initialMetadataLoad(); // refresh maps
+                await loadSettingsData();
+                showToast("Platform updated successfully", "success");
+                // Refresh views immediately since UI depends on the map
+                applySocFilters();
+            } catch(e) {
+                showToast("Error: " + e.message, "error");
+            } finally {
+                btn.innerText = "Save Changes"; btn.disabled = false;
+            }
+        } else { showToast("Platform Name is required.", "error"); }
+    });
+
     window.deletePlatformItem = async (rowId) => { 
       if(confirm("Remove this platform?")) { 
           try {
               const { error } = await supabaseClient.from('platforms_directory').delete().eq('id', rowId); 
               if (error) throw error;
-              loadSettingsData(); 
+              await initialMetadataLoad();
+              await loadSettingsData(); 
               showToast("Platform removed", "primary"); 
           } catch(err) {
               showToast("Error: " + err.message, "error");
