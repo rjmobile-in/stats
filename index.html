@@ -49,8 +49,8 @@
       --input-bg: #09090b; 
       --hover-bg: rgba(255, 255, 255, 0.08);
       --selected-bg: var(--primary-alpha);
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
-      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 20px;
@@ -293,7 +293,7 @@
     
     .table-progress-bg { position: relative; display: inline-flex; align-items: center; min-width: 100px; padding: 6px 0; }
     .table-progress-fill { position: absolute; left: -12px; top: 0; bottom: 0; background: var(--primary-alpha); border-radius: var(--radius-sm); z-index: 0; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    .table-progress-text { position: relative; z-index: 1; font-size: calc(15px * var(--font-scale)); font-weight: 700; color: var(--primary); }
+    .table-progress-text { position: relative; z-index: 1; font-size: calc(15px * var(--font-scale, 1)); font-weight: 700; color: var(--primary); }
 
   </style>
 </head>
@@ -979,29 +979,125 @@
       });
     });
 
-    let lastSyncTime = 0;
-    
-    function setupRealtimeSync() {
-      const isSyncOn = document.getElementById('sync-toggle')?.checked;
-      if (isSyncOn && !realtimeSubscription) {
-        realtimeSubscription = onSnapshot(collection(db, "social_clicks"), (snapshot) => {
-            const currentTime = Date.now();
-            if (currentTime - lastSyncTime > 2000) {
-                lastSyncTime = currentTime;
-                loadSocStats(false);
+    // Native Live-Sync using Firebase onSnapshot (Fixed logic)
+    async function loadSocStats(loadMore = false) {
+      if (socIsFetching && !loadMore) return;
+      socIsFetching = true;
+      
+      if (!loadMore) { 
+        document.getElementById('table-loading-overlay')?.classList.add('active');
+        socData = []; 
+        socLastDoc = null; 
+        window.rjDbExhausted = false;
+        
+        socUnsubscribes.forEach(unsub => unsub());
+        socUnsubscribes = [];
+      } 
+      
+      try {
+        const DB_FETCH_LIMIT = 5000; 
+        let q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), limit(DB_FETCH_LIMIT));
+        if (loadMore && socLastDoc) q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), startAfter(socLastDoc), limit(DB_FETCH_LIMIT));
+
+        const listener = onSnapshot(q, (snapshot) => {
+          let newlyAdded = 0;
+          if (!loadMore) socData = []; 
+
+          if (!snapshot.empty) {
+            socLastDoc = snapshot.docs[snapshot.docs.length - 1];
+            snapshot.forEach(doc => { 
+                let d = doc.data(); 
+                if(d.staff_name) d.staff_name = d.staff_name.replace(/[.-]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); 
+                
+                if (loadMore) {
+                    if (!socData.some(existing => existing.created_at?.toMillis() === d.created_at?.toMillis() && existing.staff_name === d.staff_name)) {
+                        socData.push(d); newlyAdded++;
+                    }
+                } else {
+                    socData.push(d); newlyAdded++;
+                }
+            });
+          }
+
+          if (loadMore && newlyAdded === 0) window.rjDbExhausted = true;
+          
+          // Re-populate Admin Checkboxes
+          if(userRole === 'admin') {
+            const staffCounts = {};
+            socData.forEach(i => { if(i.staff_name) staffCounts[i.staff_name] = (staffCounts[i.staff_name] || 0) + 1; });
+            
+            const dl = document.getElementById('staff-checkboxes'); 
+            if(dl) {
+                dl.innerHTML = '';
+                masterStaffList.forEach(name => {
+                  const count = staffCounts[name] || 0;
+                  const isChecked = selectedStaffArr.length === 0 || selectedStaffArr.includes(name) ? 'checked' : '';
+                  dl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="staff-cb" value="${name}" ${isChecked}> <span>${name} <span style="color:var(--text-soft); font-size:11px;">(${count})</span></span></label>`;
+                });
+                const unique = [...new Set(socData.map(i => i.staff_name))].sort();
+                unique.forEach(s => { 
+                  if(s && s !== 'Direct/Unknown' && !masterStaffList.includes(s)) {
+                    const count = staffCounts[s] || 0;
+                    const isChecked = selectedStaffArr.length === 0 || selectedStaffArr.includes(s) ? 'checked' : '';
+                    dl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="staff-cb" value="${s}" ${isChecked}> <span>${s} <span style="color:var(--text-soft); font-size:11px;">(${count})</span></span></label>`;
+                  } 
+                });
+
+                document.querySelectorAll('.staff-cb').forEach(cb => {
+                    cb.addEventListener('change', (e) => {
+                        if(e.target.checked) {
+                            if(!selectedStaffArr.includes(e.target.value)) selectedStaffArr.push(e.target.value); 
+                        } else {
+                            selectedStaffArr = selectedStaffArr.filter(v => v !== e.target.value);
+                        }
+                        updateStaffButtonText(); applySocFilters(); 
+                    });
+                });
             }
+          }
+          
+          document.querySelectorAll('.plat-cb').forEach(cb => {
+              cb.addEventListener('change', (e) => {
+                  if(e.target.checked) {
+                      if(!selectedPlatformArr.includes(e.target.value)) selectedPlatformArr.push(e.target.value); 
+                  } else {
+                      selectedPlatformArr = selectedPlatformArr.filter(v => v !== e.target.value);
+                  }
+                  updatePlatformButtonText(); applySocFilters(); 
+              });
+          });
+          
+          isSocLoaded = true;
+          socIsFetching = false; 
+          document.getElementById('table-loading-overlay')?.classList.remove('active');
+          applySocFilters(); 
+          
+        }, (err) => {
+          console.error(err);
+          if (!loadMore) document.getElementById('soc-table-body').innerHTML = '<tr><td colspan="3" style="color:var(--danger); text-align:center; padding:30px;">Failed to sync live data.</td></tr>';
+          socIsFetching = false; document.getElementById('table-loading-overlay')?.classList.remove('active');
         });
-      } else if (!isSyncOn && realtimeSubscription) {
-        realtimeSubscription();
-        realtimeSubscription = null;
+
+        socUnsubscribes.push(listener);
+
+      } catch (err) {
+        console.error(err);
+        socIsFetching = false; 
+        document.getElementById('table-loading-overlay')?.classList.remove('active');
       }
     }
-    
+
     const syncToggle = document.getElementById('sync-toggle');
     if(syncToggle) {
         syncToggle.addEventListener('change', (e) => {
-            setupRealtimeSync();
-            showToast(e.target.checked ? "Auto-Sync Enabled" : "Auto-Sync Disabled", "success");
+            if(e.target.checked) {
+                loadSocStats(false);
+                showToast("Auto-Sync Enabled", "success");
+            } else {
+                socUnsubscribes.forEach(unsub => unsub());
+                socUnsubscribes = [];
+                showToast("Auto-Sync Disabled", "primary");
+            }
         });
     }
 
@@ -1043,12 +1139,12 @@
         }
         
         loadSocStats(false);
-        if(document.getElementById('sync-toggle').checked) setupRealtimeSync();
       } else {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('dashboard').style.display = 'none';
         isSocLoaded = false;
-        if(realtimeSubscription) { realtimeSubscription(); realtimeSubscription = null; }
+        socUnsubscribes.forEach(unsub => unsub());
+        socUnsubscribes = [];
       }
     });
 
@@ -1069,7 +1165,8 @@
     });
     
     document.getElementById('logout-btn').addEventListener('click', () => {
-        if(realtimeSubscription) { realtimeSubscription(); realtimeSubscription = null; }
+        socUnsubscribes.forEach(unsub => unsub());
+        socUnsubscribes = [];
         signOut(auth);
     });
 
@@ -1088,97 +1185,6 @@
       }
       const mos = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       return `${mos[date.getMonth()]} '${String(date.getFullYear()).slice(2)}`;
-    }
-
-    document.getElementById('soc-rows-per-page').addEventListener('change', (e) => { 
-        socRows = parseInt(e.target.value); 
-        socPage = 1; 
-        document.getElementById('table-loading-overlay').classList.add('active');
-        setTimeout(() => { renderSocTable(); }, 50);
-    });
-
-    document.getElementById('soc-prev-page-btn').addEventListener('click', () => { if(socPage > 1) { socPage--; document.getElementById('table-loading-overlay').classList.add('active'); setTimeout(renderSocTable, 50); } });
-    document.getElementById('soc-next-page-btn').addEventListener('click', () => { socPage++; document.getElementById('table-loading-overlay').classList.add('active'); setTimeout(renderSocTable, 50); });
-
-    async function loadSocStats(loadMore = false) {
-      if (socIsFetching && !loadMore) return;
-      socIsFetching = true;
-      
-      if (!loadMore) { 
-        socData = []; 
-        socLastDoc = null; 
-        window.rjDbExhausted = false;
-      } 
-      
-      try {
-        const DB_FETCH_LIMIT = 5000; 
-        let q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), limit(DB_FETCH_LIMIT));
-        if (loadMore && socLastDoc) q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), startAfter(socLastDoc), limit(DB_FETCH_LIMIT));
-
-        const snapshot = await getDocs(q);
-        let newlyAdded = 0;
-
-        if (!snapshot.empty) {
-            socLastDoc = snapshot.docs[snapshot.docs.length - 1];
-            snapshot.forEach(doc => { 
-                let d = doc.data(); 
-                if(d.staff_name) d.staff_name = d.staff_name.replace(/[.-]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); 
-                
-                if (loadMore) {
-                    if (!socData.some(existing => existing.created_at?.toMillis() === d.created_at?.toMillis() && existing.staff_name === d.staff_name)) {
-                        socData.push(d); newlyAdded++;
-                    }
-                } else {
-                    socData.push(d); newlyAdded++;
-                }
-            });
-        }
-
-        if (loadMore && newlyAdded === 0) window.rjDbExhausted = true;
-        
-        if(userRole === 'admin' && !loadMore) {
-            const staffCounts = {};
-            socData.forEach(i => { if(i.staff_name) staffCounts[i.staff_name] = (staffCounts[i.staff_name] || 0) + 1; });
-            
-            const dl = document.getElementById('staff-checkboxes'); 
-            dl.innerHTML = '';
-            
-            masterStaffList.forEach(name => {
-                const count = staffCounts[name] || 0;
-                dl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="staff-cb" value="${name}"> <span>${name} <span style="color:var(--text-soft); font-size:11px;">(${count})</span></span></label>`;
-            });
-            const unique = [...new Set(socData.map(i => i.staff_name))].sort();
-            unique.forEach(s => { 
-                if(s && s !== 'Direct/Unknown' && !masterStaffList.includes(s)) {
-                dl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="staff-cb" value="${s}"> <span>${s} <span style="color:var(--text-soft); font-size:11px;">(${staffCounts[s]})</span></span></label>`;
-                } 
-            });
-            
-            document.querySelectorAll('.staff-cb').forEach(cb => {
-                cb.addEventListener('change', (e) => {
-                    if(e.target.checked) selectedStaffArr.push(e.target.value); 
-                    else selectedStaffArr = selectedStaffArr.filter(v => v !== e.target.value);
-                    updateStaffButtonText(); applySocFilters(); 
-                });
-            });
-        }
-        
-        document.querySelectorAll('.plat-cb').forEach(cb => {
-            cb.addEventListener('change', (e) => {
-                if(e.target.checked && !selectedPlatformArr.includes(e.target.value)) selectedPlatformArr.push(e.target.value); 
-                else if(!e.target.checked) selectedPlatformArr = selectedPlatformArr.filter(v => v !== e.target.value);
-                updatePlatformButtonText(); applySocFilters(); 
-            });
-        });
-        
-        isSocLoaded = true;
-        socIsFetching = false; 
-        applySocFilters(); 
-
-      } catch (err) {
-        console.error(err);
-        socIsFetching = false; 
-      }
     }
 
     document.getElementById('btn-select-all-staff')?.addEventListener('click', () => {
