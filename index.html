@@ -219,8 +219,9 @@
     .widget-title { font-size: calc(12px * var(--font-scale, 1)); color: var(--text-soft); text-transform: uppercase; font-weight: 700; pointer-events: none; letter-spacing: 0.5px;}
     
     /* Top Staff Fix Applied Here */
-    .metric-value { font-size: calc(36px * var(--font-scale, 1)); font-weight: 800; color: var(--text-main); pointer-events: none; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: baseline; gap: 8px;}
-    .staff-name-clip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; display: inline-block; vertical-align: bottom;}
+    .metric-value { font-size: calc(36px * var(--font-scale, 1)); font-weight: 800; color: var(--text-main); pointer-events: none; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0;}
+    .staff-name-clip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
+    .metric-value span:not(.staff-name-clip) { flex-shrink: 0; }
     
     .drag-handle { color: var(--text-soft); opacity: 0.3; cursor: grab; transition: 0.2s; font-size: calc(18px * var(--font-scale, 1)); line-height: 1;}
     .widget-card:hover .drag-handle { opacity: 1; color: var(--primary); }
