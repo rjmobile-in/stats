@@ -7,25 +7,28 @@
   <link rel="icon" type="image/png" href="logo.png" />
   
   <script>
-    if (localStorage.getItem('rj_theme') === 'light') { 
-      document.documentElement.classList.add('light-theme'); 
+    if (localStorage.getItem('rj_theme') === 'light') {
+      document.documentElement.classList.add('light-theme');
     }
   </script>
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
-
+  
+  <!-- Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link id="flatpickr-theme" rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
   <style>
     /* =========================================================
-       1. ROOT VARIABLES & THEME (Premium SaaS Palette)
+       1. ROOT VARIABLES & THEME
        ========================================================= */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -33,6 +36,7 @@
       --bg-base: #09090b; 
       --bg-surface: #18181b;
       --card-bg: #18181b; 
+      --card-bg-alpha: rgba(24, 24, 27, 0.85);
       --card-border: #27272a;
       
       --primary: #6366f1; 
@@ -47,25 +51,28 @@
       --warning: #f59e0b; --warning-alpha: rgba(245, 158, 11, 0.15);
       
       --input-bg: #09090b; 
-      --hover-bg: rgba(255, 255, 255, 0.08);
-      --selected-bg: var(--primary-alpha);
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 20px;
+      --chart-grid: #334155;
+      --chart-text: #94a3b8;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
       
       --gold-alpha: rgba(255, 215, 0, 0.08);
       --silver-alpha: rgba(192, 192, 192, 0.08);
       --bronze-alpha: rgba(205, 127, 50, 0.08);
-
-      --font-scale: 1;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      
+      --font-scale: 1; 
     }
-
+    
     html.light-theme {
       --bg-base: #f1f5f9; 
       --bg-surface: #ffffff;
       --card-bg: #ffffff; 
+      --card-bg-alpha: rgba(255, 255, 255, 0.9);
       --card-border: #e2e8f0;
       
       --primary: #4f46e5; 
@@ -76,56 +83,48 @@
       --text-soft: #64748b; 
       
       --input-bg: #f8fafc; 
-      --hover-bg: rgba(0, 0, 0, 0.06);
-      --selected-bg: var(--primary-alpha);
+      --chart-grid: #e2e8f0;
+      --chart-text: #64748b;
+      
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-
+      
       --gold-alpha: rgba(255, 215, 0, 0.15);
       --silver-alpha: rgba(192, 192, 192, 0.15);
       --bronze-alpha: rgba(205, 127, 50, 0.15);
     }
-    
+
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-base); color: var(--text-main); font-size: calc(14px * var(--font-scale)); min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3, .name, .metric-value { font-family: 'Plus Jakarta Sans', sans-serif; }
+
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-soft); }
 
-    body { font-family: 'Inter', sans-serif; background: var(--bg-base); color: var(--text-main); font-size: calc(14px * var(--font-scale, 1)); min-height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
-    h1, h2, h3, .name, .metric-value, .sidebar-category { font-family: 'Plus Jakarta Sans', sans-serif; }
-
     /* =========================================================
        2. TYPOGRAPHY & BUTTONS
        ========================================================= */
-    .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; font-size: calc(13px * var(--font-scale, 1)); box-shadow: var(--shadow-sm); }
+    .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: calc(13px * var(--font-scale)); box-shadow: var(--shadow-sm); }
     .btn-primary:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
     
-    .btn-secondary { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); padding: 10px 16px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; font-size: calc(13px * var(--font-scale, 1)); }
+    .btn-secondary { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); padding: 10px 16px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: calc(13px * var(--font-scale)); box-shadow: var(--shadow-sm); }
     .btn-secondary:hover:not(:disabled) { background: var(--input-bg); border-color: var(--primary); color: var(--primary); }
-    .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
     
     .icon-btn { background: transparent; border: none; color: var(--text-soft); cursor: pointer; font-size: calc(13px * var(--font-scale, 1)); transition: 0.2s; padding: 6px 10px; border-radius: var(--radius-sm); font-weight: 600; border: 1px solid transparent; }
     .icon-btn:hover { background: var(--input-bg); color: var(--primary); border-color: var(--card-border); }
-    
+
     .badge { padding: 4px 10px; border-radius: 6px; font-size: calc(11px * var(--font-scale, 1)); font-weight: 700; display: inline-flex; align-items: center; letter-spacing: 0.3px; text-transform: uppercase;}
-    .bg-green { background: var(--success-alpha); color: var(--success); }
-    .bg-red { background: var(--danger-alpha); color: var(--danger); }
-    .bg-orange { background: var(--warning-alpha); color: var(--warning); }
     .bg-blue { background: var(--primary-alpha); color: var(--primary); }
-    
-    .role-tag { font-size: calc(11px * var(--font-scale, 1)); text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); border: 1px solid var(--primary-alpha); padding: 2px 6px; border-radius: var(--radius-sm); margin-top: 4px; display: inline-block; background: var(--primary-alpha); }
 
     /* =========================================================
-       3. TOGGLES & LOADERS
+       3. LOADERS & TOAST
        ========================================================= */
-    .switch-wrap { display: flex; align-items: center; gap: 10px; font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; color: var(--text-main); background: var(--bg-base); padding: 8px 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border); }
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--card-border); transition: .4s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(20px); }
+    #global-loader { position: fixed; inset: 0; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: var(--text-soft); font-weight: 600; font-size: calc(15px * var(--font-scale)); }
+    .spinner { width: 48px; height: 48px; border: 4px solid var(--card-border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite; margin-bottom: 24px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     #toast-container { position: fixed; bottom: 40px; right: 40px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
     .toast { padding: 14px 24px; border-radius: var(--radius-md); color: #fff; font-weight: 600; box-shadow: var(--shadow-md); opacity: 0; transform: translateX(20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-size: calc(14px * var(--font-scale, 1)); display: flex; align-items: center; gap: 10px;}
@@ -134,72 +133,82 @@
     .toast-success { background: var(--success); }
     .toast-error { background: var(--danger); }
 
-    #global-loader { position: fixed; inset: 0; background: var(--bg-base); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .spinner { width: 48px; height: 48px; border: 4px solid var(--card-border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* =========================================================
+       4. LOGIN SCREEN
+       ========================================================= */
+    #login-screen { display: none; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-base); }
+    .login-card { width: 100%; max-width: 420px; background: var(--card-bg); padding: 48px 40px; border-radius: var(--radius-lg); border: 1px solid var(--card-border); box-shadow: var(--shadow-md); text-align: center; }
+    .login-card h2 { font-weight: 800; font-size: calc(24px * var(--font-scale)); margin-bottom: 8px; color: var(--text-main); }
+    .login-card p { color: var(--text-soft); font-size: calc(14px * var(--font-scale)); margin-bottom: 32px; }
+    
+    .input-field { width: 100%; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-main); font-size: calc(13px * var(--font-scale)); margin-bottom: 16px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; font-weight: 500; }
+    .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-alpha); background: var(--card-bg); }
+    
+    .password-wrapper { position: relative; width: 100%; margin-bottom: 16px; }
+    .password-wrapper .input-field { margin-bottom: 0; padding-right: 48px; }
+    .toggle-password { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-soft); cursor: pointer; display: flex; }
+    
+    #error-msg { color: var(--danger); font-size: calc(13px * var(--font-scale)); margin-top: 16px; display: none; font-weight: 600; background: var(--danger-alpha); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--danger-alpha); }
 
     /* =========================================================
-       4. FORM INPUTS & DROPDOWNS
+       5. SIDEBAR & MAIN LAYOUT
        ========================================================= */
-    .input-field { width: 100%; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); background-color: var(--input-bg) !important; color: var(--text-main) !important; margin-bottom: 16px; outline: none; font-family: 'Inter', sans-serif; font-size: calc(13px * var(--font-scale, 1)); transition: all 0.2s; color-scheme: dark; }
-    html.light-theme .input-field { color-scheme: light; }
-    .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-alpha); }
-    
-    .dropdown { position: relative; display: inline-block; }
-    .dropdown-content { display: none; position: absolute; right: 0; top: calc(100% + 8px); min-width: 260px; background: var(--bg-surface); border: 1px solid var(--card-border); border-radius: var(--radius-md); padding: 16px; z-index: 1000; box-shadow: var(--shadow-md); }
-    .dropdown-content.show { display: block; animation: dropIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes dropIn { from {opacity:0; transform: translateY(-10px) scale(0.98);} to {opacity:1; transform:translateY(0) scale(1);} }
-    
-    .dropdown-content.export-menu a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: 500; border-radius: var(--radius-sm); transition: 0.2s; font-size: calc(13px * var(--font-scale, 1));}
-    .dropdown-content.export-menu a:hover { background-color: var(--primary-alpha); color: var(--primary); }
-
-    .multi-select-actions { display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; }
-    .multi-select-actions button { flex: 1; padding: 8px; border-radius: var(--radius-sm); border: none; background: var(--input-bg); color: var(--text-main); font-size: calc(12px * var(--font-scale, 1)); font-weight: 600; cursor: pointer; transition: 0.2s;}
-    .multi-select-actions button:hover { background: var(--primary-alpha); color: var(--primary); }
-    .check-wrap { display: flex; align-items: center; gap: 10px; font-weight: 500; cursor: pointer; padding: 10px 8px; border-radius: var(--radius-sm); transition: 0.2s; font-size: calc(13px * var(--font-scale, 1));}
-    .check-wrap:hover { background: var(--input-bg); color: var(--primary); }
-    .check-wrap input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; border-radius: 4px; pointer-events: none;}
-    .list-container { max-height: 250px; overflow-y: auto; padding-right: 4px; }
-
-    /* =========================================================
-       5. LAYOUT: SIDEBAR & MAIN CONTENT
-       ========================================================= */
-    #dashboard { display: none; height: 100vh; width: 100vw; }
     .app-container { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
     
-    .sidebar { width: 280px; background: var(--sidebar-bg, var(--bg-surface)); border-right: 1px solid var(--card-border); display: flex; flex-direction: column; padding: 24px 16px; z-index: 100; flex-shrink: 0; }
-    .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 32px 8px; border-bottom: 1px solid var(--card-border); margin-bottom: 24px; }
-    .sidebar-brand img { height: 36px; object-fit: contain; }
-    .brand-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: calc(18px * var(--font-scale, 1)); font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+    .sidebar { width: 280px; background: var(--sidebar-bg, var(--bg-surface)); border-right: 1px solid var(--card-border); display: flex; flex-direction: column; padding: 24px 16px; z-index: 100; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; white-space: nowrap;}
+    .sidebar.collapsed { width: 88px; }
+    .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 32px 8px; border-bottom: 1px solid var(--card-border); margin-bottom: 24px; position: relative;}
+    .brand-info { display: flex; align-items: center; gap: 12px; transition: opacity 0.2s ease; opacity: 1; }
+    .sidebar.collapsed .brand-info { opacity: 0; pointer-events: none; width: 0; }
+    
+    .sidebar-toggle-btn { position: absolute; right: 0px; top: 4px; background: var(--input-bg); border: 1px solid var(--card-border); transition: all 0.3s ease; z-index: 10; }
+    .sidebar.collapsed .sidebar-toggle-btn { right: 50%; transform: translateX(50%); }
+
+    .brand-title { font-size: calc(18px * var(--font-scale, 1)); font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
     .brand-subtitle { font-size: calc(11px * var(--font-scale, 1)); color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; font-weight: 600;}
     
     .tab-controls { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex: 1; padding-right: 8px; }
     .sidebar-category { font-size: calc(11px * var(--font-scale, 1)); font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px 8px; }
-    
+    .sidebar.collapsed .sidebar-category { opacity: 0; height: 0; margin: 0; overflow: hidden; }
+
     .tab-btn { background: transparent; border: none; color: var(--text-soft); font-weight: 600; padding: 12px 16px; border-radius: var(--radius-sm); cursor: pointer; text-align: left; transition: all 0.2s; font-size: calc(14px * var(--font-scale, 1)); display: flex; align-items: center; gap: 12px; }
     .tab-btn:hover { background: var(--hover-bg, var(--input-bg)); color: var(--text-main); }
     .tab-btn.active { background: var(--selected-bg, var(--primary-alpha)); color: var(--primary); }
-    .tab-icon { display: flex; align-items: center; justify-content: center; }
+    .tab-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+    .tab-btn-text { transition: opacity 0.2s ease, width 0.2s ease; }
+    .sidebar.collapsed .tab-btn-text { opacity: 0; width: 0; overflow: hidden; height: 0; }
+    .sidebar.collapsed .tab-btn { padding-left: 0; padding-right: 0; justify-content: center; }
 
     .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; background: var(--bg-base); position: relative; }
-    
-    .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: var(--header-bg, var(--bg-base)); border-bottom: 1px solid var(--card-border); z-index: 50; position: relative;}
+    .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: var(--header-bg, var(--bg-base)); border-bottom: 1px solid var(--card-border); z-index: 50; position: relative; flex-wrap: wrap; gap: 16px;}
     .header-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .header-title { font-weight: 700; font-size: calc(20px * var(--font-scale, 1)); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif;}
-
+    .header-title { font-weight: 700; font-size: calc(20px * var(--font-scale, 1)); color: var(--text-main); }
     .content-wrapper { padding: 32px 40px; flex: 1; display: flex; flex-direction: column; }
 
     /* =========================================================
-       6. STRUCTURED FILTER BAR & WIDGETS
+       6. DROPDOWNS & FILTER BAR
        ========================================================= */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content { display: none; position: absolute; right: 0; top: calc(100% + 8px); min-width: 260px; background: var(--bg-surface); border: 1px solid var(--card-border); border-radius: var(--radius-md); padding: 16px; z-index: 1000; box-shadow: var(--shadow-md); }
+    .dropdown-content.show { display: block; animation: dropIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes dropIn { from {opacity:0; transform: translateY(-10px) scale(0.98);} to {opacity:1; transform:translateY(0) scale(1);} }
+    .dropdown-content.export-menu a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: 500; border-radius: var(--radius-sm); transition: 0.2s; font-size: calc(13px * var(--font-scale, 1));}
+    .dropdown-content.export-menu a:hover { background-color: var(--primary-alpha); color: var(--primary); }
+    .multi-select-actions { display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; }
+    .multi-select-actions button { flex: 1; padding: 8px; border-radius: var(--radius-sm); border: none; background: var(--input-bg); color: var(--text-main); font-size: calc(12px * var(--font-scale, 1)); font-weight: 600; cursor: pointer; transition: 0.2s;}
+    .multi-select-actions button:hover { background: var(--primary-alpha); color: var(--primary); }
+    .check-wrap { display: flex; align-items: center; gap: 10px; font-weight: 500; cursor: pointer; padding: 10px 8px; border-radius: var(--radius-sm); transition: 0.2s; font-size: calc(13px * var(--font-scale, 1)); color: var(--text-main);}
+    .check-wrap:hover { background: var(--input-bg); color: var(--primary); }
+    .check-wrap input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; border-radius: 4px; pointer-events: none;}
+    .list-container { max-height: 250px; overflow-y: auto; padding-right: 4px; }
+
     .filter-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px; transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease; overflow: visible; position: relative; z-index: 100; }
     .filter-section.collapsed { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0; overflow: hidden; pointer-events: none; }
-    
     .filter-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
     .filter-group { display: flex; flex-direction: column; gap: 8px; }
     .filter-group label { font-size: calc(11px * var(--font-scale, 1)); text-transform: uppercase; font-weight: 700; color: var(--text-soft); letter-spacing: 0.5px;}
     
-    .quick-dates { display: flex; gap: 8px; background: var(--input-bg); padding: 6px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); flex-wrap: wrap; }
+    .quick-dates { display: flex; gap: 8px; background: var(--input-bg); padding: 6px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); flex-wrap: wrap; margin-bottom:0;}
     .quick-date-btn { background: transparent; border: none; color: var(--text-soft); padding: 8px 14px; border-radius: var(--radius-sm); font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; }
     .quick-date-btn:hover { color: var(--text-main); background: var(--hover-bg, var(--bg-surface)); }
     .quick-date-btn.active { background: var(--selected-bg, var(--card-bg)); color: var(--primary); border: 1px solid var(--card-border); box-shadow: var(--shadow-sm); }
@@ -209,6 +218,9 @@
     .sub-tab-btn:hover { color: var(--text-main); background: var(--hover-bg, var(--card-bg)); }
     .sub-tab-btn.active { background: var(--selected-bg, var(--card-bg)); color: var(--primary); border-color: var(--card-border); box-shadow: var(--shadow-sm); }
 
+    /* =========================================================
+       7. WIDGETS & CHARTS
+       ========================================================= */
     .sortable-ghost { opacity: 0.4; background: var(--primary-alpha); border: 1px dashed var(--primary); }
     .sortable-drag { cursor: grabbing !important; }
     .widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
@@ -218,24 +230,31 @@
     .widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .widget-title { font-size: calc(12px * var(--font-scale, 1)); color: var(--text-soft); text-transform: uppercase; font-weight: 700; pointer-events: none; letter-spacing: 0.5px;}
     
-    /* Top Staff Fix Applied Here */
+    /* Perfect Top Staff Alignment */
     .metric-value { font-size: calc(36px * var(--font-scale, 1)); font-weight: 800; color: var(--text-main); pointer-events: none; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0;}
     .staff-name-clip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
     .metric-value span:not(.staff-name-clip) { flex-shrink: 0; }
     
     .drag-handle { color: var(--text-soft); opacity: 0.3; cursor: grab; transition: 0.2s; font-size: calc(18px * var(--font-scale, 1)); line-height: 1;}
     .widget-card:hover .drag-handle { opacity: 1; color: var(--primary); }
+    
+    .tbl-trend { font-size: calc(11px * var(--font-scale)); font-weight: 700; padding: 4px 8px; border-radius: 6px; display: inline-block; vertical-align: middle; letter-spacing: 0.5px; text-transform: uppercase;}
+    .tbl-trend.up { background: var(--success-alpha); color: var(--success); }
+    .tbl-trend.down { background: var(--danger-alpha); color: var(--danger); }
+    .tbl-trend.neutral { background: var(--bg-base); color: var(--text-soft); border: 1px solid var(--card-border); }
 
     .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 32px;}
     .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); position: relative;}
     .chart-card h3 { font-size: calc(14px * var(--font-scale, 1)); margin-bottom: 20px; color: var(--text-soft); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between;}
     .chart-container { position: relative; height: 300px; width: 100%; }
     .interactive-hint { font-size: calc(9px * var(--font-scale, 1)); background: var(--input-bg); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--card-border); color: var(--primary); font-weight: 800;}
+    .charts-loading-overlay { display: none; position: absolute; inset: 0; border-radius: var(--radius-lg); align-items: center; justify-content: center; flex-direction: column; z-index: 15; background: var(--card-bg-alpha); backdrop-filter: blur(4px); }
+    .charts-loading-overlay.active { display: flex; }
 
     /* =========================================================
-       7. DATA TABLE & PAGINATION
+       8. DATA TABLE & PAGINATION
        ========================================================= */
-    .table-card { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--card-border); overflow: hidden; margin-bottom: 32px; box-shadow: var(--shadow-sm);}
+    .table-card { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--card-border); overflow: hidden; margin-bottom: 32px; box-shadow: var(--shadow-sm); position: relative;}
     .table-responsive { overflow-x: auto; max-height: calc(100vh - 340px); min-height: 400px; overflow-y: auto; }
     table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
     th { position: sticky; top: 0; background: var(--bg-surface); color: var(--text-soft); font-weight: 700; font-size: calc(11px * var(--font-scale, 1)); text-transform: uppercase; padding: 16px 24px; border-bottom: 1px solid var(--card-border); z-index: 10; letter-spacing: 0.5px; border-top: 1px solid var(--card-border);}
@@ -243,10 +262,6 @@
     tbody tr:hover td { background: var(--hover-bg, var(--input-bg)); }
     tbody tr:last-child td { border-bottom: none; }
 
-    .pagination-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 24px; }
-    .page-info-group { display: flex; align-items: center; gap: 16px; font-size: calc(13px * var(--font-scale)); font-weight: 600; color: var(--text-soft); }
-    .page-info-group select { padding: 8px 12px; border-radius: var(--radius-sm); background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); font-weight: 600; outline: none; font-size: calc(13px * var(--font-scale)); cursor: pointer; transition: 0.2s;}
-    
     th.sortable { cursor: pointer; user-select: none; transition: color 0.2s; }
     th.sortable:hover { color: var(--primary); }
     th.sortable::before { content: '↕'; font-size: 0.8em; margin-left: 6px; opacity: 0.3; float: right; margin-top: 2px;}
@@ -256,28 +271,47 @@
     .rank-1 td { background: var(--gold-alpha) !important; }
     .rank-2 td { background: var(--silver-alpha) !important; }
     .rank-3 td { background: var(--bronze-alpha) !important; }
+    
+    .table-progress-bg { position: relative; display: inline-flex; align-items: center; min-width: 100px; padding: 6px 0; }
+    .table-progress-fill { position: absolute; left: -12px; top: 0; bottom: 0; background: var(--primary-alpha); border-radius: var(--radius-sm); z-index: 0; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .table-progress-text { position: relative; z-index: 1; font-size: calc(15px * var(--font-scale, 1)); font-weight: 700; color: var(--primary); }
+
+    .pagination-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 24px; }
+    .page-info-group { display: flex; align-items: center; gap: 16px; font-size: calc(13px * var(--font-scale)); font-weight: 600; color: var(--text-soft); }
+    .page-info-group select { padding: 8px 12px; border-radius: var(--radius-sm); background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); font-weight: 600; outline: none; font-size: calc(13px * var(--font-scale)); cursor: pointer; transition: 0.2s;}
 
     /* =========================================================
-       8. MODALS & OTHER ELEMENTS
+       9. SETTINGS & QR GEN PANELS
        ========================================================= */
-    #login-screen { display: none; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-base); }
-    .login-card { width: 100%; max-width: 420px; background: var(--card-bg); padding: 48px 40px; border-radius: var(--radius-lg); border: 1px solid var(--card-border); box-shadow: var(--shadow-md); text-align: center; }
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 32px;}
+    .settings-panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);}
+    .settings-panel h3 { font-size: calc(16px * var(--font-scale, 1)); margin-bottom: 12px; color: var(--text-main); }
+    .del-btn { color: var(--danger); cursor: pointer; font-weight: 600; background: var(--bg-base); border: 1px solid var(--card-border); padding: 6px 12px; border-radius: var(--radius-sm); transition: 0.2s; font-size: calc(12px * var(--font-scale, 1));}
+    .del-btn:hover { background: var(--danger-alpha); border-color: var(--danger-alpha); }
+    .edit-btn { color: var(--primary); cursor: pointer; font-weight: 600; background: var(--bg-base); border: 1px solid var(--card-border); padding: 6px 12px; border-radius: var(--radius-sm); transition: 0.2s; margin-right: 6px; font-size: calc(12px * var(--font-scale, 1));}
+    .edit-btn:hover { background: var(--primary-alpha); border-color: var(--primary-alpha); }
+
+    .qr-staff-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; padding: 16px; background: var(--input-bg); border-radius: var(--radius-md); border: 1px solid var(--card-border); margin-bottom: 24px;}
+    .qr-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 24px; }
+    .qr-preview-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: var(--shadow-sm);}
+    .qr-preview-card h4 { font-size: calc(13px * var(--font-scale)); margin: 0; color: var(--text-main); text-align: center;}
+    .qr-preview-card img { max-width: 100%; height: auto; border-radius: 4px;}
+
+    /* =========================================================
+       10. THEME MODALS
+       ========================================================= */
+    .switch-wrap { display: flex; align-items: center; gap: 10px; font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; color: var(--text-main); background: var(--bg-base); padding: 8px 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border); }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--card-border); transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px;}
     .modal-card { background: var(--card-bg); padding: 32px; border-radius: var(--radius-lg); width: 100%; max-width: 500px; border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-md); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);}
     @keyframes slideUp { from { transform: translateY(20px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-
-    .sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; white-space: nowrap; width: 280px; }
-    .sidebar.collapsed { width: 88px; }
-    .brand-info { display: flex; align-items: center; gap: 12px; transition: opacity 0.2s ease; opacity: 1; }
-    .sidebar-toggle-btn { position: absolute; right: 0px; top: 4px; background: var(--input-bg); border: 1px solid var(--card-border); transition: all 0.3s ease; z-index: 10; }
-    .sidebar.collapsed .brand-info { opacity: 0; pointer-events: none; width: 0; }
-    .sidebar.collapsed .sidebar-toggle-btn { right: 50%; transform: translateX(50%); }
-    .tab-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .tab-btn-text { transition: opacity 0.2s ease, width 0.2s ease; }
-    .sidebar.collapsed .tab-btn-text, .sidebar.collapsed .sidebar-category { opacity: 0; width: 0; overflow: hidden; height: 0; margin: 0; }
-    .sidebar.collapsed .tab-btn { padding-left: 0; padding-right: 0; justify-content: center; }
-
+    
     .color-picker-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: var(--radius-md); margin-bottom: 12px; }
     .color-picker-label { font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; color: var(--text-main); }
     .color-picker-input { -webkit-appearance: none; border: 2px solid var(--card-border); width: 36px; height: 36px; border-radius: 50%; overflow: hidden; cursor: pointer; padding: 0; background: transparent; transition: 0.2s; }
@@ -285,17 +319,8 @@
     .color-picker-input::-webkit-color-swatch-wrapper { padding: 0; }
     .color-picker-input::-webkit-color-swatch { border: none; border-radius: 50%; }
 
-    .password-wrapper { position: relative; width: 100%; margin-bottom: 16px; }
-    .password-wrapper .input-field { margin-bottom: 0; padding-right: 48px; }
-    .toggle-password { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-soft); cursor: pointer; display: flex; }
-    
-    .charts-loading-overlay { display: none; position: absolute; inset: 0; border-radius: var(--radius-lg); align-items: center; justify-content: center; flex-direction: column; z-index: 15; background: var(--card-bg-alpha); backdrop-filter: blur(4px); }
-    .charts-loading-overlay.active { display: flex; }
-    
-    .table-progress-bg { position: relative; display: inline-flex; align-items: center; min-width: 100px; padding: 6px 0; }
-    .table-progress-fill { position: absolute; left: -12px; top: 0; bottom: 0; background: var(--primary-alpha); border-radius: var(--radius-sm); z-index: 0; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    .table-progress-text { position: relative; z-index: 1; font-size: calc(15px * var(--font-scale, 1)); font-weight: 700; color: var(--primary); }
-
+    /* Specific Print Styling for PDF Generator */
+    .print-hide { display: none !important; }
   </style>
 </head>
 <body>
@@ -355,6 +380,20 @@
             <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></span> 
             <span class="tab-btn-text">Data Explorer</span>
           </button>
+          
+          <!-- Tools -->
+          <div class="sidebar-category admin-only">Tools</div>
+          <button class="tab-btn admin-only" data-view="view-qr" title="QR Generator">
+            <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg></span> 
+            <span class="tab-btn-text">QR Generator</span>
+          </button>
+
+          <!-- Management -->
+          <div class="sidebar-category admin-only">Management</div>
+          <button class="tab-btn admin-only" data-view="view-settings" title="Social Settings">
+            <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span> 
+            <span class="tab-btn-text">Social Settings</span>
+          </button>
         </div>
       </aside>
 
@@ -396,9 +435,8 @@
         </div>
 
         <div class="content-wrapper">
-            <!-- NEW COLLAPSIBLE FILTER BAR -->
+            <!-- COLLAPSIBLE FILTER BAR -->
             <div class="filter-section" id="master-filter-section">
-                <!-- Row 1: Date Filters -->
                 <div class="filter-row">
                     <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; width: 100%;">
                         <div class="filter-group">
@@ -454,13 +492,7 @@
                                         <button id="btn-select-all-platforms">Select All</button>
                                         <button id="btn-deselect-all-platforms">Clear All</button>
                                     </div>
-                                    <div class="list-container" id="platform-checkboxes">
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="Instagram" checked> <span>Instagram</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="YouTube" checked> <span>YouTube</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="Facebook" checked> <span>Facebook</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="Snapchat" checked> <span>Snapchat</span></label>
-                                        <label class="check-wrap"><input type="checkbox" class="plat-cb" value="WhatsApp" checked> <span>WhatsApp</span></label>
-                                    </div>
+                                    <div class="list-container" id="platform-checkboxes"></div>
                                 </div>
                             </div>
                         </div>
@@ -468,6 +500,7 @@
                 </div>
             </div>
 
+            <!-- EXPORTABLE CONTAINER -->
             <div id="export-container">
             
                 <!-- VIEW 1: DASHBOARD -->
@@ -567,6 +600,68 @@
                     </div>
                 </div>
 
+                <!-- VIEW 3: QR GENERATOR -->
+                <div id="view-qr" class="app-view admin-only" style="display: none;">
+                    <span style="color: var(--text-soft); display:block; margin-bottom: 24px; font-size: calc(13px * var(--font-scale, 1));">Generate Smart URL QRs for your staff members. Format includes scissors lines for easy cutting (A4).</span>
+                    
+                    <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+                        <h3 style="font-size: calc(16px * var(--font-scale)); margin-bottom: 16px; color: var(--text-main);">Select Staff for QR Generation</h3>
+                        
+                        <div class="qr-staff-list" id="qr-staff-selection">
+                            <div style="color:var(--text-soft); font-size: 13px;">Loading staff directory...</div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                            <button class="btn-secondary" id="btn-qr-select-all">Select All</button>
+                            <button class="btn-secondary" id="btn-qr-deselect-all">Clear All</button>
+                            <button class="btn-primary" id="btn-qr-generate-preview" style="margin-left: auto;">Generate Preview</button>
+                            <button class="btn-primary" id="btn-qr-download-pdf" style="background: var(--success);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Download A4 Print PDF</button>
+                        </div>
+                    </div>
+                    
+                    <div class="qr-preview-grid" id="qr-preview-container">
+                        <!-- Preview Cards will be injected here -->
+                    </div>
+                </div>
+
+                <!-- VIEW 4: SOCIAL SETTINGS -->
+                <div id="view-settings" class="app-view admin-only" style="display: none;">
+                    <span style="color: var(--text-soft); display:block; margin-bottom: 24px; font-size: calc(13px * var(--font-scale, 1));">Manage Staff Directory and Active Social Platforms.</span>
+                    
+                    <div class="settings-grid">
+                        <div class="settings-panel">
+                            <h3>Staff Directory</h3>
+                            <div style="display:flex; gap:12px; flex-direction:column; background: var(--bg-base); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border); margin-bottom: 24px;">
+                                <input type="text" id="new-staff-name" class="input-field" placeholder="Staff Name" style="margin:0;">
+                                <button id="add-staff-btn" class="btn-primary" style="justify-content: center;">Add Staff</button>
+                            </div>
+
+                            <div class="table-responsive" style="border: 1px solid var(--card-border); border-radius: var(--radius-sm); max-height: 400px;">
+                                <table style="width: 100%;">
+                                <thead><tr><th>Staff Details</th><th style="text-align: right;">Action</th></tr></thead>
+                                <tbody id="staff-settings-list"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="settings-panel">
+                            <h3>Platforms Directory</h3>
+                            <div style="display:flex; flex-direction: column; gap:12px; background: var(--bg-base); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border); margin-bottom: 24px;">
+                                <input type="text" id="new-platform-name" class="input-field" placeholder="Platform Name (e.g. Instagram)" style="margin:0;">
+                                <input type="url" id="new-platform-link" class="input-field" placeholder="Platform Base Link (Optional)" style="margin:0;">
+                                <button id="add-platform-btn" class="btn-primary" style="justify-content:center;">Add Platform</button>
+                            </div>
+                            
+                            <div class="table-responsive" style="border: 1px solid var(--card-border); border-radius: var(--radius-sm); max-height: 400px;">
+                                <table style="width: 100%;">
+                                <thead><tr><th>Platform Details</th><th style="text-align: right;">Action</th></tr></thead>
+                                <tbody id="platform-settings-list"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div> <!-- End Export Container -->
         </div> <!-- End Content Wrapper -->
         <div id="auto-fetch-sentinel" style="height: 1px; width: 100%; margin-top: 10px;"></div>
@@ -634,25 +729,23 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, onSnapshot, orderBy, query, limit, startAfter } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+  <div id="hidden-pdf-container" style="position: absolute; top: -9999px; left: -9999px; z-index: -1;"></div>
 
-    const firebaseConfig = { 
-      apiKey: "AIzaSyBsAsMlKJqoyOS27IVotwszVvO1ZFCGABs", 
-      authDomain: "staff-review-935f3.firebaseapp.com", 
-      projectId: "staff-review-935f3", 
-      storageBucket: "staff-review-935f3.firebasestorage.app", 
-      messagingSenderId: "91819642184", 
-      appId: "1:91819642184:web:9b78814e6efcfb811a608d",
-      measurementId: "G-CVH4RRXS41" 
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = initializeFirestore(app, {
-      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const SUPABASE_URL = 'https://upvhrarcbjfodzvohcpq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwdmhyYXJjYmpmb2R6dm9oY3BxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNTEzMDcsImV4cCI6MjA5OTkyNzMwN30.4kFdGZM2B24jRbHCoZKCd7TbSXRF-3wEWqH2I4V9Fj0';
+
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { 
+        storage: window.localStorage,
+        storageKey: 'rj_social_admin_auth',
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
     });
-    const auth = getAuth(app);
     
     let userRole = 'staff';
     let userStaffName = '';
@@ -663,17 +756,12 @@
     let currentSortCol = null;
     let currentSortDir = 'desc';
 
-    const masterStaffList = [
-      "Aman", "Ankur", "Ayush", "Deepak", "Farhan", "Gaurav", "Girish", "Harsh Dubay",
-      "Harsh Kejriwal", "Harsh Verma", "Kamal Murarka", "Krishna Choubey", "Krishna Singh",
-      "Krishna Soni", "Lokesh", "Manish Daga", "Manish Soni", "Mohit Tamrayat", "Pawan",
-      "Prakash", "Prashant", "Rajesh", "Rakesh", "Ram", "Ronak", "Sachin", "Sameer Singh",
-      "Sanju", "Sonu", "Subhash", "Sufiyan", "Sunil", "Vinod", "Vivek", "Yash"
-    ];
+    let dbStaff = [];
+    let dbPlatforms = [];
 
     let socData = [], socFiltered = [], socPrevFiltered = [];
     let socDoughnut, socStaffChart, socHourly, socLine;
-    let socLastDoc = null, socIsFetching = false;
+    let socIsFetching = false;
     let socPage = 1, socRows = 15;
     
     let currentDisplayDataLength = 0;
@@ -681,7 +769,7 @@
     window.rjDbExhausted = false;
 
     let selectedStaffArr = [];
-    let selectedPlatformArr = ["Instagram", "YouTube", "Facebook", "Snapchat", "WhatsApp"];
+    let selectedPlatformArr = [];
 
     function showToast(message, type = 'primary') {
       const container = document.getElementById('toast-container');
@@ -948,7 +1036,7 @@
       localStorage.removeItem('rj_soc_widget_order'); location.reload(); 
     });
 
-    document.querySelectorAll('.tab-btn[data-view="view-dashboard"], .tab-btn[data-view="view-data"]').forEach(btn => {
+    document.querySelectorAll('.tab-btn[data-view^="view-"]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.tab-btn[data-view^="view-"]').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active');
@@ -965,6 +1053,9 @@
             if (viewId === 'view-data') exportBtn.style.display = 'inline-block';
             else exportBtn.style.display = 'none';
         }
+        
+        if (viewId === 'view-settings') loadSettingsData();
+        if (viewId === 'view-qr') populateQRStaffList();
       });
     });
 
@@ -980,123 +1071,35 @@
       });
     });
 
-    // Native Live-Sync using Firebase onSnapshot (Fixed logic)
-    async function loadSocStats(loadMore = false) {
-      if (socIsFetching && !loadMore) return;
-      socIsFetching = true;
-      
-      if (!loadMore) { 
-        document.getElementById('table-loading-overlay')?.classList.add('active');
-        socData = []; 
-        socLastDoc = null; 
-        window.rjDbExhausted = false;
-        
-        socUnsubscribes.forEach(unsub => unsub());
-        socUnsubscribes = [];
-      } 
-      
-      try {
-        const DB_FETCH_LIMIT = 5000; 
-        let q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), limit(DB_FETCH_LIMIT));
-        if (loadMore && socLastDoc) q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), startAfter(socLastDoc), limit(DB_FETCH_LIMIT));
-
-        const listener = onSnapshot(q, (snapshot) => {
-          let newlyAdded = 0;
-          if (!loadMore) socData = []; 
-
-          if (!snapshot.empty) {
-            socLastDoc = snapshot.docs[snapshot.docs.length - 1];
-            snapshot.forEach(doc => { 
-                let d = doc.data(); 
-                if(d.staff_name) d.staff_name = d.staff_name.replace(/[.-]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); 
-                
-                if (loadMore) {
-                    if (!socData.some(existing => existing.created_at?.toMillis() === d.created_at?.toMillis() && existing.staff_name === d.staff_name)) {
-                        socData.push(d); newlyAdded++;
-                    }
-                } else {
-                    socData.push(d); newlyAdded++;
-                }
-            });
-          }
-
-          if (loadMore && newlyAdded === 0) window.rjDbExhausted = true;
-          
-          // Re-populate Admin Checkboxes
-          if(userRole === 'admin') {
-            const staffCounts = {};
-            socData.forEach(i => { if(i.staff_name) staffCounts[i.staff_name] = (staffCounts[i.staff_name] || 0) + 1; });
-            
-            const dl = document.getElementById('staff-checkboxes'); 
-            if(dl) {
-                dl.innerHTML = '';
-                masterStaffList.forEach(name => {
-                  const count = staffCounts[name] || 0;
-                  const isChecked = selectedStaffArr.length === 0 || selectedStaffArr.includes(name) ? 'checked' : '';
-                  dl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="staff-cb" value="${name}" ${isChecked}> <span>${name} <span style="color:var(--text-soft); font-size:11px;">(${count})</span></span></label>`;
-                });
-                const unique = [...new Set(socData.map(i => i.staff_name))].sort();
-                unique.forEach(s => { 
-                  if(s && s !== 'Direct/Unknown' && !masterStaffList.includes(s)) {
-                    const count = staffCounts[s] || 0;
-                    const isChecked = selectedStaffArr.length === 0 || selectedStaffArr.includes(s) ? 'checked' : '';
-                    dl.innerHTML += `<label class="check-wrap"><input type="checkbox" class="staff-cb" value="${s}" ${isChecked}> <span>${s} <span style="color:var(--text-soft); font-size:11px;">(${count})</span></span></label>`;
-                  } 
-                });
-
-                document.querySelectorAll('.staff-cb').forEach(cb => {
-                    cb.addEventListener('change', (e) => {
-                        if(e.target.checked) {
-                            if(!selectedStaffArr.includes(e.target.value)) selectedStaffArr.push(e.target.value); 
-                        } else {
-                            selectedStaffArr = selectedStaffArr.filter(v => v !== e.target.value);
-                        }
-                        updateStaffButtonText(); applySocFilters(); 
-                    });
-                });
-            }
-          }
-          
-          document.querySelectorAll('.plat-cb').forEach(cb => {
-              cb.addEventListener('change', (e) => {
-                  if(e.target.checked) {
-                      if(!selectedPlatformArr.includes(e.target.value)) selectedPlatformArr.push(e.target.value); 
-                  } else {
-                      selectedPlatformArr = selectedPlatformArr.filter(v => v !== e.target.value);
-                  }
-                  updatePlatformButtonText(); applySocFilters(); 
-              });
-          });
-          
-          isSocLoaded = true;
-          socIsFetching = false; 
-          document.getElementById('table-loading-overlay')?.classList.remove('active');
-          applySocFilters(); 
-          
-        }, (err) => {
-          console.error(err);
-          if (!loadMore) document.getElementById('soc-table-body').innerHTML = '<tr><td colspan="3" style="color:var(--danger); text-align:center; padding:30px;">Failed to sync live data.</td></tr>';
-          socIsFetching = false; document.getElementById('table-loading-overlay')?.classList.remove('active');
-        });
-
-        socUnsubscribes.push(listener);
-
-      } catch (err) {
-        console.error(err);
-        socIsFetching = false; 
-        document.getElementById('table-loading-overlay')?.classList.remove('active');
+    // Native Live-Sync using Supabase Realtime
+    let realtimeSubscription = null;
+    function setupRealtimeSync() {
+      const isSyncOn = document.getElementById('sync-toggle')?.checked;
+      if (isSyncOn && !realtimeSubscription) {
+        realtimeSubscription = supabaseClient
+          .channel('public:social_clicks')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'social_clicks' }, payload => {
+                loadSocStats(false);
+          })
+          .subscribe();
+      } else if (!isSyncOn && realtimeSubscription) {
+        supabaseClient.removeChannel(realtimeSubscription);
+        realtimeSubscription = null;
       }
     }
-
+    
     const syncToggle = document.getElementById('sync-toggle');
     if(syncToggle) {
         syncToggle.addEventListener('change', (e) => {
             if(e.target.checked) {
                 loadSocStats(false);
+                setupRealtimeSync();
                 showToast("Auto-Sync Enabled", "success");
             } else {
-                socUnsubscribes.forEach(unsub => unsub());
-                socUnsubscribes = [];
+                if(realtimeSubscription) {
+                    supabaseClient.removeChannel(realtimeSubscription);
+                    realtimeSubscription = null;
+                }
                 showToast("Auto-Sync Disabled", "primary");
             }
         });
@@ -1112,21 +1115,37 @@
         }
     }, { rootMargin: '100px' });
 
-    onAuthStateChanged(auth, (user) => {
+    async function initialMetadataLoad() {
+        try {
+            const { data: staffData } = await supabaseClient.from('staff_directory').select('*').order('name');
+            dbStaff = staffData || [];
+        } catch (err) {}
+        
+        try {
+            const { data: platformData } = await supabaseClient.from('platforms_directory').select('*').order('platform_name');
+            dbPlatforms = platformData || [];
+        } catch (err) {}
+    }
+
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
       document.getElementById('global-loader').style.display = 'none';
-      if (user) {
+      if (session?.user) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         
         observer.observe(document.getElementById('auto-fetch-sentinel'));
         
-        const email = user.email.toLowerCase();
+        const email = session.user.email.toLowerCase();
+        
+        await initialMetadataLoad();
+        
         if (email.includes('admin')) {
           userRole = 'admin';
           document.getElementById('role-badge').innerText = 'ADMIN';
           document.getElementById('soc-card-top-staff').style.display = 'flex';
           document.getElementById('soc-chart-cont-staff').style.display = 'block';
           document.getElementById('staff-filter-dropdown').style.display = 'block';
+          document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
         } else {
           userRole = 'staff';
           document.getElementById('role-badge').innerText = 'STAFF';
@@ -1137,15 +1156,21 @@
           document.getElementById('soc-card-top-staff').style.display = 'none';
           document.getElementById('soc-chart-cont-staff').style.display = 'none';
           document.getElementById('staff-filter-dropdown').style.display = 'none';
+          document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
         }
         
+        // Populate default platforms from DB if available
+        if (dbPlatforms.length > 0) {
+            selectedPlatformArr = dbPlatforms.map(p => p.platform_name);
+        }
+
         loadSocStats(false);
+        if(document.getElementById('sync-toggle').checked) setupRealtimeSync();
       } else {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('dashboard').style.display = 'none';
         isSocLoaded = false;
-        socUnsubscribes.forEach(unsub => unsub());
-        socUnsubscribes = [];
+        if(realtimeSubscription) { supabaseClient.removeChannel(realtimeSubscription); realtimeSubscription = null; }
       }
     });
 
@@ -1159,21 +1184,22 @@
       const e = document.getElementById('email-input').value, p = document.getElementById('password-input').value, msg = document.getElementById('error-msg');
       try { 
           msg.style.display = 'none'; 
-          await setPersistence(auth, browserLocalPersistence); 
-          await signInWithEmailAndPassword(auth, e, p); 
+          const btn = document.getElementById('login-btn');
+          btn.innerText = "Authenticating..."; btn.disabled = true;
+          const { error } = await supabaseClient.auth.signInWithPassword({ email: e, password: p });
+          if(error) throw error;
       } 
-      catch (err) { msg.style.display = 'block'; msg.innerText = err.message; }
+      catch (err) { msg.style.display = 'block'; msg.innerText = err.message; document.getElementById('login-btn').innerText = "Log In"; document.getElementById('login-btn').disabled = false; }
     });
     
     document.getElementById('logout-btn').addEventListener('click', () => {
-        socUnsubscribes.forEach(unsub => unsub());
-        socUnsubscribes = [];
-        signOut(auth);
+        if(realtimeSubscription) { supabaseClient.removeChannel(realtimeSubscription); realtimeSubscription = null; }
+        supabaseClient.auth.signOut();
     });
 
-    function formatToDate(ts) { 
-        if(!ts) return "N/A"; 
-        const d = ts.toDate(); 
+    function formatToDate(dt) { 
+        if(!dt) return "N/A"; 
+        const d = new Date(dt); 
         return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}, ${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,'0')} ${d.getHours()>=12?'PM':'AM'}`; 
     }
     
@@ -1225,7 +1251,8 @@
     function updatePlatformButtonText() {
         const btn = document.getElementById('platform-btn-text');
         if(!btn) return;
-        if(selectedPlatformArr.length === 0 || selectedPlatformArr.length === 5) btn.innerText = "All Platforms Selected";
+        const totalPlatforms = document.querySelectorAll('.plat-cb').length;
+        if(selectedPlatformArr.length === 0 || selectedPlatformArr.length === totalPlatforms) btn.innerText = "All Platforms Selected";
         else btn.innerText = `${selectedPlatformArr.length} Selected`;
     }
 
@@ -1244,7 +1271,7 @@
         if (selectedStaffArr.length > 0 && item.staff_name && !selectedStaffArr.includes(item.staff_name)) return false;
         if (selectedPlatformArr.length > 0 && item.platform && !selectedPlatformArr.includes(item.platform)) return false;
         if (item.created_at) {
-          const t = item.created_at.toDate().getTime();
+          const t = new Date(item.created_at).getTime();
           if (startQ && t < startMs) return false;
           if (endQ && t >= endMs) return false;
         }
@@ -1260,7 +1287,7 @@
           if (selectedStaffArr.length > 0 && item.staff_name && !selectedStaffArr.includes(item.staff_name)) return false;
           if (selectedPlatformArr.length > 0 && item.platform && !selectedPlatformArr.includes(item.platform)) return false;
           if (item.created_at) {
-            const t = item.created_at.toDate().getTime();
+            const t = new Date(item.created_at).getTime();
             return t >= prevStartMs && t < prevEndMs;
           }
           return false;
@@ -1317,7 +1344,7 @@
       
       updateSocCharts(pC, socFiltered, sC);
       
-      document.getElementById('table-loading-overlay').classList.add('active');
+      document.getElementById('table-loading-overlay')?.classList.add('active');
       setTimeout(() => { renderSocTable(); }, 50);
     }
 
@@ -1394,7 +1421,7 @@
       let minDate = Infinity, maxDate = 0;
       rawData.forEach(i => {
         if(i.created_at) {
-          const t = i.created_at.toDate().getTime();
+          const t = new Date(i.created_at).getTime();
           if(t < minDate) minDate = t; if(t > maxDate) maxDate = t;
         }
       });
@@ -1402,7 +1429,7 @@
 
       rawData.forEach(i => {
         if(i.created_at) {
-          const d = i.created_at.toDate();
+          const d = new Date(i.created_at);
           hC[d.getHours()] = (hC[d.getHours()]||0) + 1;
           const groupStr = getDynamicGroupedDate(new Date(d), daysRange);
           dC[groupStr] = (dC[groupStr]||0) + 1;
@@ -1450,7 +1477,8 @@
         const prevGrouped = {};
         const isDateFiltered = document.getElementById('global-start').value !== "";
         
-        masterStaffList.forEach(name => { grouped[name] = { total: 0, platforms: {} }; });
+        const validStaffList = dbStaff.length > 0 ? dbStaff.map(s => s.name) : masterStaffList;
+        validStaffList.forEach(name => { grouped[name] = { total: 0, platforms: {} }; });
 
         socFiltered.forEach(d => {
             const name = d.staff_name || "Unknown";
@@ -1527,8 +1555,8 @@
             let valB = b[currentSortCol];
 
             if (currentSortCol === 'created_at') {
-                valA = valA ? valA.toMillis() : 0;
-                valB = valB ? valB.toMillis() : 0;
+                valA = valA ? new Date(valA).getTime() : 0;
+                valB = valB ? new Date(valB).getTime() : 0;
             }
 
             if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
@@ -1579,7 +1607,7 @@
         displayData = getListViewData();
         
         if(!currentSortCol) {
-            displayData.sort((a,b) => (b.created_at ? b.created_at.toMillis() : 0) - (a.created_at ? a.created_at.toMillis() : 0));
+            displayData.sort((a,b) => (b.created_at ? new Date(b.created_at).getTime() : 0) - (a.created_at ? new Date(a.created_at).getTime() : 0));
         } else { displayData = sortData(displayData); }
 
       } else if (currentViewMode === 'staff') {
@@ -1620,7 +1648,7 @@
           tb.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 40px; color: var(--text-soft);">No data matches your active filters.</td></tr>`;
           info.innerText = `Page 0 of 0`; 
           prevBtn.disabled = true; nextBtn.disabled = true; 
-          document.getElementById('table-loading-overlay').classList.remove('active');
+          document.getElementById('table-loading-overlay')?.classList.remove('active');
           return; 
       }
 
@@ -1680,7 +1708,7 @@
           nextBtn.disabled = false;
       }
 
-      document.getElementById('table-loading-overlay').classList.remove('active');
+      document.getElementById('table-loading-overlay')?.classList.remove('active');
     }
 
     function getExportData() {
@@ -1737,6 +1765,261 @@
             }
         });
     });
+
+    // =========================================================================
+    //  QR GENERATOR LOGIC
+    // =========================================================================
+    function formatNameForQR(name) {
+        return name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('-');
+    }
+
+    function populateQRStaffList() {
+        const container = document.getElementById('qr-staff-selection');
+        if(!container) return;
+        const staffList = dbStaff.length > 0 ? dbStaff.map(s => s.name) : masterStaffList;
+        container.innerHTML = staffList.map(name => `
+            <label class="check-wrap" style="background:var(--bg-base); padding: 8px 12px; border: 1px solid var(--card-border);">
+                <input type="checkbox" class="qr-staff-cb" value="${name}" checked> <span>${name}</span>
+            </label>
+        `).join('');
+    }
+
+    document.getElementById('btn-qr-select-all')?.addEventListener('click', () => {
+        document.querySelectorAll('.qr-staff-cb').forEach(cb => cb.checked = true);
+    });
+    
+    document.getElementById('btn-qr-deselect-all')?.addEventListener('click', () => {
+        document.querySelectorAll('.qr-staff-cb').forEach(cb => cb.checked = false);
+    });
+
+    document.getElementById('btn-qr-generate-preview')?.addEventListener('click', () => {
+        const selected = Array.from(document.querySelectorAll('.qr-staff-cb:checked')).map(cb => cb.value);
+        if(selected.length === 0) return showToast("Select at least one staff member.", "error");
+
+        const container = document.getElementById('qr-preview-container');
+        container.innerHTML = '';
+
+        selected.forEach((name, i) => {
+            const formattedName = formatNameForQR(name);
+            const url = `https://rjmobile-in.github.io/murlipura?staff=${formattedName}`;
+            
+            const card = document.createElement('div');
+            card.className = 'qr-preview-card';
+            
+            const title = document.createElement('h4');
+            title.innerText = name;
+            
+            const qrDiv = document.createElement('div');
+            new QRCode(qrDiv, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.H });
+            
+            const dlBtn = document.createElement('button');
+            dlBtn.className = 'btn-secondary';
+            dlBtn.innerText = '↓ PNG';
+            dlBtn.style.padding = '4px 8px';
+            dlBtn.style.fontSize = '11px';
+            dlBtn.onclick = () => {
+                setTimeout(() => {
+                    const canvas = qrDiv.querySelector('canvas');
+                    if(canvas) {
+                        const a = document.createElement('a');
+                        a.href = canvas.toDataURL('image/png');
+                        a.download = `${formattedName}-QR.png`;
+                        a.click();
+                    }
+                }, 50);
+            };
+
+            card.appendChild(title);
+            card.appendChild(qrDiv);
+            card.appendChild(dlBtn);
+            container.appendChild(card);
+        });
+        showToast("Previews generated!", "success");
+    });
+
+    document.getElementById('btn-qr-download-pdf')?.addEventListener('click', () => {
+        const selected = Array.from(document.querySelectorAll('.qr-staff-cb:checked')).map(cb => cb.value);
+        if(selected.length === 0) return showToast("Select at least one staff member.", "error");
+
+        const container = document.getElementById('hidden-pdf-container');
+        container.innerHTML = '';
+        
+        let currentPage;
+        
+        for(let i=0; i<selected.length; i++) {
+            if(i % 20 === 0) {
+                currentPage = document.createElement('div');
+                currentPage.style.width = '210mm';
+                currentPage.style.height = '297mm';
+                currentPage.style.display = 'grid';
+                currentPage.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                currentPage.style.gridTemplateRows = 'repeat(5, 1fr)';
+                currentPage.style.boxSizing = 'border-box';
+                currentPage.style.backgroundColor = 'white';
+                currentPage.style.color = 'black';
+                if (i > 0) currentPage.classList.add('html2pdf__page-break');
+                container.appendChild(currentPage);
+            }
+            
+            const cell = document.createElement('div');
+            cell.style.borderRight = '2px dashed #999';
+            cell.style.borderBottom = '2px dashed #999';
+            if (i % 4 === 0) cell.style.borderLeft = '2px dashed #999';
+            if (Math.floor((i % 20) / 4) === 0) cell.style.borderTop = '2px dashed #999';
+            
+            cell.style.display = 'flex';
+            cell.style.flexDirection = 'column';
+            cell.style.alignItems = 'center';
+            cell.style.justifyContent = 'center';
+            cell.style.padding = '10mm';
+            cell.style.boxSizing = 'border-box';
+            
+            const nameLabel = document.createElement('div');
+            nameLabel.innerText = selected[i];
+            nameLabel.style.fontSize = '14px';
+            nameLabel.style.fontWeight = 'bold';
+            nameLabel.style.marginBottom = '10px';
+            nameLabel.style.textAlign = 'center';
+            nameLabel.style.fontFamily = 'sans-serif';
+            
+            const qrDiv = document.createElement('div');
+            const formattedName = formatNameForQR(selected[i]);
+            const url = `https://rjmobile-in.github.io/murlipura?staff=${formattedName}`;
+            
+            new QRCode(qrDiv, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.H });
+            
+            cell.appendChild(nameLabel);
+            cell.appendChild(qrDiv);
+            currentPage.appendChild(cell);
+        }
+
+        const btn = document.getElementById('btn-qr-download-pdf');
+        const originalText = btn.innerHTML;
+        btn.innerText = "Generating PDF..."; btn.disabled = true;
+
+        setTimeout(() => {
+            const opt = {
+                margin: 0,
+                filename: 'RJ-Staff-Smart-QRs.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(container).save().then(() => {
+                btn.innerHTML = originalText; btn.disabled = false;
+                showToast("PDF Downloaded!", "success");
+            });
+        }, 500);
+    });
+
+    // =========================================================================
+    //  SETTINGS MANAGEMENT (STAFF & PLATFORMS)
+    // =========================================================================
+    
+    async function loadSettingsData() {
+      try {
+        const { data: staffData } = await supabaseClient.from('staff_directory').select('*').order('name');
+        dbStaff = staffData || [];
+      } catch (err) { console.error(err); }
+
+      try {
+        const { data: platData } = await supabaseClient.from('platforms_directory').select('*').order('platform_name');
+        dbPlatforms = platData || [];
+      } catch (err) { console.error(err); }
+
+      const staffTbody = document.getElementById('staff-settings-list');
+      if (staffTbody) {
+          staffTbody.innerHTML = dbStaff.map(s => `<tr>
+              <td><strong style="color: var(--text-main);">${s.name}</strong></td>
+              <td style="text-align:right; white-space:nowrap;">
+                <button class="del-btn" onclick="window.deleteStaffItem('${s.id}')">Remove</button>
+              </td>
+          </tr>`).join('');
+      }
+      
+      const platTbody = document.getElementById('platform-settings-list');
+      if (platTbody) {
+          platTbody.innerHTML = dbPlatforms.map(p => `<tr>
+              <td style="padding: 12px 16px; border-bottom: 1px solid var(--card-border);">
+                <strong style="color: var(--text-main);">${p.platform_name}</strong><br>
+                <span style="font-size:calc(11px * var(--font-scale, 1)); color:var(--text-soft); font-weight: 600;">Link: ${p.link || 'N/A'}</span>
+              </td>
+              <td style="text-align:right; white-space:nowrap; padding: 12px 16px; border-bottom: 1px solid var(--card-border);">
+                <button class="del-btn" onclick="window.deletePlatformItem('${p.id}')">Remove</button>
+              </td>
+          </tr>`).join('');
+      }
+      
+      // Update filter options
+      const platDropdown = document.getElementById('platform-checkboxes');
+      if (platDropdown && dbPlatforms.length > 0) {
+          platDropdown.innerHTML = dbPlatforms.map(p => {
+              const isChecked = selectedPlatformArr.length === 0 || selectedPlatformArr.includes(p.platform_name) ? 'checked' : '';
+              return `<label class="check-wrap"><input type="checkbox" class="plat-cb" value="${p.platform_name}" ${isChecked}> <span>${p.platform_name}</span></label>`;
+          }).join('');
+          
+          document.querySelectorAll('.plat-cb').forEach(cb => {
+              cb.addEventListener('change', (e) => {
+                  if(e.target.checked) {
+                      if(!selectedPlatformArr.includes(e.target.value)) selectedPlatformArr.push(e.target.value); 
+                  } else {
+                      selectedPlatformArr = selectedPlatformArr.filter(v => v !== e.target.value);
+                  }
+                  updatePlatformButtonText(); applySocFilters(); 
+              });
+          });
+      }
+    }
+
+    document.getElementById('add-staff-btn')?.addEventListener('click', async () => {
+      const nameVal = document.getElementById('new-staff-name').value.trim();
+      if(nameVal) {
+        const btn = document.getElementById('add-staff-btn'); btn.innerText = "Adding..."; btn.disabled = true;
+        try {
+          await supabaseClient.from('staff_directory').insert([{ name: nameVal }]);
+          document.getElementById('new-staff-name').value = '';
+          await loadSettingsData(); 
+          showToast("Staff added successfully", "success");
+        } catch (err) { showToast("Failed to add staff.", "error"); } 
+        finally { btn.innerText = "Add Staff"; btn.disabled = false; }
+      } else { showToast("Please enter a staff name.", "error"); }
+    });
+
+    window.deleteStaffItem = async (rowId) => { 
+      if(confirm("Remove this staff member?")) { 
+          await supabaseClient.from('staff_directory').delete().eq('id', rowId); 
+          loadSettingsData(); 
+          showToast("Staff removed", "primary"); 
+      }
+    };
+
+    document.getElementById('add-platform-btn')?.addEventListener('click', async () => { 
+      const nameVal = document.getElementById('new-platform-name').value.trim();
+      const linkVal = document.getElementById('new-platform-link').value.trim();
+      
+      if(nameVal) { 
+        const btn = document.getElementById('add-platform-btn'); btn.innerText = "Adding..."; btn.disabled = true;
+        try {
+            await supabaseClient.from('platforms_directory').insert([{ platform_name: nameVal, link: linkVal }]); 
+            document.getElementById('new-platform-name').value = ''; 
+            document.getElementById('new-platform-link').value = ''; 
+            await loadSettingsData(); 
+            showToast("Platform added successfully", "success");
+        } catch (err) { showToast("Failed to add platform. Ensure 'platforms_directory' table exists.", "error"); }
+        finally { btn.innerText = "Add Platform"; btn.disabled = false; }
+      } else { 
+        showToast("Platform Name is mandatory.", "error"); 
+      }
+    });
+
+    window.deletePlatformItem = async (rowId) => { 
+      if(confirm("Remove this platform?")) { 
+          await supabaseClient.from('platforms_directory').delete().eq('id', rowId); 
+          loadSettingsData(); 
+          showToast("Platform removed", "primary"); 
+      }
+    };
 
   </script>
 </body>
