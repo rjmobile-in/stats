@@ -163,7 +163,7 @@
     .brand-text-wrap { transition: opacity 0.2s ease, width 0.2s ease; opacity: 1; }
     
     .sidebar.collapsed .brand-text-wrap { opacity: 0; display: none; }
-    .sidebar.collapsed .logo-img { margin-left: 4px; }
+    .sidebar.collapsed .logo-img { display: none; }
     
     .sidebar-toggle-btn { position: absolute; right: 0px; top: 4px; background: var(--input-bg); border: 1px solid var(--card-border); transition: all 0.3s ease; z-index: 10; }
     .sidebar.collapsed .sidebar-toggle-btn { right: 50%; transform: translateX(50%); top: -14px;} 
@@ -1197,18 +1197,22 @@
 
     async function initialMetadataLoad() {
         try {
-            const { data: staffData } = await supabaseClient.from('staff_directory').select('*').order('name');
-            dbStaff = staffData || [];
+            // Dono requests ek sath (parallel) bhej kar time bachayenge
+            const [staffRes, platRes] = await Promise.all([
+                supabaseClient.from('staff_directory').select('*').order('name'),
+                supabaseClient.from('platforms_directory').select('*').order('platform_name')
+            ]);
+            
+            dbStaff = staffRes.data || [];
             staffMap = {};
             dbStaff.forEach(s => staffMap[s.id] = s);
-        } catch (err) {}
-        
-        try {
-            const { data: platformData } = await supabaseClient.from('platforms_directory').select('*').order('platform_name');
-            dbPlatforms = platformData || [];
+
+            dbPlatforms = platRes.data || [];
             platformMap = {};
             dbPlatforms.forEach(p => platformMap[p.id] = p);
-        } catch (err) {}
+        } catch (err) {
+            console.error("Metadata load error", err);
+        }
     }
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
