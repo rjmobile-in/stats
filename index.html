@@ -1091,6 +1091,11 @@
         drawer.classList.toggle('collapsed');
     });
 
+    // Toggle Sidebar
+    document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+        document.getElementById('app-sidebar').classList.toggle('collapsed');
+    });
+
     function toggleDropdown(targetId) {
         const boxes = ['export-menu', 'staff-dropdown-box', 'platform-dropdown-box'];
         boxes.forEach(id => {
