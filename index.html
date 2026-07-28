@@ -24,7 +24,6 @@
   <link id="flatpickr-theme" rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
   <style>
     /* =========================================================
@@ -185,7 +184,7 @@
     .sidebar.collapsed .tab-btn { padding-left: 0; padding-right: 0; justify-content: center; }
 
     .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; background: var(--bg-base); position: relative; }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: var(--header-bg, var(--bg-base)); border-bottom: 1px solid var(--card-border); z-index: 50; position: relative; flex-wrap: wrap; gap: 16px;}
+    .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: var(--header-bg, var(--bg-base)); border-bottom: 1px solid var(--card-border); z-index: 150; position: relative; flex-wrap: wrap; gap: 16px;}
     .header-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .header-title { font-weight: 700; font-size: calc(20px * var(--font-scale, 1)); color: var(--text-main); }
     .content-wrapper { padding: 32px 40px; flex: 1; display: flex; flex-direction: column; }
@@ -226,21 +225,15 @@
     /* =========================================================
        7. WIDGETS & CHARTS
        ========================================================= */
-    .sortable-ghost { opacity: 0.4; background: var(--primary-alpha); border: 1px dashed var(--primary); }
-    .sortable-drag { cursor: grabbing !important; }
     .widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
-    .widget-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 24px; cursor: grab; position: relative; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;}
-    .widget-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .widget-card:active { cursor: grabbing; }
+    .widget-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 24px; position: relative; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s;}
+    .widget-card:hover { box-shadow: var(--shadow-md); }
     .widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .widget-title { font-size: calc(12px * var(--font-scale, 1)); color: var(--text-soft); text-transform: uppercase; font-weight: 700; pointer-events: none; letter-spacing: 0.5px;}
+    .widget-title { font-size: calc(12px * var(--font-scale, 1)); color: var(--text-soft); text-transform: uppercase; font-weight: 700; pointer-events: none; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
     
     .metric-value { font-size: calc(36px * var(--font-scale, 1)); font-weight: 800; color: var(--text-main); pointer-events: none; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0;}
     .staff-name-clip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
     .metric-value span:not(.staff-name-clip) { flex-shrink: 0; }
-    
-    .drag-handle { color: var(--text-soft); opacity: 0.3; cursor: grab; transition: 0.2s; font-size: calc(18px * var(--font-scale, 1)); line-height: 1;}
-    .widget-card:hover .drag-handle { opacity: 1; color: var(--primary); }
     
     .tbl-trend { font-size: calc(11px * var(--font-scale)); font-weight: 700; padding: 4px 8px; border-radius: 6px; display: inline-block; vertical-align: middle; letter-spacing: 0.5px; text-transform: uppercase;}
     .tbl-trend.up { background: var(--success-alpha); color: var(--success); }
@@ -315,30 +308,64 @@
     .color-picker-input::-webkit-color-swatch-wrapper { padding: 0; }
     .color-picker-input::-webkit-color-swatch { border: none; border-radius: 50%; }
 
-    /* Print PDF Grid Styling (A4 Format 4x5) */
+    /* =========================================================
+       11. Print PDF Grid Styling (A4 Format 4x5 with Scissors)
+       ========================================================= */
     .print-hide { display: none !important; }
-    .pdf-page-container {
-        width: 210mm;
-        height: 297mm;
-        background: #ffffff;
-        color: #000000;
-        box-sizing: border-box;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(5, 1fr);
+    
+    #preview-window { 
+        display: none; 
+        max-height: 600px; 
+        overflow-y: auto; 
+        background: #e2e8f0;
+        border: 1px solid var(--card-border); 
+        border-radius: var(--radius-md); 
+        margin-top: 24px; 
+        padding: 24px; 
     }
-    .pdf-qr-cell {
+    
+    #print-container { 
+        margin: 0 auto;
+        width: 190mm; /* A4 printable width (210mm - 20mm margins) */
+    }
+
+    .pdf-page {
+        width: 190mm;
+        height: 277mm; /* A4 printable height (297mm - 20mm margins) */
+        background: white;
+        margin-bottom: 20px;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        border-right: 1.5px dashed #000;
-        border-bottom: 1.5px dashed #000;
-        padding: 8px;
-        box-sizing: border-box;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .pdf-qr-cell.left-edge { border-left: 1.5px dashed #000; }
-    .pdf-qr-cell.top-edge { border-top: 1.5px dashed #000; }
+    
+    .qr-wrapper { 
+        width: 47.5mm; /* 190 / 4 columns */
+        height: 55mm;  /* ~277 / 5 rows */
+        border: 1px dashed #999; 
+        position: relative; 
+        padding: 4mm; 
+        text-align: center; 
+        font-family: sans-serif; 
+        background: #fff; 
+        color: #000; 
+        box-sizing: border-box; 
+        overflow: hidden;
+    }
+    
+    .scissor-icon { position: absolute; top: -7px; left: -5px; font-size: 12px; color: #666; background: #fff; line-height: 1; }
+    .qr-label-header { font-size: 9px; font-weight: 900; text-transform: uppercase; margin-bottom: 3px; border-bottom: 1px solid #ddd; padding-bottom: 2px; color: #000; }
+    .qr-wrapper h4 { margin: 0 0 2px 0; font-size: 10px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+    .qr-wrapper p { margin: 0 0 3px 0; font-size: 11px; font-weight: bold; color: #333; line-height: 1; }
+    
+    .qr-wrapper .qr-code { display: flex; justify-content: center; align-items: center; margin-top: 4px;}
+    .qr-wrapper .qr-code img { 
+        width: 28mm !important; 
+        height: 28mm !important; 
+        object-fit: contain; 
+    }
+
   </style>
 </head>
 <body>
@@ -446,7 +473,6 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> Filter Data
             </button>
             
-            <button id="reset-layout-btn" class="btn-secondary" title="Reset Widget Layout">⟲ Layout</button>
             <button id="btn-open-theme" class="btn-secondary" title="Advanced Theme Customizer">🎨 Theme</button>
             <button id="logout-btn" class="btn-secondary">Log Out</button>
           </div>
@@ -527,8 +553,7 @@
                     <div class="widget-grid" id="draggable-widgets">
                         <div class="widget-card" data-id="w-clicks">
                             <div class="widget-header">
-                            <span class="widget-title">Filtered Clicks</span>
-                            <span class="drag-handle">⣿</span>
+                                <span class="widget-title">Filtered Clicks</span>
                             </div>
                             <div class="metric-value">
                               <span id="soc-metric-total">0</span>
@@ -537,22 +562,20 @@
                         </div>
                         <div class="widget-card admin-only" id="soc-card-top-staff" data-id="w-staff" style="display: none;">
                             <div class="widget-header">
-                            <span class="widget-title">Top Staff</span>
-                            <span class="drag-handle">⣿</span>
+                                <span class="widget-title">Top Staff</span>
                             </div>
                             <div class="metric-value" id="soc-metric-staff-container">
                                 <span class="staff-name-clip" id="soc-metric-staff-name">-</span>
-                                <span style="font-size: 16px; color: var(--text-soft); font-weight: 600;" id="soc-metric-staff-pct"></span>
+                                <span style="font-size: 16px; color: var(--text-soft); font-weight: 600; margin-left: 8px;" id="soc-metric-staff-pct"></span>
                             </div>
                         </div>
                         <div class="widget-card" data-id="w-platform">
                             <div class="widget-header">
-                            <span class="widget-title">Top Platform</span>
-                            <span class="drag-handle">⣿</span>
+                                <span class="widget-title">Top Platform</span>
                             </div>
                             <div class="metric-value" id="soc-metric-platform-container">
                                 <span class="staff-name-clip" id="soc-metric-platform-name">-</span>
-                                <span style="font-size: 16px; color: var(--text-soft); font-weight: 600;" id="soc-metric-platform-pct"></span>
+                                <span style="font-size: 16px; color: var(--text-soft); font-weight: 600; margin-left: 8px;" id="soc-metric-platform-pct"></span>
                             </div>
                         </div>
                     </div>
@@ -641,6 +664,12 @@
                     <div class="qr-preview-grid" id="qr-preview-container">
                         <!-- Preview Cards will be injected here -->
                     </div>
+
+                    <!-- PDF Target Window -->
+                    <div id="preview-window">
+                        <div id="print-container"></div>
+                    </div>
+
                 </div>
 
                 <!-- VIEW 4: DIRECTORIES -->
@@ -667,6 +696,7 @@
                             <h3>Platforms Directory</h3>
                             <div style="display:flex; flex-direction: column; gap:12px; background: var(--bg-base); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border); margin-bottom: 24px;">
                                 <input type="text" id="new-platform-name" class="input-field" placeholder="Platform Name (e.g. Instagram)" style="margin:0;">
+                                <input type="url" id="new-platform-link" class="input-field" placeholder="Platform Base Link" style="margin:0;">
                                 <button id="add-platform-btn" class="btn-primary" style="justify-content:center;">Add Platform</button>
                             </div>
                             
@@ -768,14 +798,14 @@
         <input type="hidden" id="edit-soc-plat-id">
         <label style="font-size: calc(11px * var(--font-scale, 1)); color: var(--text-soft); font-weight: 700; text-transform: uppercase;">Platform Name</label>
         <input type="text" id="edit-soc-plat-name" class="input-field" style="margin-top: 8px;">
+        <label style="font-size: calc(11px * var(--font-scale, 1)); color: var(--text-soft); font-weight: 700; text-transform: uppercase;">Platform Base Link</label>
+        <input type="url" id="edit-soc-plat-link" class="input-field" style="margin-top: 8px;">
         <div style="display: flex; gap: 12px; margin-top: 16px;">
             <button id="btn-cancel-soc-plat" class="btn-secondary" style="flex: 1; justify-content: center;">Cancel</button>
             <button id="btn-save-soc-plat" class="btn-primary" style="flex: 1; justify-content: center;">Save Changes</button>
         </div>
     </div>
   </div>
-
-  <div id="hidden-pdf-container" style="position: absolute; top: -9999px; left: -9999px; z-index: -1;"></div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
@@ -797,7 +827,7 @@
     let userStaffName = '';
     let isSocLoaded = false;
     let currentViewMode = 'list'; 
-    let socUnsubscribes = []; 
+    let realtimeSubscription = null;
 
     let currentSortCol = null;
     let currentSortDir = 'desc';
@@ -816,6 +846,7 @@
     let currentDisplayDataLength = 0;
     let autoFetchThrottle = false;
     window.rjDbExhausted = false;
+    window.socCurrentOffset = 0;
 
     let selectedStaffArr = []; 
     let selectedPlatformArr = []; 
@@ -977,8 +1008,6 @@
     }
     // --- END SAFE THEME LOGIC ---
 
-    
-
     let lastSyncTime = 0;
     
     function isUserBusy() {
@@ -1020,21 +1049,6 @@
             }
         });
     }
-
-    const dragWidgets = document.getElementById('draggable-widgets');
-    if (dragWidgets) {
-        Sortable.create(dragWidgets, {
-          handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-          store: {
-            get: (s) => { const order = localStorage.getItem('rj_soc_widget_order'); return order ? order.split('|') : []; },
-            set: (s) => { localStorage.setItem('rj_soc_widget_order', s.toArray().join('|')); }
-          }
-        });
-    }
-    
-    document.getElementById('reset-layout-btn')?.addEventListener('click', () => { 
-      localStorage.removeItem('rj_soc_widget_order'); location.reload(); 
-    });
 
     document.querySelectorAll('.tab-btn[data-view^="view-"]').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -1207,10 +1221,10 @@
         if (email.includes('admin')) {
           userRole = 'admin';
           document.getElementById('role-badge').innerText = 'ADMIN';
-          document.getElementById('soc-card-top-staff').style.display = 'flex';
+          document.getElementById('soc-card-top-staff').style.display = 'block';
           document.getElementById('soc-chart-cont-staff').style.display = 'block';
           document.getElementById('staff-filter-dropdown').style.display = 'block';
-          document.querySelectorAll('.sidebar .admin-only-tab').forEach(el => el.style.display = ''); // Fix applied here
+          document.querySelectorAll('.sidebar .admin-only-tab').forEach(el => el.style.display = ''); 
         } else {
           userRole = 'staff';
           document.getElementById('role-badge').innerText = 'STAFF';
@@ -1341,24 +1355,30 @@
       if (!loadMore) { 
         document.getElementById('table-loading-overlay')?.classList.add('active');
         socData = []; 
-        socLastDoc = null; 
         window.rjDbExhausted = false;
+        window.socCurrentOffset = 0;
+        socPage = 1;
       } 
       
       try {
         const DB_FETCH_LIMIT = 5000; 
-        let q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), limit(DB_FETCH_LIMIT));
-        if (loadMore && socLastDoc) q = query(collection(db, "social_clicks"), orderBy("created_at", "desc"), startAfter(socLastDoc), limit(DB_FETCH_LIMIT));
+        const offset = loadMore ? window.socCurrentOffset : 0;
+        
+        const { data, error } = await supabaseClient
+            .from('social_clicks')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .range(offset, offset + DB_FETCH_LIMIT - 1);
 
-        const snapshot = await getDocs(q);
+        if (error) throw error;
+
         let newlyAdded = 0;
 
-        if (!snapshot.empty) {
-            socLastDoc = snapshot.docs[snapshot.docs.length - 1];
-            snapshot.forEach(doc => { 
-                let d = doc.data(); 
+        if (data && data.length > 0) {
+            window.socCurrentOffset = offset + data.length;
+            data.forEach(d => { 
                 if (loadMore) {
-                    if (!socData.some(existing => existing.created_at?.toMillis() === d.created_at?.toMillis() && existing.staff_id === d.staff_id)) {
+                    if (!socData.some(existing => existing.id === d.id)) {
                         socData.push(d); newlyAdded++;
                     }
                 } else {
@@ -1368,6 +1388,7 @@
         }
 
         if (loadMore && newlyAdded === 0) window.rjDbExhausted = true;
+        if (data && data.length < DB_FETCH_LIMIT) window.rjDbExhausted = true;
         
         // Populate Admin Checkboxes with UUIDs
         if(userRole === 'admin' && !loadMore) {
@@ -1424,9 +1445,12 @@
         applySocFilters(); 
 
       } catch (err) {
-        console.error(err);
+        console.error("Fetch error:", err);
         socIsFetching = false; 
         document.getElementById('table-loading-overlay')?.classList.remove('active');
+        // Force the app to act as loaded so UI isn't permanently locked
+        isSocLoaded = true;
+        applySocFilters();
       }
     }
 
@@ -1992,8 +2016,7 @@
 
         selected.forEach((s) => {
             const formattedName = formatNameForQR(s.name);
-            // Passing staff_id (UUID) to ensure robustness against name changes, and staff (Formatted Name) for display/fallback.
-            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${s.id}&staff=${formattedName}`;
+            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${s.id}`;
             
             const card = document.createElement('div');
             card.className = 'qr-preview-card';
@@ -2039,7 +2062,7 @@
 
         for (let s of selected) {
             const formattedName = formatNameForQR(s.name);
-            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${s.id}&staff=${formattedName}`;
+            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${s.id}`;
             
             const tempDiv = document.createElement('div');
             new QRCode(tempDiv, {
@@ -2070,8 +2093,9 @@
         const selected = Array.from(document.querySelectorAll('.qr-staff-cb:checked')).map(cb => ({ id: cb.value, name: cb.getAttribute('data-name') }));
         if(selected.length === 0) return showToast("Select at least one staff member.", "error");
 
-        const container = document.getElementById('hidden-pdf-container');
-        container.innerHTML = '';
+        const printContainer = document.getElementById('print-container');
+        printContainer.innerHTML = '';
+        document.getElementById('preview-window').style.display = 'block';
         
         let currentPage;
         
@@ -2079,35 +2103,35 @@
             // New page every 20 QRs (4 columns x 5 rows)
             if(i % 20 === 0) {
                 currentPage = document.createElement('div');
-                currentPage.className = 'pdf-page-container';
-                if (i > 0) currentPage.classList.add('html2pdf__page-break');
-                container.appendChild(currentPage);
+                currentPage.className = 'pdf-page';
+                printContainer.appendChild(currentPage);
             }
             
             const cell = document.createElement('div');
-            cell.className = 'pdf-qr-cell';
+            cell.className = 'qr-wrapper';
             
-            // Add dashed borders appropriately for the grid
-            if (i % 4 === 0) cell.classList.add('left-edge');
-            if (Math.floor((i % 20) / 4) === 0) cell.classList.add('top-edge');
-            
-            const nameLabel = document.createElement('div');
-            nameLabel.innerText = selected[i].name;
-            nameLabel.style.fontSize = '14px';
-            nameLabel.style.fontWeight = 'bold';
-            nameLabel.style.marginBottom = '10px';
-            nameLabel.style.textAlign = 'center';
-            nameLabel.style.fontFamily = 'sans-serif';
-            
-            const qrDiv = document.createElement('div');
             const formattedName = formatNameForQR(selected[i].name);
             const url = `https://rjmobile-in.github.io/murlipura?staff_id=${selected[i].id}&staff=${formattedName}`;
             
-            new QRCode(qrDiv, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.M });
+            const uniqueId = `pdf-qr-${i}-${Date.now()}`;
+            cell.innerHTML = `
+                <div class="scissor-icon">✂</div>
+                <div class="qr-label-header"><span>RJ Mobile Staff</span></div>
+                <h4>${selected[i].name}</h4>
+                <div class="qr-code" id="${uniqueId}"></div>
+            `;
             
-            cell.appendChild(nameLabel);
-            cell.appendChild(qrDiv);
             currentPage.appendChild(cell);
+
+            // Generate QR and immediately convert to image to prevent html2pdf bugs
+            const qrContainer = cell.querySelector(`#${uniqueId}`);
+            new QRCode(qrContainer, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.M });
+            
+            const canvas = qrContainer.querySelector('canvas');
+            if (canvas) {
+                const imgSrc = canvas.toDataURL("image/png");
+                qrContainer.innerHTML = `<img src="${imgSrc}" alt="QR" style="width: 28mm; height: 28mm; object-fit: contain;" />`;
+            }
         }
 
         const btn = document.getElementById('btn-qr-download-pdf');
@@ -2116,18 +2140,18 @@
 
         setTimeout(() => {
             const opt = {
-                margin: 0,
+                margin: [10, 10, 10, 10], // top, left, bottom, right in mm
                 filename: 'RJ-Staff-Smart-QRs.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
-            html2pdf().set(opt).from(container).save().then(() => {
+            html2pdf().set(opt).from(printContainer).save().then(() => {
                 btn.innerHTML = originalText; btn.disabled = false;
                 showToast("PDF Downloaded!", "success");
             });
-        }, 500);
+        }, 500); // Give time for rendering engine to catch up
     });
 
     // =========================================================================
@@ -2150,10 +2174,11 @@
       if (platTbody) {
           platTbody.innerHTML = dbPlatforms.map(p => `<tr>
               <td style="padding: 12px 16px; border-bottom: 1px solid var(--card-border);">
-                <strong style="color: var(--text-main);">${p.platform_name}</strong>
+                <strong style="color: var(--text-main);">${p.platform_name}</strong><br>
+                <span style="font-size:calc(11px * var(--font-scale, 1)); color:var(--text-soft); font-weight: 600;">Link: ${p.link || 'N/A'}</span>
               </td>
               <td style="text-align:right; white-space:nowrap; padding: 12px 16px; border-bottom: 1px solid var(--card-border);">
-                <button class="edit-btn" onclick="window.openEditSocPlatform('${p.id}', '${p.platform_name.replace(/'/g, "\\'")}')">Edit</button>
+                <button class="edit-btn" onclick="window.openEditSocPlatform('${p.id}', '${p.platform_name.replace(/'/g, "\\'")}', '${(p.link || '').replace(/'/g, "\\'")}')">Edit</button>
                 <button class="del-btn" onclick="window.deletePlatformItem('${p.id}')">Remove</button>
               </td>
           </tr>`).join('');
@@ -2249,14 +2274,16 @@
     // --- PLATFORM EDIT LOGIC ---
     document.getElementById('add-platform-btn')?.addEventListener('click', async () => { 
       const nameVal = document.getElementById('new-platform-name').value.trim();
+      const linkVal = document.getElementById('new-platform-link').value.trim();
       
       if(nameVal) { 
         const btn = document.getElementById('add-platform-btn'); btn.innerText = "Adding..."; btn.disabled = true;
         try {
-            const { error } = await supabaseClient.from('platforms_directory').insert([{ platform_name: nameVal }]); 
+            const { error } = await supabaseClient.from('platforms_directory').insert([{ platform_name: nameVal, link: linkVal }]); 
             if (error) throw error;
             
             document.getElementById('new-platform-name').value = ''; 
+            document.getElementById('new-platform-link').value = ''; 
             await initialMetadataLoad(); // refresh maps
             await loadSettingsData(); 
             showToast("Platform added successfully", "success");
@@ -2270,9 +2297,10 @@
       }
     });
 
-    window.openEditSocPlatform = (id, name) => {
+    window.openEditSocPlatform = (id, name, link) => {
         document.getElementById('edit-soc-plat-id').value = id;
         document.getElementById('edit-soc-plat-name').value = name;
+        document.getElementById('edit-soc-plat-link').value = link || '';
         document.getElementById('edit-soc-plat-modal').style.display = 'flex';
     };
 
@@ -2283,10 +2311,12 @@
     document.getElementById('btn-save-soc-plat')?.addEventListener('click', async () => {
         const id = document.getElementById('edit-soc-plat-id').value;
         const newName = document.getElementById('edit-soc-plat-name').value.trim();
+        const newLink = document.getElementById('edit-soc-plat-link').value.trim();
+        
         if(newName) {
             const btn = document.getElementById('btn-save-soc-plat'); btn.innerText = "Saving..."; btn.disabled = true;
             try {
-                const { error } = await supabaseClient.from('platforms_directory').update({ platform_name: newName }).eq('id', id);
+                const { error } = await supabaseClient.from('platforms_directory').update({ platform_name: newName, link: newLink }).eq('id', id);
                 if (error) throw error;
                 document.getElementById('edit-soc-plat-modal').style.display = 'none';
                 await initialMetadataLoad(); // refresh maps
