@@ -249,10 +249,10 @@
     .charts-loading-overlay.active { display: flex; }
 
     /* =========================================================
-       8. DATA TABLE & PAGINATION
+       8. DATA TABLE & PAGINATION (Auto Scaling Fix)
        ========================================================= */
-    .table-card { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--card-border); overflow: hidden; margin-bottom: 32px; box-shadow: var(--shadow-sm); position: relative;}
-    .table-responsive { overflow-x: auto; max-height: calc(100vh - 340px); min-height: 400px; overflow-y: auto; }
+    .table-card { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--card-border); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow-sm); position: relative;}
+    .table-responsive { overflow-x: auto; max-height: calc(100vh - 300px); min-height: 300px; overflow-y: auto; }
     table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
     th { position: sticky; top: 0; background: var(--bg-surface); color: var(--text-soft); font-weight: 700; font-size: calc(11px * var(--font-scale, 1)); text-transform: uppercase; padding: 16px 24px; border-bottom: 1px solid var(--card-border); z-index: 10; letter-spacing: 0.5px; border-top: 1px solid var(--card-border);}
     td { padding: 16px 24px; border-bottom: 1px solid var(--card-border); vertical-align: middle; font-size: calc(13px * var(--font-scale, 1)); color: var(--text-main); transition: background 0.1s;}
@@ -273,7 +273,7 @@
     .table-progress-fill { position: absolute; left: -12px; top: 0; bottom: 0; background: var(--primary-alpha); border-radius: var(--radius-sm); z-index: 0; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
     .table-progress-text { position: relative; z-index: 1; font-size: calc(15px * var(--font-scale, 1)); font-weight: 700; color: var(--primary); }
 
-    .pagination-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 24px; }
+    .pagination-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 24px; margin-top: 16px;}
     .page-info-group { display: flex; align-items: center; gap: 16px; font-size: calc(13px * var(--font-scale)); font-weight: 600; color: var(--text-soft); }
     .page-info-group select { padding: 8px 12px; border-radius: var(--radius-sm); background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); font-weight: 600; outline: none; font-size: calc(13px * var(--font-scale)); cursor: pointer; transition: 0.2s;}
 
@@ -326,12 +326,12 @@
     
     #print-container { 
         margin: 0 auto;
-        width: 190mm; /* A4 printable width (210mm - 20mm margins) */
+        width: 190mm; 
     }
 
     .pdf-page {
         width: 190mm;
-        height: 277mm; /* A4 printable height (297mm - 20mm margins) */
+        height: 277mm; 
         background: white;
         margin-bottom: 20px;
         display: flex;
@@ -341,8 +341,8 @@
     }
     
     .qr-wrapper { 
-        width: 47.5mm; /* 190 / 4 columns */
-        height: 55mm;  /* ~277 / 5 rows */
+        width: 47.5mm; 
+        height: 55mm;  
         border: 1px dashed #999; 
         position: relative; 
         padding: 4mm; 
@@ -360,11 +360,7 @@
     .qr-wrapper p { margin: 0 0 3px 0; font-size: 11px; font-weight: bold; color: #333; line-height: 1; }
     
     .qr-wrapper .qr-code { display: flex; justify-content: center; align-items: center; margin-top: 4px;}
-    .qr-wrapper .qr-code img { 
-        width: 28mm !important; 
-        height: 28mm !important; 
-        object-fit: contain; 
-    }
+    .qr-wrapper .qr-code img { width: 28mm !important; height: 28mm !important; object-fit: contain; }
 
   </style>
 </head>
@@ -624,20 +620,20 @@
                             </tbody>
                             </table>
                         </div>
-                        <!-- UNIFIED PAGINATION CONTROLS -->
-                        <div class="pagination-footer">
-                            <button id="soc-prev-page-btn" class="btn-secondary" disabled>← Previous</button>
-                            <div class="page-info-group">
-                                <span id="soc-page-info">Page 0 of 0</span>
-                                <select id="soc-rows-per-page">
-                                    <option value="15" selected>15 rows</option>
-                                    <option value="50">50 rows</option>
-                                    <option value="100">100 rows</option>
-                                    <option value="250">250 rows</option>
-                                </select>
-                            </div>
-                            <button id="soc-next-page-btn" class="btn-secondary" disabled>Next Page →</button>
+                    </div>
+                    <!-- UNIFIED PAGINATION CONTROLS (Moved OUTSIDE table-card to allow table to stretch) -->
+                    <div class="pagination-footer">
+                        <button id="soc-prev-page-btn" class="btn-secondary" disabled>← Previous</button>
+                        <div class="page-info-group">
+                            <span id="soc-page-info">Page 0 of 0</span>
+                            <select id="soc-rows-per-page">
+                                <option value="15" selected>15 rows</option>
+                                <option value="50">50 rows</option>
+                                <option value="100">100 rows</option>
+                                <option value="250">250 rows</option>
+                            </select>
                         </div>
+                        <button id="soc-next-page-btn" class="btn-secondary" disabled>Next Page →</button>
                     </div>
                 </div>
 
@@ -684,7 +680,7 @@
                                 <button id="add-staff-btn" class="btn-primary" style="justify-content: center;">Add Staff</button>
                             </div>
 
-                            <div class="table-responsive" style="border: 1px solid var(--card-border); border-radius: var(--radius-sm); max-height: 400px;">
+                            <div class="table-responsive" style="border: 1px solid var(--card-border); border-radius: var(--radius-sm);">
                                 <table style="width: 100%;">
                                 <thead><tr><th>Staff Details</th><th style="text-align: right;">Action</th></tr></thead>
                                 <tbody id="staff-settings-list"></tbody>
