@@ -2022,7 +2022,7 @@
 
         for (let s of selected) {
             const formattedName = formatNameForQR(s.name);
-            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${s.id}`;
+            const url = `https://rjmobile-in.github.io/social?staff_id=${s.id}`;
             
             const tempDiv = document.createElement('div');
             new QRCode(tempDiv, {
@@ -2071,7 +2071,7 @@
             cell.className = 'qr-wrapper';
             
             const formattedName = formatNameForQR(selected[i].name);
-            const url = `https://rjmobile-in.github.io/murlipura?staff_id=${selected[i].id}&staff=${formattedName}`;
+            const url = `https://rjmobile-in.github.io/social?staff_id=${selected[i].id}&staff=${formattedName}`;
             
             const uniqueId = `pdf-qr-${i}-${Date.now()}`;
             cell.innerHTML = `
