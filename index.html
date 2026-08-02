@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link id="flatpickr-theme" rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/easyqrcodejs@4.6.1/dist/easy.qrcode.min.js"></script>
 
   <style>
     /* =========================================================
@@ -1985,7 +1985,15 @@
             title.innerText = s.name;
             
             const qrDiv = document.createElement('div');
-            new QRCode(qrDiv, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.M });
+            new QRCode(qrDiv, { 
+                text: url, 
+                width: 120, 
+                height: 120, 
+                correctLevel: QRCode.CorrectLevel.L,
+                quietZone: 10,
+                quietZoneColor: '#ffffff',
+                dotScale: 0.9 
+            });
             
             const dlBtn = document.createElement('button');
             dlBtn.className = 'btn-secondary';
@@ -2025,22 +2033,26 @@
             const url = `https://rjmobile-in.github.io/social?staff_id=${s.id}`;
             
             const tempDiv = document.createElement('div');
-            new QRCode(tempDiv, {
-                text: url,
-                width: 400, 
-                height: 400,
-                correctLevel: QRCode.CorrectLevel.M
+
+            await new Promise(resolve => {
+                new QRCode(tempDiv, {
+                    text: url,
+                    width: 600, 
+                    height: 600,
+                    correctLevel: QRCode.CorrectLevel.L,
+                    quietZone: 40,
+                    quietZoneColor: '#ffffff',
+                    dotScale: 0.9,
+                    onRenderingEnd: function(qrOptions, dataURL) {
+                        const a = document.createElement('a');
+                        a.href = dataURL;
+                        a.download = `${formattedName}-QR.png`;
+                        a.click();
+                        resolve();
+                    }
+                });
             });
 
-            await new Promise(res => setTimeout(res, 100)); // Wait for render
-
-            const canvas = tempDiv.querySelector('canvas');
-            if (canvas) {
-                const a = document.createElement('a');
-                a.href = canvas.toDataURL('image/png');
-                a.download = `${formattedName}-QR.png`;
-                a.click();
-            }
             // Small delay to prevent browser from blocking multiple quick downloads
             await new Promise(res => setTimeout(res, 250));
         }
@@ -2085,13 +2097,18 @@
 
             // Generate QR and immediately convert to image to prevent html2pdf bugs
             const qrContainer = cell.querySelector(`#${uniqueId}`);
-            new QRCode(qrContainer, { text: url, width: 120, height: 120, correctLevel: QRCode.CorrectLevel.M });
-            
-            const canvas = qrContainer.querySelector('canvas');
-            if (canvas) {
-                const imgSrc = canvas.toDataURL("image/png");
-                qrContainer.innerHTML = `<img src="${imgSrc}" alt="QR" style="width: 28mm; height: 28mm; object-fit: contain;" />`;
-            }
+            new QRCode(qrContainer, { 
+                text: url, 
+                width: 120, 
+                height: 120, 
+                correctLevel: QRCode.CorrectLevel.L,
+                quietZone: 10,
+                quietZoneColor: '#ffffff',
+                dotScale: 0.9,
+                onRenderingEnd: function(options, dataURL) {
+                    qrContainer.innerHTML = `<img src="${dataURL}" alt="QR" style="width: 28mm; height: 28mm; object-fit: contain;" />`;
+                }
+            });
         }
 
         const btn = document.getElementById('btn-qr-download-pdf');
